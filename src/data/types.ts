@@ -120,6 +120,7 @@ export interface CalcDraft {
   packageId?: string; // undefined => fully custom menu
   removed: string[]; // included item ids removed (credit applied)
   added: { itemId: string; qty: number }[]; // optional additions
+  heroTouched?: boolean; // true once the user has used the home hero search
 }
 
 export const SLOTS: { id: SlotId; label: string; time: string }[] = [

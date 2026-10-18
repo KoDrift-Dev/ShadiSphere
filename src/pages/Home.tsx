@@ -38,11 +38,12 @@ const HOW_IT_WORKS = [
 function HeroSearch() {
   const { calc, setCalc } = useStore();
   const nav = useNavigate();
-  // Initialize from the persisted calc state so selections survive
-  // a trip to the planner and back (no reset).
-  const [date, setDate] = useState(calc.date || todayISO());
-  const [eventType, setEventType] = useState<EventType>(calc.eventType || 'Barat');
-  const [guests, setGuests] = useState(calc.guests || 400);
+  // Empty with placeholders until the user searches; afterwards the
+  // selection persists (no reset on return).
+  const touched = !!calc.heroTouched;
+  const [date, setDate] = useState(touched ? calc.date : '');
+  const [eventType, setEventType] = useState<EventType | ''>(touched ? calc.eventType : '');
+  const [guests, setGuests] = useState(touched && calc.guests ? String(calc.guests) : '');
   return (
     <form
       className="hero-search"
@@ -50,8 +51,13 @@ function HeroSearch() {
       aria-label="Find your wedding date"
       onSubmit={e => {
         e.preventDefault();
-        const g = Math.min(3000, Math.max(50, guests || 400));
-        setCalc(c => ({ ...c, city: BUSINESS.city, date, eventType, guests: g }));
+        const g = Math.min(3000, Math.max(50, Number(guests) || 400));
+        setCalc(c => ({
+          ...c, city: BUSINESS.city,
+          date: date || todayISO(),
+          eventType: (eventType || 'Barat') as EventType,
+          guests: g, heroTouched: true,
+        }));
         nav('/planner', { state: { autoFind: true } });
       }}
     >
@@ -60,15 +66,16 @@ function HeroSearch() {
       </Field>
       <Field label="Event type">
         <select className="input" value={eventType} onChange={e => setEventType(e.target.value as EventType)} aria-label="Event type">
+          <option value="" disabled>Select event type</option>
           {EVENT_TYPES.map(t => <option key={t} value={t}>{t}</option>)}
         </select>
       </Field>
       <Field label="Guests">
-        <input type="number" className="input" value={guests} min={50} max={3000} step={10} onChange={e => setGuests(Number(e.target.value))} aria-label="Guest count" />
+        <input type="number" className="input" value={guests} min={50} max={3000} step={10} placeholder="e.g. 400" onChange={e => setGuests(e.target.value)} aria-label="Guest count" />
       </Field>
       <div className="field">
-        <label>&nbsp;</label>
-        <Btn type="submit" variant="gold" block><span className="hide-on-bar">Find My Date&nbsp;</span>→</Btn>
+        <label className="hide-m" aria-hidden="true">&nbsp;</label>
+        <Btn type="submit" variant="gold" block>Find My Date →</Btn>
       </div>
     </form>
   );
@@ -81,8 +88,7 @@ export default function Home() {
 
   return (
     <div>
-      <style>{`@media (max-width: 900px){ .hero-search{grid-template-columns:1fr 1fr !important;} .grid-3,.grid-4,.grid-2{grid-template-columns:1fr;} }
-@media (max-width: 560px){ .hero-search{grid-template-columns:1fr !important;} }
+      <style>{`@media (min-width: 701px) and (max-width: 900px){ .hero-search{grid-template-columns:1fr 1fr !important;} } @media (max-width: 900px){ .grid-3,.grid-4,.grid-2{grid-template-columns:1fr;} }
 .hero-ctas .hero-cta-wrap { flex: none; }
 @media (max-width: 700px){ .hero-ctas .hero-cta-wrap { flex: 1 1 0; min-width: 0; } .hero-ctas .hero-cta-wrap .btn { min-width: 0; } }`}</style>
 
@@ -163,9 +169,9 @@ export default function Home() {
                   {['Choose a menu package', 'Customize dishes & add-ons', 'Enter guests, date & space', 'Get an instant itemized estimate'].map((s, i) => (
                     <StaggerItem key={s}>
                       <div className="flex items-center gap-4 rounded-2xl border border-champagne-500/25 bg-white/70 !px-4 !py-3 shadow-[inset_0_1px_0_rgba(255,255,255,.8),0_12px_34px_rgba(30,77,63,.10)] backdrop-blur-md">
-                        <span className="font-display text-[26px] font-bold text-champagne-500" aria-hidden="true">{String(i + 1).padStart(2, '0')}</span>
-                        <span className="grow font-semibold text-pine-900">{s}</span>
-                        <span className="text-champagne-500" aria-hidden="true">→</span>
+                        <span className="font-display text-[26px] font-bold text-champagne-500 shrink-0" aria-hidden="true">{String(i + 1).padStart(2, '0')}</span>
+                        <span className="grow font-semibold text-pine-900 min-w-0">{s}</span>
+                        <span className="text-champagne-500 shrink-0" aria-hidden="true">→</span>
                       </div>
                     </StaggerItem>
                   ))}
@@ -187,9 +193,9 @@ export default function Home() {
             {HOW_IT_WORKS.map(s => (
               <StaggerItem key={s.n} className="h-full">
                 <div className="card tint-ivory h-full transition-transform duration-300 hover:-translate-y-1.5" style={{ padding: 20 }}>
-                  <div className="mb-4 flex items-center justify-between">
-                    <span className="font-display text-4xl font-bold text-champagne-500" aria-hidden="true">{s.n}</span>
-                    <span className="eyebrow" style={{ margin: 0 }}><span className="rule" />{s.k}</span>
+                  <div className="mb-4 flex items-center justify-between gap-3">
+                    <span className="font-display text-4xl font-bold text-champagne-500 shrink-0" aria-hidden="true">{s.n}</span>
+                    <span className="eyebrow min-w-0" style={{ margin: 0 }}><span className="rule" />{s.k}</span>
                   </div>
                   <h3 className="mb-2 text-xl">{s.t}</h3>
                   <p className="small muted hide-m" style={{ marginBottom: 18 }}>{s.d}</p>
