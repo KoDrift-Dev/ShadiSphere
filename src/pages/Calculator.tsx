@@ -4,7 +4,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useStore } from '../state/store';
 import {
-  Btn, Badge, Field, PageHead, Qty, Img, Modal,
+  Btn, Badge, Field, PageHead, Qty, Img, Modal, Select,
   Reveal, Stagger, StaggerItem,
 } from '../components/ui';
 import { calculate, MAX_DISCOUNT_PCT } from '../lib/calc';
@@ -260,28 +260,28 @@ export default function Calculator() {
                   <input className="input" value={`${BUSINESS.name} · ${BUSINESS.area}, Lahore`} readOnly aria-label="Venue (fixed)" />
                 </Field>
                 <Field label="Event space (optional)">
-                  <select
+                  <Select
                     value={calc.venueId ?? ''}
-                    onChange={e => setCalc(c => ({ ...c, venueId: e.target.value || undefined }))}
-                    aria-label="Event space"
+                    onChange={v => setCalc(c => ({ ...c, venueId: v || undefined }))}
+                    ariaLabel="Event space"
                   >
                     <option value="">No space selected yet</option>
                     {state.venues.map(v => (
                       <option key={v.id} value={v.id}>{v.name}</option>
                     ))}
-                  </select>
+                  </Select>
                 </Field>
               </div>
 
               <div className="form-row c2">
                 <Field label="Event type">
-                  <select
+                  <Select
                     value={calc.eventType}
-                    onChange={e => setCalc(c => ({ ...c, eventType: e.target.value as EventType }))}
-                    aria-label="Event type"
+                    onChange={v => setCalc(c => ({ ...c, eventType: v as EventType }))}
+                    ariaLabel="Event type"
                   >
                     {EVENT_TYPES.map(t => <option key={t} value={t}>{t}</option>)}
-                  </select>
+                  </Select>
                 </Field>
                 <Field label="Number of guests" error={guestError} hint={capWarn || undefined}>
                   <input
@@ -300,16 +300,16 @@ export default function Calculator() {
 
               <div className="form-row c2">
                 <Field label="Menu package">
-                  <select
+                  <Select
                     value={calc.packageId ?? ''}
-                    onChange={e => pickPkg(e.target.value || undefined)}
-                    aria-label="Menu package"
+                    onChange={v => pickPkg(v || undefined)}
+                    ariaLabel="Menu package"
                   >
                     <option value="">Fully Custom — build your own</option>
                     {state.packages.filter(p => p.enabled).map(p => (
                       <option key={p.id} value={p.id}>{p.name} — {pkr(p.pricePerGuest)}/guest</option>
                     ))}
-                  </select>
+                  </Select>
                 </Field>
                 <Field label="Time slot">
                   <div className="slot-chips" role="group" aria-label="Time slot">
@@ -375,12 +375,12 @@ export default function Calculator() {
                     <p className="hint" style={{ marginBottom: 12 }}>Pick a category, tap dishes to select them, then move to the next category.</p>
                     <div className="smart-cat-bar">
                       <Field label="Category">
-                        <select value={activeCat} onChange={e => setCustomCat(e.target.value)} aria-label="Menu category">
+                        <Select value={activeCat} onChange={v => setCustomCat(v)} ariaLabel="Menu category">
                           {customCats.map(c => {
                             const n = customMains.filter(i => i.category === c && (addedMap.get(i.id) ?? 0) > 0).length;
                             return <option key={c} value={c}>{c}{n > 0 ? ` — ${n} selected` : ''}</option>;
                           })}
-                        </select>
+                        </Select>
                       </Field>
                       {nextCat && nextCat !== activeCat && (
                         <button

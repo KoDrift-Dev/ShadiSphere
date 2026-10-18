@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import { useStore } from '../state/store';
-import { Btn, Badge, Img, Empty, PageHead, Field, Reveal, Stagger, StaggerItem } from '../components/ui';
+import { Btn, Badge, Img, Empty, PageHead, Field, Reveal, Stagger, StaggerItem , Select} from '../components/ui';
 import { BUSINESS, VenueConfig, VenueType } from '../data/types';
 import { pkr } from '../lib/format';
 
@@ -67,19 +67,19 @@ export default function Venues() {
             <span className="eyebrow relative" style={{ marginBottom: 14 }}><span className="rule" />Refine your search</span>
             <div className="filter-bar">
               <Field label="Space type">
-                <select className="input" value={type} onChange={e => setType(e.target.value)}>
+                <Select value={type} onChange={v => setType(v)}>
                   <option>All</option>{TYPES.map(t => <option key={t} value={t}>{t}</option>)}
-                </select>
+                </Select>
               </Field>
               <Field label="Indoor / outdoor">
-                <select className="input" value={config} onChange={e => setConfig(e.target.value)}>
+                <Select value={config} onChange={v => setConfig(v)}>
                   <option>All</option>{CONFIGS.map(c => <option key={c} value={c}>{c}</option>)}
-                </select>
+                </Select>
               </Field>
               <Field label="Amenity">
-                <select className="input" value={amenity} onChange={e => setAmenity(e.target.value)}>
+                <Select value={amenity} onChange={v => setAmenity(v)}>
                   <option>All</option>{amenities.map(a => <option key={a} value={a}>{a}</option>)}
-                </select>
+                </Select>
               </Field>
               <Field label="Guest count" hint="Venue must fit this many guests">
                 <input type="number" className="input" placeholder="e.g. 500" value={guests} min={50} max={3000} onChange={e => setGuests(e.target.value)} />
@@ -88,11 +88,11 @@ export default function Venues() {
                 <input type="number" className="input" placeholder="e.g. 200000" value={budget} min={0} onChange={e => setBudget(e.target.value)} />
               </Field>
               <Field label="Sort by">
-                <select className="input" value={sort} onChange={e => setSort(e.target.value as SortKey)}>
+                <Select value={sort} onChange={v => setSort(v as SortKey)}>
                   <option value="recommended">Recommended</option>
                   <option value="capacity">Capacity (high to low)</option>
                   <option value="price">Hall rental (low to high)</option>
-                </select>
+                </Select>
               </Field>
               <div className="field">
                 <label>&nbsp;</label>

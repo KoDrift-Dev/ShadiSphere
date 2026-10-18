@@ -5,7 +5,7 @@ import { useStore } from '../state/store';
 import {
   Btn, Badge, Field, Empty, PageHead, SectionHead, MiniCalendar,
   Reveal, Stagger, StaggerItem,
-} from '../components/ui';
+  Select} from '../components/ui';
 import { recommend, planMultiEvent, RecInput, Recommendation, WindowMode, EventWish, EventPlanCombo } from '../lib/recommend';
 import { isoPlus, fmtDate, pkr, todayISO } from '../lib/format';
 import {
@@ -169,9 +169,9 @@ export default function Planner() {
               </Field>
             </div>
             <Field label="Date flexibility">
-              <select value={form.window} onChange={e => setForm(f => ({ ...f, window: e.target.value as WindowMode }))} aria-label="Date flexibility">
+              <Select value={form.window} onChange={v => setForm(f => ({ ...f, window: v as WindowMode }))} ariaLabel="Date flexibility">
                 {WINDOWS.map(w => <option key={w.id} value={w.id}>{w.label}</option>)}
-              </select>
+              </Select>
             </Field>
             {form.window === 'custom' && (
               <Field label="Search until">
@@ -181,16 +181,16 @@ export default function Planner() {
             )}
             <div className="form-row" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
               <Field label="Time slot">
-                <select value={form.slot} onChange={e => setForm(f => ({ ...f, slot: e.target.value as '' | SlotId }))} aria-label="Time slot">
+                <Select value={form.slot} onChange={v => setForm(f => ({ ...f, slot: v as '' | SlotId }))} ariaLabel="Time slot">
                   <option value="">Any slot</option>
                   {SLOTS.map(s => <option key={s.id} value={s.id}>{s.label} ({s.time})</option>)}
-                </select>
+                </Select>
               </Field>
               <Field label="Preferred space (optional)">
-                <select value={form.spaceId} onChange={e => setForm(f => ({ ...f, spaceId: e.target.value }))} aria-label="Preferred space">
+                <Select value={form.spaceId} onChange={v => setForm(f => ({ ...f, spaceId: v }))} ariaLabel="Preferred space">
                   <option value="">Any space</option>
                   {state.venues.map(v => <option key={v.id} value={v.id}>{v.name}</option>)}
-                </select>
+                </Select>
               </Field>
             </div>
             <Field label="Approximate budget, PKR (optional)" hint="Recommendations slightly above budget are still shown and labelled.">
@@ -294,9 +294,9 @@ export default function Planner() {
                 onChange={e => setGapDays(Number(e.target.value) || 1)} aria-label="Gap days" />
             </Field>
             <Field label="Preferred slot for all functions">
-              <select value={planSlot} onChange={e => setPlanSlot(e.target.value as SlotId)} aria-label="Planner slot">
+              <Select value={planSlot} onChange={v => setPlanSlot(v as SlotId)} ariaLabel="Planner slot">
                 {SLOTS.map(s => <option key={s.id} value={s.id}>{s.label} ({s.time})</option>)}
-              </select>
+              </Select>
             </Field>
           </div>
 
@@ -318,9 +318,9 @@ export default function Planner() {
               </div>
               <div className="wish-row">
                 <Field label="Event type">
-                  <select value={w.eventType} onChange={e => editWish(i, { eventType: e.target.value as EventType })} aria-label={`Function ${i + 1} type`}>
+                  <Select value={w.eventType} onChange={v => editWish(i, { eventType: v as EventType })} ariaLabel={`Function ${i + 1} type`}>
                     {EVENT_TYPES.map(t => <option key={t} value={t}>{t}</option>)}
-                  </select>
+                  </Select>
                 </Field>
                 <Field label="Guests">
                   <input className="input" type="number" min={50} max={3000} value={w.guests}

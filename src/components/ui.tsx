@@ -290,3 +290,112 @@ export function MiniCalendar({ value, onChange, minDate, ariaLabel }: {
     </div>
   );
 }
+
+/** Theme-styled dropdown — custom popup like MiniCalendar, because the native
+ *  option list is drawn by the OS and cannot be styled. Drop-in for <select>:
+ *  keep <option> children, onChange receives the chosen value directly. */
+export function Select({ value, onChange, children, ariaLabel, className }: {
+  value: string; onChange: (value: string) => void; children: React.ReactNode;
+  ariaLabel?: string; className?: string;
+}) {
+  const [open, setOpen] = React.useState(false);
+  const [pos, setPos] = React.useState<{ top: number; left: number; width: number } | null>(null);
+  const btnRef = React.useRef<HTMLButtonElement>(null);
+  const popRef = React.useRef<HTMLDivElement>(null);
+
+  const opts = React.useMemo(() =>
+    React.Children.toArray(children)
+      .filter(React.isValidElement)
+      .map(c => {
+        const pr = (c as React.ReactElement<any>).props;
+        const kids = Array.isArray(pr.children) ? pr.children.join('') : pr.children;
+        return {
+          value: pr.value === undefined ? String(kids ?? '') : String(pr.value),
+          label: String(kids ?? ''),
+          disabled: !!pr.disabled,
+        };
+      }), [children]);
+  const current = opts.find(o => o.value === value);
+
+  const toggle = () => {
+    if (!open && btnRef.current) {
+      const r = btnRef.current.getBoundingClientRect();
+      const estH = Math.min(308, 12 + opts.length * 38);
+      const below = window.innerHeight - r.bottom;
+      const up = below < estH + 12 && r.top > estH + 12;
+      setPos({
+        left: Math.max(8, Math.min(r.left, window.innerWidth - Math.max(r.width, 180) - 8)),
+        width: Math.max(r.width, 180),
+        top: up ? Math.max(8, r.top - estH - 8) : r.bottom + 8,
+      });
+    }
+    setOpen(o => !o);
+  };
+
+  // Measure after render and correct any viewport overflow.
+  React.useEffect(() => {
+    if (!open || !popRef.current) return;
+    const r = popRef.current.getBoundingClientRect();
+    setPos(p => {
+      if (!p) return p;
+      let { top, left, width } = p;
+      if (r.bottom > window.innerHeight - 8) {
+        const b = btnRef.current?.getBoundingClientRect();
+        top = Math.max(8, (b ? b.top : window.innerHeight - r.height - 16) - r.height - 8);
+      }
+      if (r.right > window.innerWidth - 8) left = Math.max(8, window.innerWidth - r.width - 8);
+      return { top, left, width };
+    });
+  }, [open ]);
+
+  // Close on scroll / resize / Escape.
+  React.useEffect(() => {
+    if (!open) return;
+    const close = () => setOpen(false);
+    const esc = (e: KeyboardEvent) => { if (e.key === 'Escape') setOpen(false); };
+    window.addEventListener('scroll', close, true);
+    window.addEventListener('resize', close);
+    window.addEventListener('keydown', esc);
+    return () => {
+      window.removeEventListener('scroll', close, true);
+      window.removeEventListener('resize', close);
+      window.removeEventListener('keydown', esc);
+    };
+  }, [open ]);
+
+  return (
+    <>
+      <button
+        ref={btnRef} type="button"
+        className={`select-btn${className ? ` ${className}` : ''}`}
+        onClick={toggle} aria-haspopup="listbox" aria-expanded={open} aria-label={ariaLabel}
+      >
+        <span className={`select-val${current ? '' : ' placeholder'}`}>{current ? current.label : 'Select'}</span>
+        <svg className="select-chev" width="13" height="13" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" strokeWidth="2.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+          <path d="m6 9 6 6 6-6" />
+        </svg>
+      </button>
+      {open && pos && createPortal(
+        <>
+          <div className="select-veil" onClick={() => setOpen(false)} />
+          <div ref={popRef} className="select-pop" role="listbox" aria-label={ariaLabel}
+            style={{ top: pos.top, left: pos.left, width: pos.width }}>
+            {opts.map(o => (
+              <button
+                key={`${o.value}∷${o.label}`} type="button" role="option"
+                aria-selected={o.value === value} disabled={o.disabled}
+                className={`select-opt${o.value === value ? ' sel' : ''}`}
+                onClick={() => { onChange(o.value); setOpen(false); }}
+              >
+                <span className="select-check" aria-hidden="true">{o.value === value ? '✓' : ''}</span>
+                <span>{o.label}</span>
+              </button>
+            ))}
+          </div>
+        </>,
+        document.body
+      )}
+    </>
+  );
+}

@@ -5,7 +5,7 @@ import { Link, Route, Routes, useLocation } from 'react-router-dom';
 import { useStore } from '../state/store';
 import { seedBookings } from '../data/seed';
 import {
-  Badge, Btn, Confirm, Empty, Field, Modal, PageHead, Reveal, SectionHead, Stagger, StaggerItem, MiniCalendar,
+  Badge, Btn, Confirm, Empty, Field, Modal, Select, PageHead, Reveal, SectionHead, Stagger, StaggerItem, MiniCalendar,
 } from '../components/ui';
 import {
   fmtDate, fmtDateShort, isoPlus, pkr, todayISO, unitLabel, weekdayOf,
@@ -443,14 +443,14 @@ function VenueMgmt() {
               <input className="input" value={edit.area} onChange={e => setEdit({ ...edit, area: e.target.value })} />
             </Field>
             <Field label="Venue type">
-              <select className="input" value={edit.type} onChange={e => setEdit({ ...edit, type: e.target.value as Venue['type'] })}>
+              <Select value={edit.type} onChange={v => setEdit({ ...edit, type: v as Venue['type'] })}>
                 {VENUE_TYPES.map(t => <option key={t} value={t}>{t}</option>)}
-              </select>
+              </Select>
             </Field>
             <Field label="Configuration">
-              <select className="input" value={edit.config} onChange={e => setEdit({ ...edit, config: e.target.value as Venue['config'] })}>
+              <Select value={edit.config} onChange={v => setEdit({ ...edit, config: v as Venue['config'] })}>
                 {VENUE_CONFIGS.map(c => <option key={c} value={c}>{c}</option>)}
-              </select>
+              </Select>
             </Field>
             <Field label="Featured space">
               <label className="checkline" style={{ paddingTop: 6 }}>
@@ -715,15 +715,13 @@ function BookingMgmt() {
                 <td>{venueById.get(b.venueId)?.name ?? '—'}</td>
                 <td>{SLOTS.find(s => s.id === b.slot)?.label ?? b.slot}</td>
                 <td>
-                  <select
-                    className="input"
-                    style={{ padding: '6px 10px', fontSize: 13.5 }}
-                    aria-label={`Status for booking on ${b.date}`}
+                  <Select
+                    ariaLabel={`Status for booking on ${b.date}`}
                     value={b.status}
-                    onChange={e => setStatus(b.id, e.target.value as BookingStatus)}
+                    onChange={v => setStatus(b.id, v as BookingStatus)}
                   >
                     {ALL_STATUSES.map(s => <option key={s} value={s}>{bookingLabel(s)}</option>)}
-                  </select>
+                  </Select>
                   <div style={{ marginTop: 6 }}><Badge tone={bookingTone(b.status)}>{bookingLabel(b.status)}</Badge></div>
                 </td>
                 <td>{b.eventType}</td>
@@ -784,27 +782,27 @@ function AddBookingModal({ onClose }: { onClose: () => void }) {
       {err && <div className="alert alert-err" role="alert">{err}</div>}
       <div className="form-row c2">
         <Field label="Venue">
-          <select className="input" value={venueId} onChange={e => setVenueId(e.target.value)}>
+          <Select value={venueId} onChange={v => setVenueId(v)}>
             {state.venues.map(v => <option key={v.id} value={v.id}>{v.name}</option>)}
-          </select>
+          </Select>
         </Field>
         <Field label="Date">
           <MiniCalendar value={date} onChange={setDate} ariaLabel="Date" />
         </Field>
         <Field label="Slot">
-          <select className="input" value={slot} onChange={e => setSlot(e.target.value as typeof slot)}>
+          <Select value={slot} onChange={v => setSlot(v as typeof slot)}>
             {SLOTS.map(s => <option key={s.id} value={s.id}>{s.label} · {s.time}</option>)}
-          </select>
+          </Select>
         </Field>
         <Field label="Status">
-          <select className="input" value={status} onChange={e => setStatus(e.target.value as BookingStatus)}>
+          <Select value={status} onChange={v => setStatus(v as BookingStatus)}>
             {ALL_STATUSES.map(s => <option key={s} value={s}>{bookingLabel(s)}</option>)}
-          </select>
+          </Select>
         </Field>
         <Field label="Event type">
-          <select className="input" value={eventType} onChange={e => setEventType(e.target.value)}>
+          <Select value={eventType} onChange={v => setEventType(v)}>
             {EVENT_TYPES.map(t => <option key={t} value={t}>{t}</option>)}
-          </select>
+          </Select>
         </Field>
         <Field label="Guests">
           <input className="input" type="number" min={0} value={guests} onChange={e => setGuests(e.target.value)} />
@@ -857,15 +855,13 @@ function InquiryMgmt() {
                 <td>{i.venueId ? venueById.get(i.venueId)?.name ?? '—' : <span className="muted">Any</span>}</td>
                 <td className="price">{pkr(i.estimate)}</td>
                 <td onClick={e => e.stopPropagation()}>
-                  <select
-                    className="input"
-                    style={{ padding: '6px 10px', fontSize: 13.5 }}
-                    aria-label={`Status for inquiry ${i.ref}`}
+                  <Select
+                    ariaLabel={`Status for inquiry ${i.ref}`}
                     value={i.status}
-                    onChange={e => setStatus(i.ref, e.target.value as InquiryStatus)}
+                    onChange={v => setStatus(i.ref, v as InquiryStatus)}
                   >
                     {INQUIRY_STATUSES.map(s => <option key={s} value={s}>{s}</option>)}
-                  </select>
+                  </Select>
                   <div style={{ marginTop: 6 }}><Badge tone={inquiryTone(i.status)}>{i.status}</Badge></div>
                 </td>
               </tr>
@@ -1069,9 +1065,9 @@ function PromoMgmt() {
           </Field>
           <div className="form-row c2">
             <Field label="Type">
-              <select className="input" value={edit.kind} onChange={e => setEdit({ ...edit, kind: e.target.value as Promotion['kind'] })}>
+              <Select value={edit.kind} onChange={v => setEdit({ ...edit, kind: v as Promotion['kind'] })}>
                 {PROMO_KINDS.map(k => <option key={k.id} value={k.id}>{k.label}</option>)}
-              </select>
+              </Select>
             </Field>
             <Field label="Discount (%)">
               <input className="input" type="number" min={0} max={50} value={edit.percent} onChange={e => setEdit({ ...edit, percent: num(e.target.value) })} />

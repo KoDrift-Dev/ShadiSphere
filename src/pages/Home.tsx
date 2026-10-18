@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useStore } from '../state/store';
-import { Btn, Badge, Img, SectionHead, Field, Reveal, Stagger, StaggerItem, MiniCalendar } from '../components/ui';
+import { Btn, Badge, Img, SectionHead, Field, Reveal, Stagger, StaggerItem, MiniCalendar , Select} from '../components/ui';
 import { BUSINESS, EVENT_TYPES, EventType } from '../data/types';
 import { pkr, todayISO } from '../lib/format';
 
@@ -65,10 +65,10 @@ function HeroSearch() {
         <MiniCalendar value={date} onChange={setDate} ariaLabel="Event date" />
       </Field>
       <Field label="Event type">
-        <select className="input" value={eventType} onChange={e => setEventType(e.target.value as EventType)} aria-label="Event type">
+        <Select value={eventType} onChange={v => setEventType(v as EventType)} ariaLabel="Event type">
           <option value="" disabled>Select event type</option>
           {EVENT_TYPES.map(t => <option key={t} value={t}>{t}</option>)}
-        </select>
+        </Select>
       </Field>
       <Field label="Guests">
         <input type="number" className="input" value={guests} min={50} max={3000} step={10} placeholder="e.g. 400" onChange={e => setGuests(e.target.value)} aria-label="Guest count" />

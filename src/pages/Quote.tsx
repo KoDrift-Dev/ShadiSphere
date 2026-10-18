@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import { useStore } from '../state/store';
 import {
   Btn, Badge, Field, PageHead, Reveal, MiniCalendar,
-} from '../components/ui';
+  Select} from '../components/ui';
 import { calculate } from '../lib/calc';
 import { pkr, fmtDate, todayISO } from '../lib/format';
 import { buildWhatsAppMessage, waLink } from '../lib/whatsapp';
@@ -263,9 +263,9 @@ export default function Quote() {
                   <input className="input" value={BUSINESS.city} disabled aria-label="City" />
                 </Field>
                 <Field label="Event type">
-                  <select value={form.eventType} onChange={e => setForm(f => ({ ...f, eventType: e.target.value as EventType }))} aria-label="Event type">
+                  <Select value={form.eventType} onChange={v => setForm(f => ({ ...f, eventType: v as EventType }))} ariaLabel="Event type">
                     {EVENT_TYPES.map(t => <option key={t} value={t}>{t}</option>)}
-                  </select>
+                  </Select>
                 </Field>
               </div>
               <div className="form-row" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
@@ -274,9 +274,9 @@ export default function Quote() {
                     onChange={iso => setForm(f => ({ ...f, date: iso }))} ariaLabel="Preferred date" />
                 </Field>
                 <Field label="Time slot">
-                  <select value={form.slot} onChange={e => setForm(f => ({ ...f, slot: e.target.value as SlotId }))} aria-label="Time slot">
+                  <Select value={form.slot} onChange={v => setForm(f => ({ ...f, slot: v as SlotId }))} ariaLabel="Time slot">
                     {SLOTS.map(s => <option key={s.id} value={s.id}>{s.label} ({s.time})</option>)}
-                  </select>
+                  </Select>
                 </Field>
               </div>
               <Field label="Guests *" error={errors.guests}>

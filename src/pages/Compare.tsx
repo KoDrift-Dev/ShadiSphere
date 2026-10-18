@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { useStore } from '../state/store';
 import {
   Btn, Badge, Field, PageHead, Img, Reveal,
-} from '../components/ui';
+  Select} from '../components/ui';
 import { pkr, unitLabel } from '../lib/format';
 import { BUSINESS, SLOTS, MenuItem } from '../data/types';
 
@@ -152,27 +152,27 @@ export default function Compare() {
                 />
               </Field>
               <Field label="Event space">
-                <select
+                <Select
                   value={calc.venueId ?? ''}
-                  onChange={e => setCalc(c => ({ ...c, venueId: e.target.value || undefined }))}
-                  aria-label="Event space"
+                  onChange={v => setCalc(c => ({ ...c, venueId: v || undefined }))}
+                  ariaLabel="Event space"
                 >
                   <option value="">No space selected</option>
                   {state.venues.map(v => (
                     <option key={v.id} value={v.id}>{v.name}</option>
                   ))}
-                </select>
+                </Select>
               </Field>
               <Field label="Time slot">
-                <select
+                <Select
                   value={calc.slot}
-                  onChange={e => setCalc(c => ({ ...c, slot: e.target.value as typeof calc.slot }))}
-                  aria-label="Time slot"
+                  onChange={v => setCalc(c => ({ ...c, slot: v as typeof calc.slot }))}
+                  ariaLabel="Time slot"
                 >
                   {SLOTS.map(s => (
                     <option key={s.id} value={s.id}>{s.label} · {s.time}</option>
                   ))}
-                </select>
+                </Select>
               </Field>
             </div>
             <p className="hint" style={{ marginTop: 10 }}>

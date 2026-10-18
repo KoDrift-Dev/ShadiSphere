@@ -2,7 +2,7 @@
 import React, { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useStore } from '../state/store';
-import { Btn, Badge, Field, PageHead, Reveal } from '../components/ui';
+import { Btn, Badge, Field, PageHead, Reveal , Select} from '../components/ui';
 import {
   slotStatus, SLOT_STATUS_META, isSlotBookable, SlotStatus,
 } from '../lib/availability';
@@ -105,11 +105,11 @@ export default function CalendarPage() {
 
             <div style={{ padding: '6px 16px 0' }}>
               <Field label="Event space">
-                <select value={venueId} onChange={e => setVenueId(e.target.value)} aria-label="Event space">
+                <Select value={venueId} onChange={v => setVenueId(v)} ariaLabel="Event space">
                   {state.venues.map(v => (
                     <option key={v.id} value={v.id}>{v.name}</option>
                   ))}
-                </select>
+                </Select>
               </Field>
             </div>
 
