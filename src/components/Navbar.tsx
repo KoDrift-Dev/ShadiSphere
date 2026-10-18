@@ -26,12 +26,14 @@ export default function Navbar() {
           <span className="brand-mark">S</span>
           <span className="brand-name">Shadi<span>Sphere</span></span>
         </Link>
-        <nav className="nav-pill" aria-label="Primary">
-          {LINKS.map(l => (
-            <NavLink key={l.to} to={l.to} end={l.to === '/'}
-              className={({ isActive }) => isActive ? 'active' : ''}>{l.label}</NavLink>
-          ))}
-        </nav>
+        <div className="nav-center">
+          <nav className="nav-pill" aria-label="Primary">
+            {LINKS.map(l => (
+              <NavLink key={l.to} to={l.to} end={l.to === '/'}
+                className={({ isActive }) => isActive ? 'active' : ''}>{l.label}</NavLink>
+            ))}
+          </nav>
+        </div>
         <span className="nav-cta"><Btn to="/calculator" size="sm" variant="dark">Calculate Your Wedding Cost</Btn></span>
         <button className="nav-toggle" onClick={() => setOpen(o => !o)} aria-label="Menu" aria-expanded={open}>☰</button>
       </div>

@@ -158,8 +158,16 @@ button { font-family: var(--font-sans); cursor: pointer; }
 .btn-block { @apply w-full; }
 
 /* ================= nav — KoDriftDev-style: brand left, pill center, dark CTA right ================= */
-.nav-shell { @apply sticky top-3 z-[60]; }
+.nav-shell {
+  @apply sticky top-0 z-[60];
+  background: rgba(250,247,240,.66);
+  backdrop-filter: blur(18px) saturate(1.35);
+  -webkit-backdrop-filter: blur(18px) saturate(1.35);
+  border-bottom: 1px solid rgba(198,161,91,.25);
+  box-shadow: 0 10px 30px rgba(30,77,63,.08);
+}
 .nav-inner { @apply flex items-center gap-4 h-[68px]; }
+.nav-center { @apply flex-1 flex justify-center min-w-0; }
 .brand { @apply flex items-center gap-2.5 no-underline shrink-0; }
 .brand-mark {
   @apply w-[40px] h-[40px] rounded-[13px] flex items-center justify-center text-[22px] font-bold;
@@ -181,7 +189,7 @@ button { font-family: var(--font-sans); cursor: pointer; }
 }
 .nav-pill a {
   @apply no-underline font-medium rounded-full whitespace-nowrap;
-  padding: 9px 17px; font-size: 13.5px; color: var(--color-ink-900);
+  padding: 9px 15px; font-size: 13.5px; color: var(--color-ink-900);
   transition: all .15s ease;
 }
 .nav-pill a:hover { background: rgba(30,77,63,.07); }
