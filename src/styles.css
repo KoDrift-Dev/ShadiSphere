@@ -556,6 +556,22 @@ table.tbl { @apply w-full text-[14.5px] min-w-[640px]; border-collapse: collapse
 .cmp-table td { @apply px-3 py-2.5; border-top: 1px solid rgba(198,161,91,.18); }
 .is-other { @apply opacity-60; }
 
+/* ---------- section tint variations (theme shades) ---------- */
+.card.tint-ivory, .panel.tint-ivory {
+  background: linear-gradient(165deg, rgba(255,253,246,.94), rgba(250,244,230,.7));
+  border-color: rgba(198,161,91,.32);
+}
+.card.tint-champagne, .panel.tint-champagne {
+  background: linear-gradient(165deg, rgba(251,242,221,.95), rgba(244,229,194,.72));
+  border-color: rgba(198,161,91,.42);
+}
+.card.tint-pine, .panel.tint-pine {
+  background: linear-gradient(165deg, rgba(238,244,239,.95), rgba(223,234,225,.72));
+  border-color: rgba(30,77,63,.3);
+}
+.bg-wash-warm { background: linear-gradient(180deg, rgba(198,161,91,.1), rgba(198,161,91,.03)); }
+.bg-wash-mint { background: linear-gradient(180deg, rgba(30,77,63,.07), rgba(30,77,63,.02)); }
+
 /* reveal-on-scroll helper (used with framer-motion) */
 .reveal { will-change: transform, opacity; }
 

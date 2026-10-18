@@ -182,7 +182,7 @@ export default function Home() {
           <Stagger className="grid grid-3 grid-2m" gap={0.12}>
             {HOW_IT_WORKS.map(s => (
               <StaggerItem key={s.n} className="h-full">
-                <div className="card h-full transition-transform duration-300 hover:-translate-y-1.5" style={{ padding: 20 }}>
+                <div className="card tint-ivory h-full transition-transform duration-300 hover:-translate-y-1.5" style={{ padding: 20 }}>
                   <div className="mb-4 flex items-center justify-between">
                     <span className="font-display text-4xl font-bold text-champagne-500" aria-hidden="true">{s.n}</span>
                     <span className="eyebrow" style={{ margin: 0 }}><span className="rule" />{s.k}</span>
@@ -228,13 +228,13 @@ export default function Home() {
       </section>
 
       {/* EVENT TYPES */}
-      <section className="section-tight" style={{ background: 'var(--color-cream-200)' }}>
+      <section className="section-tight bg-wash-warm">
         <div className="wrap">
           <Reveal><SectionHead eyebrow="Every function" title="Plan Barat, Walima, Mehndi and more" center /></Reveal>
           <Stagger className="grid grid-3 grid-2m" gap={0.08}>
             {EVENT_TYPES.map(t => (
               <StaggerItem key={t}>
-                <div className="panel h-full transition-transform duration-300 hover:-translate-y-1" style={{ padding: 16 }}>
+                <div className="panel tint-champagne h-full transition-transform duration-300 hover:-translate-y-1" style={{ padding: 16 }}>
                   <h3 style={{ fontSize: 19, marginBottom: 0 }}>{t}</h3>
                   <p className="small muted hide-m" style={{ margin: '8px 0 0' }}>{EVENT_BLURBS[t]}</p>
                 </div>
@@ -245,13 +245,13 @@ export default function Home() {
       </section>
 
       {/* WHY */}
-      <section className="section">
+      <section className="section bg-wash-mint">
         <div className="wrap">
           <Reveal><SectionHead eyebrow="Why ShadiSphere" title="Your celebration. Your venue. Your perfect plan." center /></Reveal>
           <Stagger className="grid grid-3 grid-2m" gap={0.1}>
             {WHY.map((w, i) => (
               <StaggerItem key={w.t} className="h-full">
-                <div className="card h-full transition-transform duration-300 hover:-translate-y-1.5" style={{ padding: 20 }}>
+                <div className="card tint-pine h-full transition-transform duration-300 hover:-translate-y-1.5" style={{ padding: 20 }}>
                   <div className="font-display text-[28px] font-bold text-champagne-500" style={{ marginBottom: 10 }} aria-hidden="true">{String(i + 1).padStart(2, '0')}</div>
                   <h3 style={{ fontSize: 18, marginBottom: 0 }}>{w.t}</h3>
                   <p className="small muted hide-m" style={{ margin: '8px 0 0' }}>{w.d}</p>
