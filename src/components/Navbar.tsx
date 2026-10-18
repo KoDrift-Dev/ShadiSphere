@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { Link, NavLink, useLocation } from 'react-router-dom';
 import { Btn } from './ui';
 
+// Desktop + mobile links. About/Owner Login live in the footer on desktop;
+// About is also kept in the mobile menu, Owner Login stays footer-only.
 const LINKS = [
   { to: '/', label: 'Home' },
   { to: '/venues', label: 'Our Spaces' },
@@ -9,8 +11,8 @@ const LINKS = [
   { to: '/calculator', label: 'Cost Calculator' },
   { to: '/calendar', label: 'Availability' },
   { to: '/planner', label: 'Date Finder' },
-  { to: '/about', label: 'About' },
 ];
+const MOBILE_EXTRA = [{ to: '/about', label: 'About' }];
 
 export default function Navbar() {
   const [open, setOpen] = useState(false);
@@ -31,7 +33,9 @@ export default function Navbar() {
             <NavLink key={l.to} to={l.to} end={l.to === '/'} onClick={() => setOpen(false)}
               className={({ isActive }) => isActive ? 'active' : ''}>{l.label}</NavLink>
           ))}
-          <NavLink to="/dashboard" onClick={() => setOpen(false)}>Owner Login</NavLink>
+          {MOBILE_EXTRA.map(l => (
+            <NavLink key={l.to} to={l.to} onClick={() => setOpen(false)} className="mobile-only-link">{l.label}</NavLink>
+          ))}
         </nav>
         <span className="nav-cta"><Btn to="/calculator" size="sm" variant="gold">Calculate Your Wedding Cost</Btn></span>
       </div>
