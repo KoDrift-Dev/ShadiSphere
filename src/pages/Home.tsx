@@ -50,7 +50,7 @@ function HeroSearch() {
         e.preventDefault();
         const g = Math.min(3000, Math.max(50, guests || 400));
         setCalc(c => ({ ...c, city: BUSINESS.city, date, eventType, guests: g }));
-        nav('/planner');
+        nav('/planner', { state: { autoFind: true } });
       }}
     >
       <Field label="Event date">
@@ -81,8 +81,8 @@ export default function Home() {
     <div>
       <style>{`@media (max-width: 900px){ .hero-search{grid-template-columns:1fr 1fr !important;} .grid-3,.grid-4,.grid-2{grid-template-columns:1fr;} }
 @media (max-width: 560px){ .hero-search{grid-template-columns:1fr !important;} }
-.hero-ctas .hero-cta-wrap { flex: 1 1 0; min-width: 200px; }
-@media (max-width: 700px){ .hero-ctas .hero-cta-wrap { flex: 1 1 0; min-width: 0; } }`}</style>
+.hero-ctas .hero-cta-wrap { flex: none; }
+@media (max-width: 700px){ .hero-ctas .hero-cta-wrap { flex: 1 1 0; min-width: 0; } .hero-ctas .hero-cta-wrap .btn { min-width: 0; } }`}</style>
 
       {/* HERO */}
       <section className="hero">
@@ -91,11 +91,13 @@ export default function Home() {
         </div>
         <div className="hero-veil" />
         <div className="hero-inner">
-          <span className="eyebrow" style={{ color: 'var(--color-champagne-300)' }}><span className="rule" />{BUSINESS.name} · {BUSINESS.area}, Lahore</span>
-          <h1>Plan Your <em>Perfect Wedding</em> Celebration.</h1>
+          <div className="hero-copy">
+            <span className="eyebrow" style={{ color: 'var(--color-champagne-300)' }}><span className="rule" />{BUSINESS.name} · {BUSINESS.area}, Lahore</span>
+            <h1>Plan Your <em>Perfect Wedding</em> Celebration.</h1>
+          </div>
           <Stagger className="hero-ctas" gap={0.12}>
-            <StaggerItem className="hero-cta-wrap"><Btn to="/calculator" variant="gold" size="lg" block>Calculate Cost</Btn></StaggerItem>
-            <StaggerItem className="hero-cta-wrap"><Btn to="/venues" variant="light" size="lg" block>Explore Spaces</Btn></StaggerItem>
+            <StaggerItem className="hero-cta-wrap"><Btn to="/calculator" variant="gold" size="lg">Calculate Cost</Btn></StaggerItem>
+            <StaggerItem className="hero-cta-wrap"><Btn to="/venues" variant="light" size="lg">Explore Spaces</Btn></StaggerItem>
           </Stagger>
           <HeroSearch />
           <p className="hero-note">Illustrative estimates — not a live reservation system.</p>

@@ -1,6 +1,6 @@
 // ShadiSphere "Find My Date" — rule-based venue/date recommendations + multi-event planner.
-import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import React, { useState, useEffect, useRef } from 'react';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useStore } from '../state/store';
 import {
   Btn, Badge, Field, Empty, PageHead, SectionHead,
@@ -78,6 +78,18 @@ export default function Planner() {
     };
     setResult(recommend(input, state.venues, state.bookings, activePkg));
   };
+
+  // Auto-run once when arriving from the hero "Find My Date" search,
+  // so results are already showing — no second click needed.
+  const loc = useLocation();
+  const autoRan = useRef(false);
+  useEffect(() => {
+    if ((loc.state as { autoFind?: boolean } | null)?.autoFind && !autoRan.current) {
+      autoRan.current = true;
+      findDates();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const applyRec = (r: Recommendation, dest: 'calendar' | 'calculator') => {
     setCalc(c => ({

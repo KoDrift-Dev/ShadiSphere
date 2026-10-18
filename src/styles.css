@@ -216,8 +216,10 @@ button { font-family: var(--font-sans); cursor: pointer; }
     radial-gradient(900px 420px at 20% 110%, rgba(198,161,91,.22), transparent 60%),
     linear-gradient(100deg, rgba(11,31,25,.92) 0%, rgba(11,31,25,.66) 46%, rgba(11,31,25,.28) 100%);
 }
-.hero-inner { @apply relative max-w-[1240px] mx-auto px-6 pt-14 pb-12; animation: fade-up .7s ease both; }
-.hero h1 { @apply max-w-[660px] mb-4; font-size: clamp(32px, 4.6vw, 54px); text-shadow: 0 3px 30px rgba(0,0,0,.45); }
+.hero-inner { @apply relative max-w-[1240px] mx-auto px-6; padding-top: 92px; padding-bottom: 76px; animation: fade-up .7s ease both; }
+.hero-copy { max-width: 700px; }
+.hero .eyebrow { margin-bottom: 22px; letter-spacing: .22em; font-size: 12px; }
+.hero h1 { margin-bottom: 26px; font-size: clamp(42px, 4.6vw, 64px); line-height: 1.05; letter-spacing: -0.015em; text-shadow: 0 3px 30px rgba(0,0,0,.45); }
 .hero h1 em {
   font-style: italic;
   background: linear-gradient(120deg, var(--color-champagne-200), var(--color-champagne-400) 55%, var(--color-champagne-200));
@@ -226,9 +228,11 @@ button { font-family: var(--font-sans); cursor: pointer; }
   animation: shimmer 6s linear infinite;
 }
 .hero p.sub { @apply text-[16.5px] max-w-[580px] mb-6; color: rgba(255,255,255,.88); }
-.hero-ctas { @apply flex gap-3 flex-wrap mb-6; }
+.hero-ctas { @apply flex gap-3.5 flex-wrap; margin-bottom: 34px; }
+.hero-cta-wrap { flex: none; }
+.hero-cta-wrap .btn { min-width: 220px; }
 .hero-search {
-  @apply rounded-[22px] p-3.5 grid gap-3 max-w-[980px];
+  @apply rounded-[22px] p-3.5 grid gap-3 max-w-[920px];
   background: rgba(253,251,245,.82);
   backdrop-filter: blur(22px) saturate(1.4);
   border: 1px solid rgba(255,255,255,.65);
