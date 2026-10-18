@@ -4,7 +4,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useStore } from '../state/store';
 import {
-  Btn, Badge, Field, Empty, PageHead, Qty, Img,
+  Btn, Badge, Field, Empty, PageHead, Qty, Img, Modal, MiniCalendar,
   Reveal, Stagger, StaggerItem,
 } from '../components/ui';
 import { calculate, quickEstimate, MAX_DISCOUNT_PCT } from '../lib/calc';
@@ -30,73 +30,13 @@ function SectionLabel({ children, style }: { children: React.ReactNode; style?: 
   );
 }
 
-/** Compact custom month-view date picker (theme-styled). */
-function MiniCalendar({ value, onChange }: { value: string; onChange: (iso: string) => void }) {
-  const [open, setOpen] = useState(false);
-  const today = todayISO();
-  const [view, setView] = useState(() => {
-    const src = value && value >= today ? value : today;
-    const [y, m] = src.split('-').map(Number);
-    return { y, m: m - 1 };
-  });
-  const first = new Date(view.y, view.m, 1);
-  const daysInMonth = new Date(view.y, view.m + 1, 0).getDate();
-  const cells: (number | null)[] = [
-    ...Array(first.getDay()).fill(null),
-    ...Array.from({ length: daysInMonth }, (_, i) => i + 1),
-  ];
-  const iso = (d: number) =>
-    `${view.y}-${String(view.m + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
-  const shift = (dir: number) =>
-    setView(v => {
-      const m = v.m + dir;
-      return { y: v.y + Math.floor(m / 12), m: ((m % 12) + 12) % 12 };
-    });
-  return (
-    <div className="mini-cal-wrap">
-      <button
-        type="button" className="input mini-cal-btn"
-        onClick={() => setOpen(o => !o)} aria-haspopup="dialog" aria-expanded={open}
-        aria-label="Choose event date"
-      >
-        <span>{value ? fmtDate(value) : 'Select date'}</span>
-        <span aria-hidden="true" style={{ color: 'var(--color-pine-600)' }}>📅</span>
-      </button>
-      {open && (
-        <>
-          <div className="mini-cal-veil" onClick={() => setOpen(false)} />
-          <div className="mini-cal-pop" role="dialog" aria-label="Choose event date">
-            <div className="mini-cal-head">
-              <button type="button" className="mini-cal-nav" onClick={() => shift(-1)} aria-label="Previous month">‹</button>
-              <strong>{first.toLocaleString('en-US', { month: 'long', year: 'numeric' })}</strong>
-              <button type="button" className="mini-cal-nav" onClick={() => shift(1)} aria-label="Next month">›</button>
-            </div>
-            <div className="mini-cal-grid mini-cal-dow" aria-hidden="true">
-              {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map((d, i) => <span key={i}>{d}</span>)}
-            </div>
-            <div className="mini-cal-grid">
-              {cells.map((d, i) => d === null ? <span key={`e${i}`} /> : (
-                <button
-                  key={d} type="button" disabled={iso(d) < today}
-                  className={`mini-cal-day${iso(d) === value ? ' sel' : ''}${iso(d) === today ? ' today' : ''}`}
-                  onClick={() => { onChange(iso(d)); setOpen(false); }}
-                >
-                  {d}
-                </button>
-              ))}
-            </div>
-          </div>
-        </>
-      )}
-    </div>
-  );
-}
 
 export default function Calculator() {
   const { state, calc, setCalc, toast } = useStore();
   const nav = useNavigate();
   const [showCompare, setShowCompare] = useState(false);
-  const [showMini, setShowMini] = useState(false);
+  const [showEstimate, setShowEstimate] = useState(false);
+  const [tileKey, setTileKey] = useState<string | null>(null);
   const [customCat, setCustomCat] = useState('');
 
   const result = useMemo(
@@ -197,13 +137,41 @@ export default function Calculator() {
     }
   };
 
+  // Estimate tiles: group breakdown lines into 4 tappable tiles (2×2).
+  const tiles = useMemo(() => {
+    const groups: Record<string, { label: string; icon: string; lines: typeof result.lines }> = {
+      food: { label: 'Menu', icon: '🍽️', lines: [] },
+      hall: { label: 'Venue', icon: '🏛️', lines: [] },
+      extras: { label: 'Extras', icon: '✨', lines: [] },
+      savings: { label: 'Savings', icon: '🎉', lines: [] },
+    };
+    for (const l of result.lines) {
+      if (l.kind === 'food') groups.food.lines.push(l);
+      else if (l.kind === 'hall') groups.hall.lines.push(l);
+      else if (l.kind === 'discount') groups.savings.lines.push(l);
+      else groups.extras.lines.push(l);
+    }
+    return Object.entries(groups).map(([key, g]) => ({
+      key, label: g.label, icon: g.icon, lines: g.lines,
+      total: g.lines.reduce((s, l) => s + l.amount, 0),
+    }));
+  }, [result]);
+  const activeTile = tiles.find(t => t.key === tileKey) ?? null;
+
+  const handleCalculate = () => {
+    if (guestError) {
+      toast(guestError);
+      return;
+    }
+    setShowEstimate(true);
+    requestAnimationFrame(() => {
+      document.getElementById('estimate-box')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  };
+
   return (
     <div className="wrap">
       <style>{`
-        .calc-grid { display: grid; grid-template-columns: 1fr; gap: 28px; align-items: start; }
-        @media (min-width: 1024px) { .calc-grid { grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); } }
-        .pkg-grid { display: grid; grid-template-columns: 1fr; gap: 14px; }
-        @media (min-width: 640px) { .pkg-grid { grid-template-columns: repeat(2, 1fr); } }
         .slot-chips { display: flex; gap: 10px; flex-wrap: wrap; }
         .slot-chip {
           border: 1px solid rgba(30,77,63,.22); border-radius: 14px; padding: 10px 16px;
@@ -225,29 +193,6 @@ export default function Calculator() {
         input[type="range"].slider { width: 100%; accent-color: #1E4D3F; }
         .cmp-table td, .cmp-table th { padding: 10px 12px; }
         .cmp-table tr.selected td { background: rgba(198,161,91,.12); font-weight: 700; }
-
-        /* mini calendar date picker */
-        .mini-cal-wrap { position: relative; }
-        .mini-cal-btn { display: flex; align-items: center; justify-content: space-between; width: 100%; cursor: pointer; text-align: left; font-family: inherit; }
-        .mini-cal-veil { position: fixed; inset: 0; z-index: 40; }
-        .mini-cal-pop {
-          position: absolute; z-index: 41; top: calc(100% + 8px); left: 0; width: 290px; max-width: calc(100vw - 48px);
-          background: rgba(255,255,255,.97); backdrop-filter: blur(18px);
-          border: 1px solid rgba(198,161,91,.35); border-radius: 16px;
-          box-shadow: 0 24px 60px rgba(11,31,25,.25), inset 0 1px 0 #fff;
-          padding: 14px; animation: pop-in .18s ease both;
-        }
-        .mini-cal-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
-        .mini-cal-head strong { font-family: var(--font-display); font-size: 15px; color: var(--color-pine-700); }
-        .mini-cal-nav { width: 30px; height: 30px; border-radius: 10px; border: 1px solid rgba(30,77,63,.18); background: #fff; font-size: 16px; line-height: 1; cursor: pointer; color: var(--color-pine-700); }
-        .mini-cal-nav:hover { background: rgba(30,77,63,.06); }
-        .mini-cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; }
-        .mini-cal-dow span { text-align: center; font-size: 10px; font-weight: 700; color: var(--color-ink-400); padding: 4px 0; text-transform: uppercase; letter-spacing: .04em; }
-        .mini-cal-day { aspect-ratio: 1; border: 0; background: transparent; border-radius: 10px; font-size: 12.5px; font-weight: 600; color: var(--color-ink-900); cursor: pointer; font-family: inherit; }
-        .mini-cal-day:hover:not(:disabled) { background: rgba(30,77,63,.08); }
-        .mini-cal-day:disabled { color: #CFC9B8; cursor: default; }
-        .mini-cal-day.today { outline: 1px solid var(--color-champagne-500); outline-offset: -1px; }
-        .mini-cal-day.sel { background: linear-gradient(180deg, var(--color-pine-500), var(--color-pine-700)); color: #fff; box-shadow: 0 3px 0 var(--color-pine-800); }
 
         /* smart category dish picker */
         .smart-cat-bar { display: flex; gap: 10px; align-items: flex-end; margin-bottom: 12px; }
@@ -277,14 +222,30 @@ export default function Calculator() {
         .pkg-menu-head { display: flex; gap: 14px; align-items: center; margin-bottom: 14px; }
         .pkg-menu-head img { width: 64px; height: 64px; border-radius: 14px; object-fit: cover; flex-shrink: 0; }
 
-        /* mobile estimate mini card */
-        .estimate-mini { border-color: rgba(198,161,91,.45); background: linear-gradient(165deg, rgba(30,77,63,.97), rgba(16,42,35,.96)); color: #F2EEDF; }
-        .em-head { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; }
-        .em-label { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .16em; color: var(--color-champagne-300); }
-        .em-total { font-family: var(--font-display); font-size: 30px; font-weight: 700; color: #E8C873; }
-        .em-sub { font-size: 12.5px; color: rgba(255,255,255,.65); margin: 6px 0 8px; }
-        .em-toggle { background: none; border: 0; color: var(--color-champagne-300); font-weight: 700; font-size: 13px; cursor: pointer; padding: 4px 0; font-family: inherit; }
-        .em-line { display: flex; justify-content: space-between; gap: 10px; font-size: 13px; padding: 7px 0; border-bottom: 1px solid rgba(198,161,91,.22); }
+        /* estimate box: 2x2 tiles + popup */
+        .estimate-box { border-color: rgba(198,161,91,.45); background: linear-gradient(165deg, rgba(30,77,63,.97), rgba(16,42,35,.96)); color: #F2EEDF; }
+        .est-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 14px; flex-wrap: wrap; margin-bottom: 6px; }
+        .est-head h2 { margin: 0; }
+        .est-date { min-width: 220px; }
+        .est-date > span { display: block; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .14em; color: var(--color-champagne-300); margin-bottom: 6px; }
+        .est-tiles { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 16px 0 6px; }
+        .est-tile {
+          text-align: left; cursor: pointer; font-family: inherit; width: 100%;
+          border: 1px solid rgba(198,161,91,.3); border-radius: 16px; padding: 14px 16px;
+          background: rgba(255,255,255,.06); color: #F2EEDF;
+          transition: transform .15s ease, border-color .15s ease, background .15s ease;
+        }
+        .est-tile:hover { transform: translateY(-2px); border-color: rgba(198,161,91,.6); background: rgba(255,255,255,.09); }
+        .est-tile .t-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
+        .est-tile .t-label { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .12em; color: var(--color-champagne-300); }
+        .est-tile .t-icon { font-size: 20px; }
+        .est-tile .t-amt { font-family: var(--font-display); font-size: 24px; font-weight: 700; color: #fff; }
+        .est-tile .t-count { font-size: 12px; color: rgba(255,255,255,.6); margin-top: 2px; }
+        .tile-lines { display: grid; gap: 10px; }
+        .tile-line { display: flex; justify-content: space-between; gap: 12px; padding: 12px 14px; border: 1px solid rgba(30,77,63,.14); border-radius: 12px; background: rgba(255,255,255,.75); }
+        .tile-line .lbl { font-weight: 600; font-size: 14px; color: var(--color-ink-900); }
+        .tile-line .det { font-size: 12.5px; color: var(--color-ink-400); margin-top: 2px; }
+        .tile-line strong { white-space: nowrap; }
       `}</style>
 
       <Reveal>
@@ -295,8 +256,7 @@ export default function Calculator() {
         />
       </Reveal>
 
-      <div className="calc-grid">
-        {/* ---------- LEFT: controls ---------- */}
+      <div style={{ maxWidth: 920, margin: '0 auto' }}>
         <div>
           <Reveal>
             <section className="panel panel-compact">
@@ -344,8 +304,17 @@ export default function Calculator() {
               )}
 
               <div className="form-row c2">
-                <Field label="Event date" error={dateError}>
-                  <MiniCalendar value={calc.date} onChange={iso => setCalc(c => ({ ...c, date: iso }))} />
+                <Field label="Menu package">
+                  <select
+                    value={calc.packageId ?? ''}
+                    onChange={e => pickPkg(e.target.value || undefined)}
+                    aria-label="Menu package"
+                  >
+                    <option value="">Fully Custom — build your own</option>
+                    {state.packages.filter(p => p.enabled).map(p => (
+                      <option key={p.id} value={p.id}>{p.name} — {pkr(p.pricePerGuest)}/guest</option>
+                    ))}
+                  </select>
                 </Field>
                 <Field label="Time slot">
                   <div className="slot-chips" role="group" aria-label="Time slot">
@@ -373,63 +342,21 @@ export default function Calculator() {
             </section>
           </Reveal>
 
-          {/* mobile-only estimate, right after event details */}
-          <div className="show-m-only" style={{ marginTop: 16 }}>
-            <Reveal>
-              <div className="panel estimate-mini">
-                <div className="em-head">
-                  <span className="em-label">Your estimate</span>
-                  <span className="em-total">{pkr(result.grandTotal)}</span>
-                </div>
-                <div className="em-sub">
-                  {guests.toLocaleString()} guests · {calc.eventType}{calc.date ? ` · ${fmtDate(calc.date)}` : ''} · {pkr(Math.round(result.perGuest))}/guest
-                </div>
-                <button type="button" className="em-toggle" onClick={() => setShowMini(v => !v)} aria-expanded={showMini}>
-                  {showMini ? 'Hide breakdown ▲' : 'View breakdown ▼'}
-                </button>
-                {showMini && (
-                  <div style={{ marginTop: 6 }}>
-                    {result.lines.map((l, i) => (
-                      <div key={i} className="em-line">
-                        <span>{l.label}</span>
-                        <strong style={{ color: l.amount < 0 ? '#8FD6A4' : '#fff' }}>
-                          {l.amount < 0 ? '−' : ''}{pkr(Math.abs(l.amount))}
-                        </strong>
-                      </div>
-                    ))}
-                  </div>
-                )}
-                <div style={{ marginTop: 12 }}>
-                  <Btn to="/quote" variant="gold" block size="sm">Get My Quotation</Btn>
-                </div>
-              </div>
-            </Reveal>
-          </div>
-
-          {/* ---------- Packages ---------- */}
+          {/* ---------- Your menu ---------- */}
+          {(pkg || !calc.packageId) && (
           <Reveal>
             <section className="panel" style={{ marginTop: 24 }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
-                <SectionLabel style={{ marginBottom: 0 }}>Choose a menu package</SectionLabel>
+                <SectionLabel style={{ marginBottom: 0 }}>{pkg ? `${pkg.name} — full menu` : 'Build your menu'}</SectionLabel>
                 {pkg && (
                   <button type="button" className="btn btn-outline btn-sm" onClick={resetMenu}>Reset menu</button>
                 )}
               </div>
-              <p className="hint" style={{ marginBottom: 12, marginTop: 10 }}>
-                The package rate covers every included dish — you are never charged per-dish for what is included.
-              </p>
-              <Field label="Menu package">
-                <select
-                  value={calc.packageId ?? ''}
-                  onChange={e => pickPkg(e.target.value || undefined)}
-                  aria-label="Menu package"
-                >
-                  <option value="">Fully Custom — build your own dish by dish</option>
-                  {state.packages.filter(p => p.enabled).map(p => (
-                    <option key={p.id} value={p.id}>{p.name} — {pkr(p.pricePerGuest)} per guest</option>
-                  ))}
-                </select>
-              </Field>
+              {pkg && (
+                <p className="hint" style={{ marginBottom: 4, marginTop: 10 }}>
+                  The package rate covers every included dish — you are never charged per-dish for what is included.
+                </p>
+              )}
 
               {pkg && (
                 <div className="pkg-full-menu">
@@ -497,14 +424,6 @@ export default function Calculator() {
                   )}
                 </div>
               )}
-            </section>
-          </Reveal>
-
-          {/* ---------- Menu customization ---------- */}
-          {(pkg || !calc.packageId) && (
-            <Reveal>
-              <section className="panel" style={{ marginTop: 24 }}>
-                <SectionLabel>Customize your menu</SectionLabel>
 
                 {!calc.packageId && (
                   <>
@@ -579,111 +498,152 @@ export default function Calculator() {
           )}
 
           <Reveal>
-            <div style={{ marginTop: 24, display: 'flex', gap: 12, flexWrap: 'wrap' }}>
-              <Btn variant="outline" to="/calendar">Find Available Dates</Btn>
-              <Btn variant="gold" to="/quote" size="lg">Get My Quotation</Btn>
-              <Btn variant="primary" onClick={() => { toast('Your estimate is saved — complete the inquiry when ready.'); nav('/quote'); }}>
-                Continue to Inquiry
+            <div style={{ marginTop: 24 }}>
+              <Btn variant="gold" size="lg" block onClick={handleCalculate}>
+                Calculate My Estimate →
               </Btn>
+              <p className="hint center" style={{ marginTop: 10 }}>
+                Fill in your event details above, then tap calculate to reveal your itemized estimate.
+              </p>
             </div>
           </Reveal>
-        </div>
 
-        {/* ---------- RIGHT: breakdown ---------- */}
-        <aside className="breakdown-sticky">
-          <Reveal>
-            <div className="panel" style={{ background: 'linear-gradient(165deg, rgba(30,77,63,.97), rgba(16,42,35,.96))', borderColor: 'rgba(198,161,91,.45)' }}>
-              <h2 className="font-sans text-[13px] font-bold uppercase tracking-[0.18em] text-champagne-300 mb-4">Your estimate</h2>
-              <div className="small" style={{ marginBottom: 14, color: 'rgba(255,255,255,.72)' }}>
-                {guests.toLocaleString()} guests · {calc.eventType} · {SLOTS.find(s => s.id === calc.slot)?.label}
-                {venue ? ` · ${venue.name}` : ' · No venue yet'}
-                {calc.date && ` · ${fmtDate(calc.date)}`}
-              </div>
-
-              {result.lines.map((l, i) => (
-                <div key={i} className="line-item" style={{ borderBottomColor: 'rgba(198,161,91,.25)', color: '#F2EEDF' }}>
-                  <div>
-                    <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-                      <span>{l.label}</span>
-                      {kindBadge(l.kind)}
-                    </div>
-                    {l.detail && <div className="small" style={{ color: 'rgba(255,255,255,.6)' }}>{l.detail}</div>}
+          {/* ---------- Estimate box (created on Calculate) ---------- */}
+          {showEstimate && (
+            <Reveal>
+              <section id="estimate-box" className="panel estimate-box" style={{ marginTop: 24 }}>
+                <div className="est-head">
+                  <h2 className="font-sans text-[13px] font-bold uppercase tracking-[0.18em] text-champagne-300">Your estimate</h2>
+                  <div className="est-date">
+                    <span>Event date</span>
+                    <MiniCalendar value={calc.date} onChange={iso => setCalc(c => ({ ...c, date: iso }))} ariaLabel="Event date" />
                   </div>
-                  <strong style={{ color: l.amount < 0 ? '#8FD6A4' : '#fff' }}>
-                    {l.amount < 0 ? '−' : ''}{pkr(Math.abs(l.amount))}
-                  </strong>
                 </div>
-              ))}
+                {dateError && <div className="alert alert-err" style={{ marginBottom: 10 }}>{dateError}</div>}
+                <div className="small" style={{ marginBottom: 4, color: 'rgba(255,255,255,.72)' }}>
+                  {guests.toLocaleString()} guests · {calc.eventType} · {SLOTS.find(s => s.id === calc.slot)?.label}
+                  {venue ? ` · ${venue.name}` : ' · No venue yet'}
+                  {calc.date && ` · ${fmtDate(calc.date)}`}
+                </div>
 
-              {result.appliedPromos.length > 0 && (
-                <div className="alert alert-ok" style={{ marginTop: 14 }}>
-                  <strong>Promotions applied:</strong>
-                  <ul className="why-list" style={{ marginTop: 8 }}>
-                    {result.appliedPromos.map(a => (
-                      <li key={a.promo.id}>{a.promo.name} — {a.reason} · saved {pkr(a.amount)}</li>
-                    ))}
-                  </ul>
-                  {result.discountCapped && (
-                    <div className="small" style={{ marginTop: 6 }}>
-                      Total discounts capped at {MAX_DISCOUNT_PCT}% of subtotal.
+                <div className="est-tiles">
+                  {tiles.map(t => (
+                    <button key={t.key} type="button" className="est-tile" onClick={() => setTileKey(t.key)}>
+                      <div className="t-top">
+                        <span className="t-label">{t.label}</span>
+                        <span className="t-icon" aria-hidden="true">{t.icon}</span>
+                      </div>
+                      <div className="t-amt">{t.total < 0 ? '−' : ''}{pkr(Math.abs(Math.round(t.total)))}</div>
+                      <div className="t-count">{t.lines.length} item{t.lines.length === 1 ? '' : 's'} · tap for details →</div>
+                    </button>
+                  ))}
+                </div>
+
+                {result.appliedPromos.length > 0 && (
+                  <div className="alert alert-ok" style={{ marginTop: 6 }}>
+                    <strong>Promotions applied:</strong>
+                    <ul className="why-list" style={{ marginTop: 8 }}>
+                      {result.appliedPromos.map(a => (
+                        <li key={a.promo.id}>{a.promo.name} — {a.reason} · saved {pkr(a.amount)}</li>
+                      ))}
+                    </ul>
+                    {result.discountCapped && (
+                      <div className="small" style={{ marginTop: 6 }}>
+                        Total discounts capped at {MAX_DISCOUNT_PCT}% of subtotal.
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                <div className="divider" style={{ background: 'linear-gradient(90deg, transparent, rgba(198,161,91,.5), transparent)' }} />
+                <div className="total-row">
+                  <span style={{ color: 'rgba(255,255,255,.85)', fontWeight: 600 }}>Estimated grand total</span>
+                  <motion.span
+                    key={result.grandTotal}
+                    initial={{ scale: 1.08, opacity: 0.5 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    transition={{ type: 'spring', stiffness: 320, damping: 22 }}
+                    className="price-lg"
+                    style={{ color: '#E8C873' }}
+                  >
+                    {pkr(result.grandTotal)}
+                  </motion.span>
+                </div>
+                <div className="line-item" style={{ borderBottomColor: 'rgba(198,161,91,.25)', color: '#F2EEDF' }}>
+                  <span style={{ color: 'rgba(255,255,255,.7)' }}>Effective cost per guest</span>
+                  <strong style={{ color: '#fff' }}>{pkr(Math.round(result.perGuest))}</strong>
+                </div>
+                <p className="small" style={{ marginTop: 10, color: 'rgba(255,255,255,.6)' }}>
+                  Illustrative estimate. Final rates depend on venue, menu, guest count, date and service inclusions.
+                </p>
+
+                <div style={{ marginTop: 14 }}>
+                  <button
+                    type="button" className="btn btn-light btn-sm"
+                    onClick={() => setShowCompare(v => !v)}
+                    aria-expanded={showCompare}
+                  >
+                    {showCompare ? 'Hide package comparison' : 'Compare packages'}
+                  </button>
+                  {showCompare && (
+                    <div className="table-wrap" style={{ marginTop: 10 }}>
+                      <table className="tbl cmp-table">
+                        <thead>
+                          <tr><th>Package</th><th>Per guest</th><th>Total</th></tr>
+                        </thead>
+                        <tbody>
+                          {compareRows.map(r => (
+                            <tr key={r.pkg.id} className={calc.packageId === r.pkg.id ? 'selected' : ''}>
+                              <td>{r.pkg.name}</td>
+                              <td>{pkr(r.pkg.pricePerGuest)}</td>
+                              <td><strong>{pkr(r.total)}</strong></td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                      <p className="small" style={{ color: 'rgba(255,255,255,.6)' }}>Same guest count{venue ? ` · includes ${venue.name} hall rental` : ''}.</p>
                     </div>
                   )}
                 </div>
-              )}
 
-              <div className="divider" style={{ background: 'linear-gradient(90deg, transparent, rgba(198,161,91,.5), transparent)' }} />
-              <div className="total-row">
-                <span style={{ color: 'rgba(255,255,255,.85)', fontWeight: 600 }}>Estimated grand total</span>
-                <motion.span
-                  key={result.grandTotal}
-                  initial={{ scale: 1.08, opacity: 0.5 }}
-                  animate={{ scale: 1, opacity: 1 }}
-                  transition={{ type: 'spring', stiffness: 320, damping: 22 }}
-                  className="price-lg"
-                  style={{ color: '#E8C873' }}
-                >
-                  {pkr(result.grandTotal)}
-                </motion.span>
-              </div>
-              <div className="line-item" style={{ borderBottomColor: 'rgba(198,161,91,.25)', color: '#F2EEDF' }}>
-                <span style={{ color: 'rgba(255,255,255,.7)' }}>Effective cost per guest</span>
-                <strong style={{ color: '#fff' }}>{pkr(Math.round(result.perGuest))}</strong>
-              </div>
-              <p className="small" style={{ marginTop: 10, color: 'rgba(255,255,255,.6)' }}>
-                Illustrative estimate. Final rates depend on venue, menu, guest count, date and service inclusions.
-              </p>
+                <div style={{ marginTop: 18, display: 'flex', gap: 12, flexWrap: 'wrap' }}>
+                  <Btn variant="outline" to="/calendar">Find Available Dates</Btn>
+                  <Btn variant="gold" to="/quote" size="lg">Get My Quotation</Btn>
+                  <Btn variant="primary" onClick={() => { toast('Your estimate is saved — complete the inquiry when ready.'); nav('/quote'); }}>
+                    Continue to Inquiry
+                  </Btn>
+                </div>
+              </section>
+            </Reveal>
+          )}
 
-              <div style={{ marginTop: 14 }}>
-                <button
-                  type="button" className="btn btn-light btn-sm"
-                  onClick={() => setShowCompare(v => !v)}
-                  aria-expanded={showCompare}
-                >
-                  {showCompare ? 'Hide package comparison' : 'Compare packages'}
-                </button>
-                {showCompare && (
-                  <div className="table-wrap" style={{ marginTop: 10 }}>
-                    <table className="tbl cmp-table">
-                      <thead>
-                        <tr><th>Package</th><th>Per guest</th><th>Total</th></tr>
-                      </thead>
-                      <tbody>
-                        {compareRows.map(r => (
-                          <tr key={r.pkg.id} className={calc.packageId === r.pkg.id ? 'selected' : ''}>
-                            <td>{r.pkg.name}</td>
-                            <td>{pkr(r.pkg.pricePerGuest)}</td>
-                            <td><strong>{pkr(r.total)}</strong></td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                    <p className="small muted">Same guest count{venue ? ` · includes ${venue.name} hall rental` : ''}.</p>
+          {/* ---------- tile detail popup ---------- */}
+          {activeTile && (
+            <Modal title={`${activeTile.icon} ${activeTile.label} — details`} onClose={() => setTileKey(null)}>
+              {activeTile.lines.length === 0 ? (
+                <Empty title="Nothing here yet" body={`No ${activeTile.label.toLowerCase()} charges in this estimate.`} />
+              ) : (
+                <div className="tile-lines">
+                  {activeTile.lines.map((l, i) => (
+                    <div key={i} className="tile-line">
+                      <div>
+                        <div className="lbl">{l.label} {kindBadge(l.kind)}</div>
+                        {l.detail && <div className="det">{l.detail}</div>}
+                      </div>
+                      <strong style={{ color: l.amount < 0 ? '#1E7A4F' : 'var(--color-ink-900)' }}>
+                        {l.amount < 0 ? '−' : ''}{pkr(Math.abs(l.amount))}
+                      </strong>
+                    </div>
+                  ))}
+                  <div className="tile-line" style={{ background: 'rgba(30,77,63,.06)', borderStyle: 'dashed' }}>
+                    <div className="lbl">Subtotal</div>
+                    <strong>{activeTile.total < 0 ? '−' : ''}{pkr(Math.abs(Math.round(activeTile.total)))}</strong>
                   </div>
-                )}
-              </div>
-            </div>
-          </Reveal>
-        </aside>
+                </div>
+              )}
+            </Modal>
+          )}
+        </div>
       </div>
     </div>
   );

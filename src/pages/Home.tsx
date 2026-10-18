@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useStore } from '../state/store';
-import { Btn, Badge, Img, SectionHead, Field, Reveal, Stagger, StaggerItem } from '../components/ui';
+import { Btn, Badge, Img, SectionHead, Field, Reveal, Stagger, StaggerItem, MiniCalendar } from '../components/ui';
 import { BUSINESS, EVENT_TYPES, EventType } from '../data/types';
 import { pkr, todayISO } from '../lib/format';
 
@@ -54,7 +54,7 @@ function HeroSearch() {
       }}
     >
       <Field label="Event date">
-        <input type="date" className="input" value={date} min={todayISO()} onChange={e => setDate(e.target.value)} aria-label="Event date" />
+        <MiniCalendar value={date} onChange={setDate} ariaLabel="Event date" />
       </Field>
       <Field label="Event type">
         <select className="input" value={eventType} onChange={e => setEventType(e.target.value as EventType)} aria-label="Event type">

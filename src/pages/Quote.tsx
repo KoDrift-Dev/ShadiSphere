@@ -3,7 +3,7 @@ import React, { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useStore } from '../state/store';
 import {
-  Btn, Badge, Field, PageHead, Reveal,
+  Btn, Badge, Field, PageHead, Reveal, MiniCalendar,
 } from '../components/ui';
 import { calculate } from '../lib/calc';
 import { pkr, fmtDate, todayISO } from '../lib/format';
@@ -270,8 +270,8 @@ export default function Quote() {
               </div>
               <div className="form-row" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
                 <Field label="Preferred date *" error={errors.date}>
-                  <input type="date" min={todayISO()} value={form.date}
-                    onChange={e => setForm(f => ({ ...f, date: e.target.value }))} aria-label="Preferred date" />
+                  <MiniCalendar value={form.date}
+                    onChange={iso => setForm(f => ({ ...f, date: iso }))} ariaLabel="Preferred date" />
                 </Field>
                 <Field label="Time slot">
                   <select value={form.slot} onChange={e => setForm(f => ({ ...f, slot: e.target.value as SlotId }))} aria-label="Time slot">

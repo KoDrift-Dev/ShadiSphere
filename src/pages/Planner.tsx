@@ -3,7 +3,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useStore } from '../state/store';
 import {
-  Btn, Badge, Field, Empty, PageHead, SectionHead,
+  Btn, Badge, Field, Empty, PageHead, SectionHead, MiniCalendar,
   Reveal, Stagger, StaggerItem,
 } from '../components/ui';
 import { recommend, planMultiEvent, RecInput, Recommendation, WindowMode, EventWish, EventPlanCombo } from '../lib/recommend';
@@ -164,8 +164,8 @@ export default function Planner() {
                   onChange={e => setForm(f => ({ ...f, guests: Number(e.target.value) }))} aria-label="Guests" />
               </Field>
               <Field label="Preferred date">
-                <input type="date" min={todayISO()} value={form.preferredDate}
-                  onChange={e => setForm(f => ({ ...f, preferredDate: e.target.value }))} aria-label="Preferred date" />
+                <MiniCalendar value={form.preferredDate}
+                  onChange={iso => setForm(f => ({ ...f, preferredDate: iso }))} ariaLabel="Preferred date" />
               </Field>
             </div>
             <Field label="Date flexibility">
@@ -175,8 +175,8 @@ export default function Planner() {
             </Field>
             {form.window === 'custom' && (
               <Field label="Search until">
-                <input type="date" min={form.preferredDate} value={form.customEnd}
-                  onChange={e => setForm(f => ({ ...f, customEnd: e.target.value }))} aria-label="Search until" />
+                <MiniCalendar value={form.customEnd} minDate={form.preferredDate}
+                  onChange={iso => setForm(f => ({ ...f, customEnd: iso }))} ariaLabel="Search until" />
               </Field>
             )}
             <div className="form-row" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
@@ -327,8 +327,8 @@ export default function Planner() {
                     onChange={e => editWish(i, { guests: Number(e.target.value) })} aria-label={`Function ${i + 1} guests`} />
                 </Field>
                 <Field label="Preferred date">
-                  <input type="date" min={todayISO()} value={w.preferredDate}
-                    onChange={e => editWish(i, { preferredDate: e.target.value })} aria-label={`Function ${i + 1} date`} />
+                  <MiniCalendar value={w.preferredDate}
+                    onChange={iso => editWish(i, { preferredDate: iso })} ariaLabel={`Function ${i + 1} date`} />
                 </Field>
                 <div />
               </div>

@@ -5,7 +5,7 @@ import { Link, Route, Routes, useLocation } from 'react-router-dom';
 import { useStore } from '../state/store';
 import { seedBookings } from '../data/seed';
 import {
-  Badge, Btn, Confirm, Empty, Field, Modal, PageHead, Reveal, SectionHead, Stagger, StaggerItem,
+  Badge, Btn, Confirm, Empty, Field, Modal, PageHead, Reveal, SectionHead, Stagger, StaggerItem, MiniCalendar,
 } from '../components/ui';
 import {
   fmtDate, fmtDateShort, isoPlus, pkr, todayISO, unitLabel, weekdayOf,
@@ -789,7 +789,7 @@ function AddBookingModal({ onClose }: { onClose: () => void }) {
           </select>
         </Field>
         <Field label="Date">
-          <input className="input" type="date" value={date} min={todayISO()} onChange={e => setDate(e.target.value)} />
+          <MiniCalendar value={date} onChange={setDate} ariaLabel="Date" />
         </Field>
         <Field label="Slot">
           <select className="input" value={slot} onChange={e => setSlot(e.target.value as typeof slot)}>
@@ -1118,10 +1118,10 @@ function PromoMgmt() {
           {edit.kind === 'date_range' && (
             <div className="form-row c2">
               <Field label="From">
-                <input className="input" type="date" value={edit.from ?? ''} onChange={e => setEdit({ ...edit, from: e.target.value })} />
+                <MiniCalendar value={edit.from ?? ''} minDate="" onChange={iso => setEdit({ ...edit, from: iso })} ariaLabel="From" />
               </Field>
               <Field label="To">
-                <input className="input" type="date" value={edit.to ?? ''} onChange={e => setEdit({ ...edit, to: e.target.value })} />
+                <MiniCalendar value={edit.to ?? ''} minDate="" onChange={iso => setEdit({ ...edit, to: iso })} ariaLabel="To" />
               </Field>
             </div>
           )}

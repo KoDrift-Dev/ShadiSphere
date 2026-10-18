@@ -2,6 +2,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import { todayISO, fmtDate } from '../lib/format';
 
 /** Fade-up reveal on scroll into view. Use around section content and card grids. */
 export function Reveal({ children, delay = 0, y = 22, className, style }: {
@@ -173,5 +174,69 @@ export function Confirm({ title, body, confirmLabel, onConfirm, onCancel }: {
         <Btn variant="danger" onClick={onConfirm}>{confirmLabel}</Btn>
       </div>
     </Modal>
+  );
+}
+
+/** Theme-styled mini month calendar picker — drop-in replacement for <input type="date">. */
+export function MiniCalendar({ value, onChange, minDate, ariaLabel }: {
+  value: string; onChange: (iso: string) => void; minDate?: string; ariaLabel?: string;
+}) {
+  const [open, setOpen] = React.useState(false);
+  const min = minDate === undefined ? todayISO() : minDate;
+  const [view, setView] = React.useState(() => {
+    const src = value && (!min || value >= min) ? value : (min || todayISO());
+    const [y, m] = src.split('-').map(Number);
+    return { y: y || new Date().getFullYear(), m: (m || 1) - 1 };
+  });
+  const first = new Date(view.y, view.m, 1);
+  const daysInMonth = new Date(view.y, view.m + 1, 0).getDate();
+  const cells: (number | null)[] = [
+    ...Array(first.getDay()).fill(null),
+    ...Array.from({ length: daysInMonth }, (_, i) => i + 1),
+  ];
+  const iso = (d: number) =>
+    `${view.y}-${String(view.m + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+  const shift = (dir: number) =>
+    setView(v => {
+      const m = v.m + dir;
+      return { y: v.y + Math.floor(m / 12), m: ((m % 12) + 12) % 12 };
+    });
+  return (
+    <div className="mini-cal-wrap">
+      <button
+        type="button" className="input mini-cal-btn"
+        onClick={() => setOpen(o => !o)} aria-haspopup="dialog" aria-expanded={open}
+        aria-label={ariaLabel || 'Choose date'}
+      >
+        <span>{value ? fmtDate(value) : 'Select date'}</span>
+        <span aria-hidden="true" style={{ color: 'var(--color-pine-600)' }}>📅</span>
+      </button>
+      {open && (
+        <>
+          <div className="mini-cal-veil" onClick={() => setOpen(false)} />
+          <div className="mini-cal-pop" role="dialog" aria-label={ariaLabel || 'Choose date'}>
+            <div className="mini-cal-head">
+              <button type="button" className="mini-cal-nav" onClick={() => shift(-1)} aria-label="Previous month">‹</button>
+              <strong>{first.toLocaleString('en-US', { month: 'long', year: 'numeric' })}</strong>
+              <button type="button" className="mini-cal-nav" onClick={() => shift(1)} aria-label="Next month">›</button>
+            </div>
+            <div className="mini-cal-grid mini-cal-dow" aria-hidden="true">
+              {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map((d, i) => <span key={i}>{d}</span>)}
+            </div>
+            <div className="mini-cal-grid">
+              {cells.map((d, i) => d === null ? <span key={`e${i}`} /> : (
+                <button
+                  key={d} type="button" disabled={!!min && iso(d) < min}
+                  className={`mini-cal-day${iso(d) === value ? ' sel' : ''}${iso(d) === todayISO() ? ' today' : ''}`}
+                  onClick={() => { onChange(iso(d)); setOpen(false); }}
+                >
+                  {d}
+                </button>
+              ))}
+            </div>
+          </div>
+        </>
+      )}
+    </div>
   );
 }
