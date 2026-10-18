@@ -162,7 +162,7 @@ export default function Quote() {
           <div className="no-print" style={{ display: 'flex', gap: 10, flexWrap: 'wrap', marginTop: 18 }}>
             <Btn variant="gold" onClick={() => window.print()}>Print quotation</Btn>
             <Btn variant="outline" to="/dashboard/inquiries">View in Dashboard</Btn>
-            <Btn variant="ghost" to="/calculator">Start new estimate</Btn>
+            <Btn variant="outline" to="/calculator">Start new estimate</Btn>
           </div>
         </div>
       ) : (

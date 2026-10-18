@@ -232,7 +232,7 @@ export default function Planner() {
                     </ul>
                     <div style={{ display: 'flex', gap: 10, marginTop: 14, flexWrap: 'wrap' }}>
                       <Btn variant="outline" size="sm" to={`/venues/${r.venue.id}`}>View Venue</Btn>
-                      <Btn variant="ghost" size="sm" onClick={() => applyRec(r, 'calendar')}>Select This Date</Btn>
+                      <Btn variant="outline" size="sm" onClick={() => applyRec(r, 'calendar')}>Select This Date</Btn>
                       <Btn variant="primary" size="sm" onClick={() => applyRec(r, 'calculator')}>Calculate Cost</Btn>
                     </div>
                   </div>

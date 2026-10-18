@@ -93,7 +93,7 @@ export default function Venues() {
               </Field>
               <div className="field">
                 <label>&nbsp;</label>
-                <Btn variant="ghost" onClick={clear} disabled={!hasFilters}>Clear filters</Btn>
+                <Btn variant="outline" onClick={clear} disabled={!hasFilters}>Clear filters</Btn>
               </div>
             </div>
           </div>

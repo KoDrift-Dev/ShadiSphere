@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom';
 export function Btn({
   to, href, variant = 'primary', size, block, children, onClick, disabled, type, target,
 }: {
-  to?: string; href?: string; variant?: 'primary' | 'gold' | 'outline' | 'ghost' | 'danger';
+  to?: string; href?: string; variant?: 'primary' | 'gold' | 'outline' | 'ghost' | 'light' | 'danger';
   size?: 'sm' | 'lg'; block?: boolean; children: React.ReactNode;
   onClick?: () => void; disabled?: boolean; type?: 'button' | 'submit'; target?: string;
 }) {

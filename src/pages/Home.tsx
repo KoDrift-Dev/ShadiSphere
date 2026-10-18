@@ -91,7 +91,7 @@ export default function Home() {
           </p>
           <div className="hero-ctas">
             <Btn to="/calculator" variant="gold" size="lg">Calculate Your Wedding Cost</Btn>
-            <Btn to="/venues" variant="outline" size="lg">Explore Our Spaces</Btn>
+            <Btn to="/venues" variant="light" size="lg">Explore Our Spaces</Btn>
           </div>
           <HeroSearch />
           <p className="hero-note">Demo availability — illustrative estimates. Not a live reservation system.</p>
@@ -138,7 +138,7 @@ export default function Home() {
                 <p className="lead">Pick a menu package, customize dishes, add extras and watch your itemized estimate update instantly — per guest and in total.</p>
                 <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', marginTop: 18 }}>
                   <Btn to="/calculator" size="lg">Calculate Your Wedding Cost</Btn>
-                  <Btn to="/menus" variant="ghost">Compare packages →</Btn>
+                  <Btn to="/menus" variant="outline">Compare packages →</Btn>
                 </div>
               </div>
               <div>

@@ -101,7 +101,7 @@ export default function VenueDetail() {
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginTop: 20 }}>
                   <Btn onClick={() => { setCalc(c => ({ ...c, venueId: venue.id, city: 'Lahore' })); nav('/calculator'); }} block>Calculate Cost for This Hall</Btn>
                   <Btn to="/calendar" variant="outline" block>Check Availability</Btn>
-                  <Btn to="/quote" variant="ghost" block>Request a Quote</Btn>
+                  <Btn to="/quote" variant="outline" block>Request a Quote</Btn>
                 </div>
               </div>
 
