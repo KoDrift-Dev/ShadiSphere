@@ -387,15 +387,15 @@ table.tbl { @apply w-full text-[14.5px] min-w-[640px]; border-collapse: collapse
 .modal-veil { @apply fixed inset-0 z-[100] flex items-center justify-center p-5; background: rgba(20,28,25,.55); backdrop-filter: blur(6px); }
 .modal {
   @apply rounded-[22px] w-full max-h-[88vh] overflow-auto;
-  max-width: 560px;
+  max-width: 520px;
   background: linear-gradient(170deg, rgba(255,255,255,.96), rgba(250,247,240,.92));
   backdrop-filter: blur(24px);
   border: 1px solid rgba(198,161,91,.35);
   box-shadow: 0 30px 80px rgba(11,31,25,.35), inset 0 1px 0 rgba(255,255,255,.9);
   animation: pop-in .25s ease both;
 }
-.modal-head { @apply px-[26px] pt-[22px] flex justify-between items-center; }
-.modal-body { @apply px-[26px] pt-[18px] pb-[26px]; }
+.modal-head { @apply px-[20px] pt-[16px] flex justify-between items-center; }
+.modal-body { @apply px-[20px] pt-[14px] pb-[20px]; }
 .modal-x { @apply bg-transparent border-0 text-[24px] leading-none; color: var(--color-ink-400); }
 .modal-x:hover { color: var(--color-ink-900); }
 

@@ -222,26 +222,24 @@ export default function Calculator() {
           .calc-sticky-bar { bottom: 8px; padding: 10px 10px 10px 14px; border-radius: 16px; }
           .csb-total { font-size: 16px; }
         }
-        /* mobile: no menu / extras — event details flow straight into calculate */
-        @media (max-width: 700px) {
-          .menu-extras-sec { display: none; }
-        }
 
         /* estimate box: full itemized breakdown */
         .estimate-box { border-color: rgba(198,161,91,.45); background: linear-gradient(165deg, rgba(30,77,63,.97), rgba(16,42,35,.96)); color: #F2EEDF; }
         .est-head { margin-bottom: 6px; }
         .est-head h2 { margin: 0; }
-        .est-breakdown { display: grid; gap: 14px; margin: 16px 0 6px; }
-        .est-group { border: 1px solid rgba(198,161,91,.28); border-radius: 16px; padding: 14px 16px; background: rgba(255,255,255,.05); }
-        .est-group-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
-        .est-group-head > span:first-child { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .12em; color: var(--color-champagne-300); }
-        .est-group-head strong { font-family: var(--font-display); font-size: 18px; color: #E8C873; }
-        .est-line { display: flex; justify-content: space-between; gap: 12px; padding: 10px 0; border-top: 1px solid rgba(198,161,91,.16); }
-        .est-line .lbl { font-weight: 600; font-size: 13.5px; color: #F2EEDF; }
-        .est-line .det { font-size: 12px; color: rgba(255,255,255,.55); margin-top: 2px; }
-        .est-line strong { white-space: nowrap; color: #fff; font-size: 13.5px; }
+        .est-breakdown { display: grid; gap: 8px; margin: 12px 0 4px; }
+        .est-group { border: 1px solid rgba(198,161,91,.28); border-radius: 12px; padding: 10px 12px; background: rgba(255,255,255,.05); }
+        .est-group-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
+        .est-group-head > span:first-child { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .1em; color: var(--color-champagne-300); }
+        .est-group-head strong { font-family: var(--font-display); font-size: 15px; color: #E8C873; }
+        .est-line { display: flex; justify-content: space-between; gap: 10px; padding: 6px 0; border-top: 1px solid rgba(198,161,91,.16); }
+        .est-line .lbl { font-weight: 600; font-size: 12px; color: #F2EEDF; }
+        .est-line .det { font-size: 11px; color: rgba(255,255,255,.55); margin-top: 1px; }
+        .est-line strong { white-space: nowrap; color: #fff; font-size: 12px; }
         .est-line strong.neg { color: #7BD8A4; }
         .est-line .badge { margin-left: 6px; vertical-align: 1px; }
+        .est-actions { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 14px; }
+        @media (max-width: 700px) { .est-actions { grid-template-columns: 1fr 1fr; } }
       `}</style>
 
       <Reveal>
@@ -342,7 +340,7 @@ export default function Calculator() {
           {/* ---------- Your menu (direct — no cards) ---------- */}
           {(pkg || !calc.packageId) && (
           <Reveal>
-            <section className="panel menu-extras-sec" style={{ marginTop: 24 }}>
+            <section className="panel menu-extras-sec" style={{ marginTop: 16 }}>
               <SectionLabel>Your menu</SectionLabel>
               {pkg ? (
                 <>
@@ -441,7 +439,7 @@ export default function Calculator() {
           )}
           {/* ---------- Add Custom browser popup (toggle only — no steppers) ---------- */}
           {menuCard === 'custom' && (
-            <Modal title="＋ Add custom" wide onClose={() => setMenuCard(null)}>
+            <Modal title="＋ Add custom" onClose={() => setMenuCard(null)}>
               {pkg && (
                 <button type="button" className="opt-row" onClick={() => setShowPkgItems(true)} aria-haspopup="dialog">
                   <span className="opt-icon" aria-hidden="true">🍽️</span>
@@ -469,6 +467,7 @@ export default function Calculator() {
                           aria-pressed={sel}
                         >
                           <span className="dish-check" aria-hidden="true">{sel ? '✓' : ''}</span>
+                          <Img src={it.image} alt={it.name} className="addon-thumb" />
                           <span className="grow">
                             <span className="nm">{it.name}</span>
                             <span className="pr">{pkr(it.price)} per guest</span>
@@ -494,6 +493,7 @@ export default function Calculator() {
                           aria-pressed={sel}
                         >
                           <span className="dish-check" aria-hidden="true">{sel ? '✓' : ''}</span>
+                          <Img src={it.image} alt={it.name} className="addon-thumb" />
                           <span className="grow">
                             <span className="nm">{it.name}</span>
                             <span className="pr">{pkr(it.price)} {unitLabel(it.unit)}</span>
@@ -561,7 +561,7 @@ export default function Calculator() {
           {/* ---------- Estimate box (created on Calculate) ---------- */}
           {showEstimate && (
             <Reveal>
-              <section id="estimate-box" className="panel estimate-box" style={{ marginTop: 24 }}>
+              <section id="estimate-box" className="panel estimate-box" style={{ marginTop: 16 }}>
                 <div className="est-head">
                   <h2 className="font-sans text-[13px] font-bold uppercase tracking-[0.18em] text-champagne-300">Your estimate</h2>
                 </div>
@@ -631,14 +631,12 @@ export default function Calculator() {
                   Illustrative estimate. Final rates depend on venue, menu, guest count, date and service inclusions.
                 </p>
 
-                <div style={{ marginTop: 14 }}>
-                  <Btn variant="light" size="sm" to="/compare">Compare packages →</Btn>
-                </div>
 
-                <div style={{ marginTop: 18, display: 'flex', gap: 12, flexWrap: 'wrap' }}>
-                  <Btn variant="outline" to="/calendar">Find Available Dates</Btn>
-                  <Btn variant="gold" to="/quote" size="lg">Get My Quotation</Btn>
-                  <Btn variant="primary" onClick={() => { toast('Your estimate is saved — complete the inquiry when ready.'); nav('/quote'); }}>
+                <div className="est-actions">
+                  <Btn variant="light" size="sm" to="/compare" block>Compare packages →</Btn>
+                  <Btn variant="outline" size="sm" to="/calendar" block>Find Available Dates</Btn>
+                  <Btn variant="gold" size="sm" to="/quote" block>Get My Quotation</Btn>
+                  <Btn variant="primary" size="sm" block onClick={() => { toast('Your estimate is saved — complete the inquiry when ready.'); nav('/quote'); }}>
                     Continue to Inquiry
                   </Btn>
                 </div>
