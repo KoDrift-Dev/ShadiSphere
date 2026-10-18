@@ -1,6 +1,6 @@
 import React from 'react';
 import { useStore } from '../state/store';
-import { Btn, Badge, Img, PageHead, SectionHead } from '../components/ui';
+import { Btn, Badge, Img, PageHead, SectionHead, Reveal, Stagger, StaggerItem } from '../components/ui';
 import { MenuCategory } from '../data/types';
 import { pkr, unitLabel } from '../lib/format';
 
@@ -8,6 +8,8 @@ const CATEGORIES: MenuCategory[] = [
   'Main Dishes', 'BBQ & Starters', 'Sides', 'Desserts',
   'Beverages', 'Live Stations', 'Decoration & Services',
 ];
+
+const catAnchor = (c: MenuCategory) => `cat-${c.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`;
 
 export default function Menus() {
   const { state } = useStore();
@@ -17,80 +19,124 @@ export default function Menus() {
 
   return (
     <div>
-      <style>{`@media (max-width: 900px){ .grid-3{grid-template-columns:1fr 1fr;} .grid-4{grid-template-columns:1fr 1fr;} }
-@media (max-width: 600px){ .grid-3,.grid-4{grid-template-columns:1fr;} }`}</style>
       <div className="wrap">
         <div className="section-tight">
-          <PageHead
-            eyebrow="Food & menus"
-            title="Wedding menu packages"
-            lead="Five curated collections, plus a full à-la-carte catalog. Prices are illustrative demo values, configurable per venue."
-          />
+          <Reveal>
+            <PageHead
+              eyebrow="Food & menus"
+              title="Wedding menu packages"
+              lead="Five curated collections, plus a full à-la-carte catalog. Prices are illustrative demo values, configurable per venue."
+            />
+          </Reveal>
 
-          <div className="grid grid-3" style={{ marginBottom: 56 }}>
+          <Stagger className="grid grid-3" style={{ marginBottom: 56 }} gap={0.1}>
             {activePackages.map(p => {
               const names = p.included.map(id => itemById.get(id)?.name).filter(Boolean) as string[];
               return (
-                <article className="card pkg-card" key={p.id}>
-                  {p.badge && <span className="badge badge-gold pkg-flag">{p.badge}</span>}
-                  <div className="card-img"><Img src={p.image} alt={`${p.name} menu package`} /></div>
-                  <div className="card-body">
-                    <h3 className="card-title">{p.name}</h3>
-                    <p className="card-meta">{p.tagline}</p>
-                    <p className="price-lg price" style={{ fontSize: 24, fontWeight: 800, color: 'var(--emerald)' }}>
-                      {pkr(p.pricePerGuest)} <span className="small muted">per guest</span>
-                    </p>
-                    <p className="small">{p.description}</p>
-                    <p className="small muted" style={{ marginBottom: 4 }}>
-                      <strong style={{ color: 'var(--charcoal)' }}>{p.included.length} dishes included:</strong>
-                    </p>
-                    <p className="small muted" style={{ marginBottom: 16 }}>
-                      {names.slice(0, 5).join(' · ')}{names.length > 5 ? ` · +${names.length - 5} more` : ''}
-                    </p>
-                    <Btn to="/calculator" variant="outline" block>Customize in Calculator</Btn>
-                  </div>
-                </article>
+                <StaggerItem key={p.id}>
+                  <article className="card pkg-card h-full">
+                    {p.badge && (
+                      <span className="badge badge-gold pkg-flag">
+                        <span className="w-1.5 h-1.5 rounded-full bg-champagne-600 inline-block" />
+                        {p.badge}
+                      </span>
+                    )}
+                    <div className="card-img"><Img src={p.image} alt={`${p.name} menu package`} /></div>
+                    <div className="card-body">
+                      <h3 className="card-title">{p.name}</h3>
+                      <p className="card-meta">{p.tagline}</p>
+                      <p className="price-lg price text-pine-600" style={{ fontSize: 26 }}>
+                        {pkr(p.pricePerGuest)}{' '}
+                        <span className="small muted font-sans font-normal">per guest</span>
+                      </p>
+                      <p className="small text-ink-600">{p.description}</p>
+                      <p className="small mb-2">
+                        <strong className="text-pine-700">{p.included.length} dishes included</strong>
+                      </p>
+                      <ul className="why-list small mb-4">
+                        {names.slice(0, 5).map(n => <li key={n}>{n}</li>)}
+                        {names.length > 5 && (
+                          <li className="muted">+{names.length - 5} more dishes</li>
+                        )}
+                      </ul>
+                      <Btn to="/calculator" variant="outline" block>Customize in Calculator</Btn>
+                    </div>
+                  </article>
+                </StaggerItem>
               );
             })}
-          </div>
+          </Stagger>
 
-          <SectionHead
-            eyebrow="À-la-carte catalog"
-            title="Dishes, beverages & services"
-            lead={`${catalog.length} sample items. Each item shows its pricing unit — per guest, per serving, per bottle, per item or a flat event charge.`}
-          />
+          <Reveal>
+            <SectionHead
+              eyebrow="À-la-carte catalog"
+              title="Dishes, beverages & services"
+              lead={`${catalog.length} sample items. Each item shows its pricing unit — per guest, per serving, per bottle, per item or a flat event charge.`}
+            />
+          </Reveal>
+
+          {/* category quick-nav as clay chips (anchor links — no state, no logic change) */}
+          <Reveal>
+            <nav className="chip-row mb-10" aria-label="Menu categories">
+              {CATEGORIES.map(cat => {
+                const n = catalog.filter(i => i.category === cat).length;
+                if (n === 0) return null;
+                return (
+                  <a key={cat} href={`#${catAnchor(cat)}`} className="chip no-underline" style={{ display: 'inline-flex', alignItems: 'center' }}>
+                    {cat}
+                    <span className="badge badge-gold ml-1" style={{ fontSize: 11, padding: '2px 8px' }}>{n}</span>
+                  </a>
+                );
+              })}
+            </nav>
+          </Reveal>
 
           {CATEGORIES.map(cat => {
             const items = catalog.filter(i => i.category === cat);
             if (items.length === 0) return null;
             return (
-              <section key={cat} style={{ marginBottom: 40 }}>
-                <h3 style={{ marginBottom: 16 }}>{cat} <span className="small muted">({items.length})</span></h3>
-                <div className="grid grid-4">
+              <section key={cat} id={catAnchor(cat)} style={{ marginBottom: 44, scrollMarginTop: 100 }}>
+                <Reveal>
+                  <div className="flex items-center gap-4 mb-5">
+                    <h3 className="m-0">{cat}</h3>
+                    <span className="brandline mb-0" />
+                    <span className="small muted">{items.length} items</span>
+                  </div>
+                </Reveal>
+                <Stagger className="grid grid-4" gap={0.06}>
                   {items.map(it => (
-                    <article className="card" key={it.id}>
-                      <div className="card-img" style={{ aspectRatio: '16/9' }}><Img src={it.image} alt={it.name} /></div>
-                      <div className="card-body" style={{ padding: '14px 16px 16px' }}>
-                        <div className="chip-row" style={{ marginBottom: 8 }}>
-                          {it.addOnOnly && <Badge tone="amber">Add-on only</Badge>}
+                    <StaggerItem key={it.id}>
+                      <article className="card h-full">
+                        <div className="card-img" style={{ aspectRatio: '16/9' }}><Img src={it.image} alt={it.name} /></div>
+                        <div className="card-body" style={{ padding: '14px 18px 18px' }}>
+                          {it.addOnOnly && (
+                            <div className="chip-row" style={{ marginBottom: 8 }}>
+                              <Badge tone="amber">Add-on only</Badge>
+                            </div>
+                          )}
+                          {/* elegant dotted leader: name …… price */}
+                          <div className="flex items-baseline gap-2">
+                            <h4 className="m-0 text-[16px] font-display">{it.name}</h4>
+                            <span aria-hidden="true" className="flex-1 border-b-2 border-dotted border-champagne-400/70 -translate-y-1" />
+                            <span className="price text-pine-700 text-[15px] whitespace-nowrap">{pkr(it.price)}</span>
+                          </div>
+                          <p className="small muted mt-2 mb-1">{it.description}</p>
+                          <p className="small text-champagne-700 font-semibold m-0">{unitLabel(it.unit)}</p>
                         </div>
-                        <h4 style={{ fontSize: 16, marginBottom: 4 }}>{it.name}</h4>
-                        <p className="small muted" style={{ marginBottom: 10 }}>{it.description}</p>
-                        <p style={{ fontWeight: 700, color: 'var(--emerald)', margin: 0 }}>
-                          {pkr(it.price)} <span className="small muted">{unitLabel(it.unit)}</span>
-                        </p>
-                      </div>
-                    </article>
+                      </article>
+                    </StaggerItem>
                   ))}
-                </div>
+                </Stagger>
               </section>
             );
           })}
 
-          <div className="alert alert-info" style={{ marginTop: 24 }}>
-            Illustrative demo rates — not verified quotations. Actual rates depend on the venue, menu,
-            guest count, date and service inclusions. Venue managers can edit every price in the owner dashboard.
-          </div>
+          <Reveal>
+            <div className="alert alert-info" style={{ marginTop: 24 }}>
+              Illustrative demo rates — not verified quotations. Actual rates depend on the venue, menu,
+              guest count, date and service inclusions. Venue managers can edit every price in the owner dashboard.
+            </div>
+          </Reveal>
         </div>
       </div>
     </div>

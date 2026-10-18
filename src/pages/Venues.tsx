@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import { useStore } from '../state/store';
-import { Btn, Badge, Img, Empty, PageHead, Field } from '../components/ui';
+import { Btn, Badge, Img, Empty, PageHead, Field, Reveal, Stagger, StaggerItem } from '../components/ui';
 import { BUSINESS, VenueConfig, VenueType } from '../data/types';
 import { pkr } from '../lib/format';
 
@@ -55,14 +55,19 @@ export default function Venues() {
 @media (max-width: 600px){ .grid-3{grid-template-columns:1fr;} .filter-bar{grid-template-columns:1fr;} }`}</style>
       <div className="wrap">
         <div className="section-tight">
-          <PageHead
-            eyebrow="Our venue"
-            title="Explore our event spaces"
-            lead={`${BUSINESS.name}, ${BUSINESS.area}, Lahore — ${state.venues.length} spaces for every kind of function. All prices are illustrative demo rates.`}
-          />
+          <Reveal>
+            <PageHead
+              eyebrow="Our venue"
+              title="Explore our event spaces"
+              lead={`${BUSINESS.name}, ${BUSINESS.area}, Lahore — ${state.venues.length} spaces for every kind of function. All prices are illustrative demo rates.`}
+            />
+          </Reveal>
 
-          <div className="panel" style={{ marginBottom: 26 }}>
-            <div className="grid filter-bar" style={{ gridTemplateColumns: 'repeat(4, 1fr)', gap: 14 }}>
+          <Reveal delay={0.05}>
+          <div className="panel relative overflow-hidden" style={{ marginBottom: 26 }}>
+            <div aria-hidden="true" className="pointer-events-none absolute -right-20 -top-20 h-56 w-56 rounded-full bg-champagne-300/25 blur-3xl" />
+            <span className="eyebrow relative" style={{ marginBottom: 14 }}><span className="rule" />Refine your search</span>
+            <div className="grid filter-bar relative" style={{ gridTemplateColumns: 'repeat(4, 1fr)', gap: 14 }}>
               <Field label="Space type">
                 <select className="input" value={type} onChange={e => setType(e.target.value)}>
                   <option>All</option>{TYPES.map(t => <option key={t} value={t}>{t}</option>)}
@@ -97,34 +102,43 @@ export default function Venues() {
               </div>
             </div>
           </div>
+          </Reveal>
 
-          <p className="small muted" style={{ marginBottom: 18 }} aria-live="polite">
-            {results.length} {results.length === 1 ? 'space' : 'spaces'} found
-          </p>
+          <div className="mb-5 flex flex-wrap items-baseline gap-x-3 gap-y-1" aria-live="polite">
+            <h2 className="font-display text-[26px] font-bold text-pine-900" style={{ margin: 0 }}>
+              {results.length} <span className="text-champagne-500">{results.length === 1 ? 'space' : 'spaces'}</span>
+            </h2>
+            <span className="text-sm text-ink-400">at {BUSINESS.name}</span>
+          </div>
 
           {results.length === 0 ? (
+            <Reveal>
             <Empty
               title="No spaces match your filters"
               body="Try adjusting the guest count or raising the budget."
               action={<Btn onClick={clear}>Clear all filters</Btn>}
             />
+            </Reveal>
           ) : (
-            <div className="grid grid-3">
+            <Stagger className="grid grid-3" gap={0.1}>
               {results.map(v => (
-                <article className="card" key={v.id}>
+                <StaggerItem key={v.id} className="h-full">
+                <article className="card pkg-card h-full transition-transform duration-300 hover:-translate-y-1.5">
+                  {v.featured && <span className="badge badge-gold pkg-flag">Featured</span>}
                   <div className="card-img">
                     <Img src={v.image} alt={v.name} />
                   </div>
                   <div className="card-body">
                     <div className="chip-row" style={{ marginBottom: 10 }}>
                       <Badge tone="green">{v.type}</Badge>
-                      {v.featured && <Badge tone="gold">Featured</Badge>}
                       <Badge>{v.config}</Badge>
                     </div>
                     <h3 className="card-title">{v.name}</h3>
                     <p className="card-meta">{BUSINESS.name} · {v.area}, Lahore</p>
-                    <p className="card-meta">{v.minGuests.toLocaleString()} – {v.maxGuests.toLocaleString()} guests</p>
-                    <p style={{ fontWeight: 700, color: 'var(--emerald)', marginBottom: 14 }}>
+                    <div className="chip-row" style={{ marginBottom: 12 }}>
+                      <span className="chip font-display" style={{ cursor: 'default', fontWeight: 700, color: 'var(--color-pine-700)' }}>{v.minGuests.toLocaleString()} – {v.maxGuests.toLocaleString()} guests</span>
+                    </div>
+                    <p className="font-display" style={{ fontWeight: 700, fontSize: 20, color: 'var(--color-pine-600)', marginBottom: 14 }}>
                       Hall from {pkr(minRental(v))}
                     </p>
                     <div className="chip-row" style={{ marginBottom: 16 }}>
@@ -133,8 +147,9 @@ export default function Venues() {
                     <Btn to={`/venues/${v.id}`} variant="outline" block>View Details</Btn>
                   </div>
                 </article>
+                </StaggerItem>
               ))}
-            </div>
+            </Stagger>
           )}
         </div>
       </div>

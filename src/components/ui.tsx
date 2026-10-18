@@ -1,6 +1,52 @@
 // Reusable design-system components.
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { motion } from 'framer-motion';
+
+/** Fade-up reveal on scroll into view. Use around section content and card grids. */
+export function Reveal({ children, delay = 0, y = 22, className, style }: {
+  children: React.ReactNode; delay?: number; y?: number; className?: string; style?: React.CSSProperties;
+}) {
+  return (
+    <motion.div
+      className={className} style={style}
+      initial={{ opacity: 0, y }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: '-60px' }}
+      transition={{ duration: 0.55, delay, ease: [0.22, 1, 0.36, 1] }}
+    >
+      {children}
+    </motion.div>
+  );
+}
+
+/** Stagger container — wrap a grid; each child should be a <StaggerItem>. */
+export function Stagger({ children, className, style, gap = 0.08 }: {
+  children: React.ReactNode; className?: string; style?: React.CSSProperties; gap?: number;
+}) {
+  return (
+    <motion.div
+      className={className} style={style}
+      initial="hidden" whileInView="show" viewport={{ once: true, margin: '-40px' }}
+      variants={{ hidden: {}, show: { transition: { staggerChildren: gap } } }}
+    >
+      {children}
+    </motion.div>
+  );
+}
+
+export function StaggerItem({ children, className, style }: {
+  children: React.ReactNode; className?: string; style?: React.CSSProperties;
+}) {
+  return (
+    <motion.div
+      className={className} style={style}
+      variants={{ hidden: { opacity: 0, y: 26 }, show: { opacity: 1, y: 0, transition: { duration: 0.5, ease: [0.22, 1, 0.36, 1] } } }}
+    >
+      {children}
+    </motion.div>
+  );
+}
 
 export function Btn({
   to, href, variant = 'primary', size, block, children, onClick, disabled, type, target,

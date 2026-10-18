@@ -5,7 +5,7 @@ import { Link, Route, Routes, useLocation } from 'react-router-dom';
 import { useStore } from '../state/store';
 import { seedBookings } from '../data/seed';
 import {
-  Badge, Btn, Confirm, Empty, Field, Modal, PageHead, SectionHead,
+  Badge, Btn, Confirm, Empty, Field, Modal, PageHead, Reveal, SectionHead, Stagger, StaggerItem,
 } from '../components/ui';
 import {
   fmtDate, fmtDateShort, isoPlus, pkr, todayISO, unitLabel, weekdayOf,
@@ -63,6 +63,31 @@ function num(v: string, fallback = 0): number {
   return Number.isFinite(n) ? n : fallback;
 }
 
+/* ---------------- visual helpers (markup only — no logic) ---------------- */
+
+/** Serif monogram tile used as a thumbnail next to item names. */
+const MONO: React.CSSProperties = {
+  display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+  width: 46, height: 46, borderRadius: 15, flexShrink: 0,
+  fontFamily: 'var(--font-display)', fontSize: 21, fontWeight: 700, color: '#fff',
+  background: 'linear-gradient(150deg, var(--color-pine-500), var(--color-pine-700))',
+  border: '1px solid rgba(198,161,91,.55)',
+  boxShadow: 'inset 0 1px 0 rgba(255,255,255,.28), 0 8px 16px rgba(30,77,63,.22)',
+};
+
+/** Champagne ref-chip for inquiry reference numbers. */
+const REF_CHIP: React.CSSProperties = {
+  display: 'inline-block', padding: '5px 13px', borderRadius: 999, whiteSpace: 'nowrap',
+  border: '1px solid rgba(198,161,91,.5)', background: 'rgba(198,161,91,.14)',
+  fontSize: 12.5, fontWeight: 700, letterSpacing: '.05em', color: 'var(--color-champagne-700)',
+};
+
+/** Small uppercase label above filter chip rows. */
+const FILTER_LABEL: React.CSSProperties = {
+  fontSize: 11.5, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '.09em',
+  color: 'var(--color-ink-400)', marginBottom: 7,
+};
+
 /* ---------------- gate ---------------- */
 
 function DashGate({ children }: { children: React.ReactNode }) {
@@ -72,9 +97,9 @@ function DashGate({ children }: { children: React.ReactNode }) {
   if (entered) return <>{children}</>;
   return (
     <div className="wrap" style={{ minHeight: '70vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-      <div className="panel" style={{ maxWidth: 520, textAlign: 'center' }}>
-        <div className="eyebrow" style={{ justifyContent: 'center' }}><span className="rule" />ShadiSphere</div>
-        <h1 style={{ fontSize: 30 }}>Owner Dashboard</h1>
+      <Reveal className="panel" style={{ maxWidth: 560, textAlign: 'center', padding: '46px 40px' }}>
+        <div className="eyebrow" style={{ justifyContent: 'center' }}><span className="rule" />ShadiSphere<span className="rule" /></div>
+        <h1 className="font-display" style={{ fontSize: 34 }}>Owner Dashboard</h1>
         <p className="lead" style={{ marginTop: 8 }}>
           Manage your event spaces, menus, sample bookings, inquiries and promotions.
         </p>
@@ -84,6 +109,7 @@ function DashGate({ children }: { children: React.ReactNode }) {
         </div>
         <Btn
           size="lg"
+          variant="gold"
           onClick={() => {
             try { localStorage.setItem(GATE_KEY, '1'); } catch { /* ignore */ }
             setEntered(true);
@@ -94,7 +120,7 @@ function DashGate({ children }: { children: React.ReactNode }) {
         <p className="muted small" style={{ marginTop: 14 }}>
           <Link to="/">Back to the customer website</Link>
         </p>
-      </div>
+      </Reveal>
     </div>
   );
 }
@@ -107,10 +133,17 @@ function DashShell() {
     <div className="dash">
       <style>{`
         .dash-cols { display: grid; grid-template-columns: 1.35fr 1fr; gap: 20px; margin-top: 20px; align-items: start; }
-        .dash-list { list-style: none; margin: 0; padding: 0; }
-        .dash-list li { display: flex; justify-content: space-between; gap: 12px; padding: 12px 0; border-bottom: 1px dashed var(--line); font-size: 14.5px; }
-        .dash-list li:last-child { border-bottom: none; }
-        .dash-side .brandline { font-family: var(--serif); font-size: 22px; color: #fff; font-weight: 700; }
+        .dash-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+        .dash-list li {
+          display: flex; justify-content: space-between; align-items: center; gap: 12px;
+          padding: 12px 16px; font-size: 14.5px; border-radius: 14px;
+          background: rgba(255,255,255,.66); border: 1px solid rgba(198,161,91,.22);
+          backdrop-filter: blur(8px);
+          transition: transform .15s ease, box-shadow .15s ease;
+        }
+        .dash-list li:hover { transform: translateY(-1px); box-shadow: 0 10px 24px rgba(30,77,63,.12); }
+        .dash-side .brandline { font-family: var(--font-display); font-size: 24px; color: #fff; font-weight: 700; letter-spacing: .01em; }
+        .dash-side .brandline .gdot { color: var(--color-champagne-300); }
         @media (max-width: 1100px) { .dash-cols { grid-template-columns: 1fr; } }
         @media (max-width: 900px) {
           .dash { grid-template-columns: 1fr; }
@@ -125,8 +158,8 @@ function DashShell() {
       `}</style>
       <aside className="dash-side">
         <div style={{ padding: '2px 14px 14px' }}>
-          <div className="brandline">ShadiSphere</div>
-          <div style={{ fontSize: 12.5, color: 'var(--gold-2)', letterSpacing: '.08em', textTransform: 'uppercase', marginTop: 4 }}>
+          <div className="brandline">ShadiSphere<span className="gdot">.</span></div>
+          <div style={{ fontSize: 12.5, color: 'var(--color-champagne-300)', letterSpacing: '.08em', textTransform: 'uppercase', marginTop: 4 }}>
             Owner Dashboard
           </div>
         </div>
@@ -146,6 +179,10 @@ function DashShell() {
         </div>
       </aside>
       <main className="dash-main">
+        <div className="alert alert-warn" style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+          <span style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--color-champagne-500)', boxShadow: '0 0 0 4px rgba(198,161,91,.18)', flexShrink: 0 }} />
+          <span><strong>Demo mode</strong> — all data here is fictional sample data. Changes reflect on the customer site instantly.</span>
+        </div>
         <Routes>
           <Route index element={<Overview />} />
           <Route path="overview" element={<Overview />} />
@@ -209,42 +246,61 @@ function Overview() {
   return (
     <div>
       <PageHead eyebrow="Demo dashboard" title="Overview" lead="Sample business activity at ShadiSphere Grand Marquee, Lahore." />
-      <div className="kpi-grid">
-        <div className="kpi">
-          <div className="k-label">Total demo inquiries</div>
-          <div className="k-value">{totalInq}</div>
-          <div className="k-sub">sample records</div>
-        </div>
-        <div className="kpi">
-          <div className="k-label">Upcoming demo events</div>
-          <div className="k-value">{upcoming.length}</div>
-          <div className="k-sub">booked slots on or after today</div>
-        </div>
-        <div className="kpi">
-          <div className="k-label">Booked sample slots</div>
-          <div className="k-value">{booked.length}</div>
-          <div className="k-sub">ShadiSphere Grand Marquee · Lahore</div>
-        </div>
-        <div className="kpi">
-          <div className="k-label">Estimated booking value</div>
-          <div className="k-value">{pkr(estValue)}</div>
-          <div className="k-sub">illustrative sample data</div>
-        </div>
-        <div className="kpi">
-          <div className="k-label">Inquiry conversion</div>
-          <div className="k-value">{convPct}%</div>
-          <div className="k-sub">{confirmed.length} of {totalInq} inquiries confirmed</div>
-        </div>
-        <div className="kpi">
-          <div className="k-label">Weekday &amp; lunch utilization</div>
-          <div className="k-value">{utilPct}%</div>
-          <div className="k-sub">{wkLunch.length} of {booked.length} booked slots</div>
-        </div>
-      </div>
+      <Stagger className="kpi-grid" gap={0.07}>
+        <StaggerItem>
+          <div className="kpi">
+            <div className="k-label">Total demo inquiries</div>
+            <div className="k-value">{totalInq}</div>
+            <div className="k-sub">sample records</div>
+          </div>
+        </StaggerItem>
+        <StaggerItem>
+          <div className="kpi">
+            <div className="k-label">Upcoming demo events</div>
+            <div className="k-value">{upcoming.length}</div>
+            <div className="k-sub">booked slots on or after today</div>
+          </div>
+        </StaggerItem>
+        <StaggerItem>
+          <div className="kpi">
+            <div className="k-label">Booked sample slots</div>
+            <div className="k-value">{booked.length}</div>
+            <div className="k-sub">ShadiSphere Grand Marquee · Lahore</div>
+          </div>
+        </StaggerItem>
+        <StaggerItem>
+          <div className="kpi">
+            <div className="k-label">Estimated booking value</div>
+            <div className="k-value">{pkr(estValue)}</div>
+            <div className="k-sub">illustrative sample data</div>
+          </div>
+        </StaggerItem>
+        <StaggerItem>
+          <div className="kpi">
+            <div className="k-label">Inquiry conversion</div>
+            <div className="k-value">{convPct}%</div>
+            <div className="k-sub">{confirmed.length} of {totalInq} inquiries confirmed</div>
+          </div>
+        </StaggerItem>
+        <StaggerItem>
+          <div className="kpi">
+            <div className="k-label">Weekday &amp; lunch utilization</div>
+            <div className="k-value">{utilPct}%</div>
+            <div className="k-sub">{wkLunch.length} of {booked.length} booked slots</div>
+          </div>
+        </StaggerItem>
+      </Stagger>
       <p className="muted small" style={{ marginTop: 12 }}>All figures are illustrative sample data.</p>
 
+      <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', marginTop: 16 }}>
+        <Btn variant="gold" size="sm" to="/dashboard/bookings">Manage bookings</Btn>
+        <Btn variant="gold" size="sm" to="/dashboard/inquiries">Review inquiries</Btn>
+        <Btn variant="gold" size="sm" to="/dashboard/promotions">New promotion</Btn>
+        <Btn variant="gold" size="sm" to="/calculator">Open cost calculator</Btn>
+      </div>
+
       <div className="dash-cols">
-        <div className="panel">
+        <Reveal className="panel">
           <h3>Upcoming events</h3>
           {upcoming.length === 0 ? (
             <p className="muted">No upcoming demo bookings.</p>
@@ -268,9 +324,9 @@ function Overview() {
           <div style={{ marginTop: 14 }}>
             <Btn variant="outline" size="sm" to="/dashboard/bookings">Manage bookings</Btn>
           </div>
-        </div>
+        </Reveal>
 
-        <div className="panel">
+        <Reveal className="panel" delay={0.08}>
           <h3>Recent inquiries</h3>
           {recent.length === 0 ? (
             <p className="muted">No inquiries yet.</p>
@@ -291,10 +347,10 @@ function Overview() {
           <div style={{ marginTop: 14 }}>
             <Btn variant="outline" size="sm" to="/dashboard/inquiries">All inquiries</Btn>
           </div>
-        </div>
+        </Reveal>
       </div>
 
-      <div className="panel" style={{ marginTop: 20 }}>
+      <Reveal className="panel" delay={0.05} style={{ marginTop: 20 }}>
         <h3>Promotional opportunities</h3>
         <p className="muted" style={{ marginBottom: 10 }}>
           Quiet days in the next 14 days — consider a targeted promotion to fill them.
@@ -311,7 +367,7 @@ function Overview() {
             ))}
           </ul>
         )}
-      </div>
+      </Reveal>
     </div>
   );
 }
@@ -360,7 +416,12 @@ function VenueMgmt() {
           <tbody>
             {state.venues.map(v => (
               <tr key={v.id}>
-                <td><strong>{v.name}</strong><br /><span className="muted small">{v.area}</span></td>
+                <td>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                    <span style={MONO} aria-hidden="true">{v.name.charAt(0)}</span>
+                    <span><strong>{v.name}</strong><br /><span className="muted small">{v.area}</span></span>
+                  </div>
+                </td>
                 <td>{v.type}</td>
                 <td>{v.minGuests.toLocaleString()}–{v.maxGuests.toLocaleString()}</td>
                 <td className="price">{pkr(v.hallRental.evening)}</td>
@@ -475,7 +536,12 @@ function MenuMgmt() {
           <tbody>
             {state.packages.map(p => (
               <tr key={p.id}>
-                <td><strong>{p.name}</strong><br /><span className="muted small">{p.tagline}</span></td>
+                <td>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                    <span style={MONO} aria-hidden="true">{p.name.charAt(0)}</span>
+                    <span><strong>{p.name}</strong><br /><span className="muted small">{p.tagline}</span></span>
+                  </div>
+                </td>
                 <td className="price">{pkr(p.pricePerGuest)}</td>
                 <td>{p.included.length}</td>
                 <td>{p.enabled ? <Badge tone="green">Enabled</Badge> : <Badge tone="grey">Disabled</Badge>}</td>
@@ -606,28 +672,35 @@ function BookingMgmt() {
 
   return (
     <div>
-      <SectionHead eyebrow="Demo dashboard" title="Bookings" lead="Simulated bookings that drive the customer availability calendar." action={<Btn onClick={() => setAddOpen(true)}>Add booking</Btn>} />
+      <SectionHead eyebrow="Demo dashboard" title="Bookings" lead="Simulated bookings that drive the customer availability calendar." action={<Btn variant="gold" onClick={() => setAddOpen(true)}>Add booking</Btn>} />
       <div className="alert alert-info">Changes update the customer calendar immediately. Demo bookings never represent real reservations.</div>
 
-      <div className="form-row c3" style={{ marginBottom: 18 }}>
-        <Field label="Venue">
-          <select className="input" value={fVenue} onChange={e => setFVenue(e.target.value)}>
-            <option value="all">All spaces</option>
-            {state.venues.map(v => <option key={v.id} value={v.id}>{v.name}</option>)}
-          </select>
-        </Field>
-        <Field label="Date">
-          <select className="input" value={fDate} onChange={e => setFDate(e.target.value)}>
-            <option value="upcoming">All upcoming</option>
-            <option value="all">All dates</option>
-          </select>
-        </Field>
-        <Field label="Status">
-          <select className="input" value={fStatus} onChange={e => setFStatus(e.target.value)}>
-            <option value="all">All statuses</option>
-            {ALL_STATUSES.map(s => <option key={s} value={s}>{bookingLabel(s)}</option>)}
-          </select>
-        </Field>
+      <div style={{ display: 'grid', gap: 14, marginBottom: 20 }}>
+        <div>
+          <div style={FILTER_LABEL}>Space</div>
+          <div className="chip-row">
+            <button type="button" className={`chip${fVenue === 'all' ? ' active' : ''}`} onClick={() => setFVenue('all')}>All spaces</button>
+            {state.venues.map(v => (
+              <button key={v.id} type="button" className={`chip${fVenue === v.id ? ' active' : ''}`} onClick={() => setFVenue(v.id)}>{v.name}</button>
+            ))}
+          </div>
+        </div>
+        <div>
+          <div style={FILTER_LABEL}>Date</div>
+          <div className="chip-row">
+            <button type="button" className={`chip${fDate === 'upcoming' ? ' active' : ''}`} onClick={() => setFDate('upcoming')}>All upcoming</button>
+            <button type="button" className={`chip${fDate === 'all' ? ' active' : ''}`} onClick={() => setFDate('all')}>All dates</button>
+          </div>
+        </div>
+        <div>
+          <div style={FILTER_LABEL}>Status</div>
+          <div className="chip-row">
+            <button type="button" className={`chip${fStatus === 'all' ? ' active' : ''}`} onClick={() => setFStatus('all')}>All statuses</button>
+            {ALL_STATUSES.map(s => (
+              <button key={s} type="button" className={`chip${fStatus === s ? ' active' : ''}`} onClick={() => setFStatus(s)}>{bookingLabel(s)}</button>
+            ))}
+          </div>
+        </div>
       </div>
 
       <div className="table-wrap">
@@ -775,7 +848,7 @@ function InquiryMgmt() {
           <tbody>
             {rows.map(i => (
               <tr key={i.ref} style={{ cursor: 'pointer' }} onClick={() => setDetail(i)}>
-                <td style={{ whiteSpace: 'nowrap' }}>{i.ref}</td>
+                <td style={{ whiteSpace: 'nowrap' }}><span style={REF_CHIP}>{i.ref}</span></td>
                 <td><strong>{i.name}</strong></td>
                 <td>{i.phone}</td>
                 <td>{i.eventType}</td>
@@ -828,6 +901,11 @@ function InquiryDetail({ inquiry, onClose }: { inquiry: Inquiry; onClose: () => 
 
   return (
     <Modal title={`Inquiry ${inquiry.ref}`} onClose={onClose}>
+      <div className="chip-row" style={{ marginBottom: 14 }}>
+        {INQUIRY_STATUSES.map(s => (
+          <span key={s} className={`chip${s === inquiry.status ? ' active' : ''}`} style={{ cursor: 'default', minHeight: 0, padding: '6px 13px', fontSize: 12.5 }}>{s}</span>
+        ))}
+      </div>
       {row('Name', <strong>{inquiry.name}</strong>)}
       {row('Phone / WhatsApp', inquiry.phone)}
       {inquiry.email && row('Email', inquiry.email)}
@@ -946,34 +1024,40 @@ function PromoMgmt() {
         eyebrow="Demo dashboard"
         title="Promotions"
         lead="Sample discounts for weekdays, lunch slots, large bookings and date ranges."
-        action={<Btn onClick={() => setEdit(blankPromo())}>New promotion</Btn>}
+        action={<Btn variant="gold" onClick={() => setEdit(blankPromo())}>New promotion</Btn>}
       />
       <div className="alert alert-info">Eligibility is evaluated in the customer calculator; total discounts cap at 15%.</div>
 
-      <div className="table-wrap">
-        <table className="tbl">
-          <thead>
-            <tr><th>Name</th><th>Type</th><th>Discount</th><th>Eligibility</th><th>Active</th><th></th></tr>
-          </thead>
-          <tbody>
-            {state.promotions.map(p => (
-              <tr key={p.id}>
-                <td><strong>{p.name}</strong><br /><span className="muted small">{p.description}</span></td>
-                <td style={{ textTransform: 'capitalize' }}>{p.kind.replace('_', ' ')}</td>
-                <td className="price">{p.percent}%</td>
-                <td className="small muted">{ruleSummary(p)}</td>
-                <td>
-                  <label className="checkline">
-                    <input type="checkbox" aria-label={`Active: ${p.name}`} checked={p.active} onChange={e => toggle(p.id, e.target.checked)} />
-                    {p.active ? <Badge tone="green">Active</Badge> : <Badge tone="grey">Paused</Badge>}
-                  </label>
-                </td>
-                <td><Btn variant="outline" size="sm" onClick={() => setEdit({ ...p })}>Edit</Btn></td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+      <Stagger style={{ display: 'grid', gap: 16, gridTemplateColumns: 'repeat(auto-fill, minmax(290px, 1fr))' }} gap={0.07}>
+        {state.promotions.map(p => (
+          <StaggerItem key={p.id}>
+            <div className="panel" style={{ padding: 22, height: '100%', opacity: p.active ? 1 : 0.78 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 10 }}>
+                <div>
+                  <div style={{ fontFamily: 'var(--font-display)', fontSize: 42, fontWeight: 700, color: 'var(--color-pine-600)', lineHeight: 1 }}>
+                    {p.percent}<span style={{ fontSize: 22 }}>%</span>
+                  </div>
+                  <div style={{ ...FILTER_LABEL, marginBottom: 0, marginTop: 4 }}>discount</div>
+                </div>
+                {p.active ? <Badge tone="green">Active</Badge> : <Badge tone="grey">Paused</Badge>}
+              </div>
+              <h3 style={{ margin: '14px 0 4px', fontSize: 19 }}>{p.name}</h3>
+              <p className="muted small" style={{ marginBottom: 8 }}>{p.description}</p>
+              <div className="small muted">
+                <span style={{ textTransform: 'capitalize' }}>{p.kind.replace('_', ' ')}</span> · {ruleSummary(p)}
+              </div>
+              <div style={{ display: 'flex', gap: 10, marginTop: 16, alignItems: 'center', justifyContent: 'space-between', borderTop: '1px dashed rgba(198,161,91,.35)', paddingTop: 14 }}>
+                <label className="checkline">
+                  <input type="checkbox" aria-label={`Active: ${p.name}`} checked={p.active} onChange={e => toggle(p.id, e.target.checked)} />
+                  {p.active ? 'On' : 'Off'}
+                </label>
+                <Btn variant="outline" size="sm" onClick={() => setEdit({ ...p })}>Edit</Btn>
+              </div>
+            </div>
+          </StaggerItem>
+        ))}
+      </Stagger>
+      {state.promotions.length === 0 && <Empty title="No promotions" body="Create your first promotion to fill quiet days." />}
 
       {edit && (
         <Modal title={state.promotions.some(p => p.id === edit.id) ? `Edit promotion — ${edit.name}` : 'New promotion'} onClose={() => setEdit(null)}>
@@ -1106,8 +1190,11 @@ function Settings() {
         )}
       </div>
 
-      <div className="panel" style={{ maxWidth: 640, borderColor: 'var(--red)' }}>
-        <h3 style={{ color: 'var(--red)' }}>Danger zone</h3>
+      <div className="panel" style={{ maxWidth: 640, borderColor: 'rgba(200,60,40,.45)', background: 'linear-gradient(165deg, rgba(255,241,236,.92), rgba(255,255,255,.62))' }}>
+        <h3 style={{ color: '#B3402E', display: 'flex', alignItems: 'center', gap: 10 }}>
+          <span style={{ width: 10, height: 10, borderRadius: '50%', background: '#C0392B', boxShadow: '0 0 0 5px rgba(192,57,43,.14)', flexShrink: 0 }} />
+          Danger zone
+        </h3>
         <p className="muted" style={{ marginBottom: 16 }}>
           Resetting restores the original sample spaces, menus, bookings, inquiries and promotions.
           Your configured WhatsApp number is preserved.

@@ -8,7 +8,7 @@ export default function Footer() {
         <div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 14 }}>
             <span className="brand-mark">S</span>
-            <span className="brand-name" style={{ color: '#fff' }}>Shadi<span style={{ color: 'var(--gold-2)' }}>Sphere</span></span>
+            <span className="brand-name" style={{ color: '#fff' }}>Shadi<span style={{ color: 'var(--color-champagne-300)' }}>Sphere</span></span>
           </div>
           <p style={{ fontSize: 14, maxWidth: 320 }}>{BUSINESS.name} — {BUSINESS.tagline} Explore our spaces, customize menus and plan your wedding with confidence.</p>
           <p style={{ fontSize: 12.5, color: '#A9A28C' }}>Demo contact (sample only): {BUSINESS.email} · {BUSINESS.phone} · {BUSINESS.address}</p>
