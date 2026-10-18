@@ -2,55 +2,50 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useStore } from '../state/store';
 import { Btn, Badge, Img, SectionHead, Field } from '../components/ui';
-import { CITIES, EVENT_TYPES, EventType } from '../data/types';
+import { BUSINESS, EVENT_TYPES, EventType } from '../data/types';
 import { pkr, todayISO } from '../lib/format';
 
 const EVENT_BLURBS: Record<EventType, string> = {
-  Barat: 'The grand procession and main celebration — marquees built for 500+ guests.',
+  Barat: 'The grand procession and main celebration — our Crystal Hall hosts 300–1,000 guests.',
   Walima: 'The elegant reception feast — premium menus and refined staging.',
-  Mehndi: 'Colour, music and dance — lawns and marquees with space to celebrate.',
-  Nikah: 'An intimate, graceful ceremony — halls with bridal suites and prayer areas.',
-  Reception: 'A formal evening gathering — banquets with premium sound and lighting.',
-  Engagement: 'The first celebration — beautiful venues for family and close friends.',
+  Mehndi: 'Colour, music and dance — our Emerald Garden Lawn under the stars.',
+  Nikah: 'An intimate, graceful ceremony — the Pearl Intimate Hall with bridal suite.',
+  Reception: 'A formal evening gathering — premium sound, lighting and décor.',
+  Engagement: 'The first celebration — beautiful spaces for family and close friends.',
 };
 
 const WHY = [
   { t: 'Transparent estimates', d: 'See every line item — food, hall, decoration and discounts — before you ask for a quote.' },
-  { t: 'Multiple venue options', d: 'Compare halls, marquees, lawns and estates across nine Pakistani cities in one place.' },
+  { t: 'Three versatile event spaces', d: 'A grand hall, a garden lawn and an intimate hall — one venue, every kind of function.' },
   { t: 'Flexible menu selection', d: 'Start from a curated package, then add, remove or substitute dishes with clear pricing.' },
-  { t: 'Date recommendations', d: 'Enter a preferred date and we suggest available alternatives within your window.' },
+  { t: 'Date recommendations', d: 'Enter a preferred date and we suggest available alternatives at our venue within your window.' },
   { t: 'Faster inquiry process', d: 'Send a structured WhatsApp inquiry with your full estimate attached — no repeated phone calls.' },
 ];
 
 const TESTIMONIALS = [
-  { q: 'We compared three marquees in Lahore in one evening and walked into the venue visit knowing exactly what our 600-guest Walima would cost.', who: 'Ayesha & Daniyal', role: 'Married in Lahore, 2026' },
-  { q: 'The date finder saved us. Our preferred Saturday was booked, and it suggested a Friday with a weekday discount that cut our bill by ten percent.', who: 'Fatima K.', role: 'Mehndi planner, Karachi' },
-  { q: 'As someone planning from abroad, seeing real per-guest math before calling anyone made the whole process feel honest and easy.', who: 'Imran S.', role: 'Overseas Pakistani, Islamabad event' },
+  { q: 'We planned our 600-guest Walima at the Grand Crystal Hall and walked into our venue visit knowing exactly what it would cost.', who: 'Ayesha & Daniyal', role: 'Walima at ShadiSphere Grand Marquee' },
+  { q: 'Our preferred Saturday was booked, and the date finder suggested a Friday in the Emerald Garden Lawn with a weekday discount that cut our bill by ten percent.', who: 'Fatima K.', role: 'Mehndi at ShadiSphere Grand Marquee' },
+  { q: 'As someone planning from abroad, seeing real per-guest math for the Pearl Intimate Hall before calling anyone made the whole process feel honest and easy.', who: 'Imran S.', role: 'Overseas Pakistani, Nikah at ShadiSphere' },
 ];
 
 function HeroSearch() {
   const { setCalc } = useStore();
   const nav = useNavigate();
-  const [city, setCity] = useState('Lahore');
   const [date, setDate] = useState(todayISO());
   const [eventType, setEventType] = useState<EventType>('Barat');
   const [guests, setGuests] = useState(400);
   return (
     <form
       className="hero-search"
+      style={{ gridTemplateColumns: 'repeat(4, 1fr)' }}
       aria-label="Find your wedding date"
       onSubmit={e => {
         e.preventDefault();
         const g = Math.min(3000, Math.max(50, guests || 400));
-        setCalc(c => ({ ...c, city, date, eventType, guests: g }));
+        setCalc(c => ({ ...c, city: BUSINESS.city, date, eventType, guests: g }));
         nav('/planner');
       }}
     >
-      <Field label="City">
-        <select className="input" value={city} onChange={e => setCity(e.target.value)} aria-label="City">
-          {CITIES.map(c => <option key={c} value={c}>{c}</option>)}
-        </select>
-      </Field>
       <Field label="Event date">
         <input type="date" className="input" value={date} min={todayISO()} onChange={e => setDate(e.target.value)} aria-label="Event date" />
       </Field>
@@ -73,46 +68,47 @@ function HeroSearch() {
 export default function Home() {
   const { state } = useStore();
   const itemById = new Map(state.menuItems.map(i => [i.id, i]));
-  const featured = state.venues.filter(v => v.featured);
+  const spaces = state.venues.filter(v => v.featured);
   const promos = state.promotions.filter(p => p.active);
 
   return (
     <div>
-      <style>{`@media (max-width: 900px){ .hero-search{grid-template-columns:1fr 1fr;} .grid-3,.grid-4,.grid-2{grid-template-columns:1fr;} .hero-inner{padding:64px 24px 56px;} }
-@media (max-width: 560px){ .hero-search{grid-template-columns:1fr;} }`}</style>
+      <style>{`@media (max-width: 900px){ .hero-search{grid-template-columns:1fr 1fr !important;} .grid-3,.grid-4,.grid-2{grid-template-columns:1fr;} .hero-inner{padding:64px 24px 56px;} }
+@media (max-width: 560px){ .hero-search{grid-template-columns:1fr !important;} }`}</style>
 
       {/* HERO */}
       <section className="hero">
         <div className="hero-bg">
-          <Img src="/img/hero-wedding.jpg" alt="Pakistani wedding marquee lit up in the evening" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+          <Img src="/img/hero-wedding.jpg" alt="ShadiSphere Grand Marquee lit up in the evening" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
         </div>
         <div className="hero-veil" />
         <div className="hero-inner">
+          <span className="eyebrow" style={{ color: 'var(--gold-2)' }}><span className="rule" />{BUSINESS.name} · {BUSINESS.area}, Lahore</span>
           <h1>Plan Your <em>Perfect Wedding</em> Celebration.</h1>
           <p className="sub">
-            Explore venues, customize menus and estimate your wedding cost with confidence —
-            across Kharian, Lahore, Karachi and six more cities.
+            Explore our halls and lawns, customize your wedding menu and estimate your celebration cost
+            with confidence — all at {BUSINESS.name}, {BUSINESS.area}, Lahore.
           </p>
           <div className="hero-ctas">
             <Btn to="/calculator" variant="gold" size="lg">Calculate Your Wedding Cost</Btn>
-            <Btn to="/venues" variant="outline" size="lg">Explore Venues</Btn>
+            <Btn to="/venues" variant="outline" size="lg">Explore Our Spaces</Btn>
           </div>
           <HeroSearch />
           <p className="hero-note">Demo availability — illustrative estimates. Not a live reservation system.</p>
         </div>
       </section>
 
-      {/* FEATURED VENUES */}
+      {/* OUR SPACES */}
       <section className="section">
         <div className="wrap">
           <SectionHead
-            eyebrow="Featured venues"
-            title="Handpicked halls, marquees and lawns"
-            lead="A sample of the venues in our demo network. Every listing shows real indicative pricing."
-            action={<Btn to="/venues" variant="outline">View all venues →</Btn>}
+            eyebrow="Our venue"
+            title="Three event spaces, one celebration"
+            lead="The Grand Crystal Hall, the Emerald Garden Lawn and the Pearl Intimate Hall — all at ShadiSphere Grand Marquee, DHA Phase 5, Lahore."
+            action={<Btn to="/venues" variant="outline">Explore Our Spaces →</Btn>}
           />
           <div className="grid grid-3">
-            {featured.map(v => (
+            {spaces.map(v => (
               <article className="card" key={v.id}>
                 <div className="card-img"><Img src={v.image} alt={v.name} /></div>
                 <div className="card-body">
@@ -121,8 +117,8 @@ export default function Home() {
                     <Badge tone="gold">{v.config}</Badge>
                   </div>
                   <h3 className="card-title">{v.name}</h3>
-                  <p className="card-meta">{v.city} · {v.area}</p>
-                  <p className="card-meta">Up to {v.maxGuests.toLocaleString()} guests · Hall from {pkr(Math.min(v.hallRental.lunch, v.hallRental.afternoon, v.hallRental.evening))}</p>
+                  <p className="card-meta">{BUSINESS.name} · {v.area}, Lahore</p>
+                  <p className="card-meta">{v.minGuests.toLocaleString()}–{v.maxGuests.toLocaleString()} guests · Hall from {pkr(Math.min(v.hallRental.lunch, v.hallRental.afternoon, v.hallRental.evening))}</p>
                   <Btn to={`/venues/${v.id}`} variant="outline" block>View Details</Btn>
                 </div>
               </article>
@@ -147,7 +143,7 @@ export default function Home() {
               </div>
               <div>
                 <div className="grid" style={{ gap: 12 }}>
-                  {['1. Choose a menu package', '2. Customize dishes & add-ons', '3. Enter guests, date & venue', '4. Get an instant itemized estimate'].map(s => (
+                  {['1. Choose a menu package', '2. Customize dishes & add-ons', '3. Enter guests, date & space', '4. Get an instant itemized estimate'].map(s => (
                     <div key={s} className="slot-row" style={{ margin: 0 }}><span className="grow" style={{ fontWeight: 600 }}>{s}</span><span aria-hidden="true">→</span></div>
                   ))}
                 </div>
@@ -163,7 +159,7 @@ export default function Home() {
           <SectionHead
             eyebrow="Wedding menus"
             title="Five curated menu collections"
-            lead="From essential feasts to grand gourmet spreads. Rates are illustrative demo values."
+            lead="From essential feasts to grand gourmet spreads, served by our in-house catering. Rates are illustrative demo values."
             action={<Btn to="/menus" variant="outline">Explore Menus →</Btn>}
           />
           <div className="grid grid-3">
@@ -251,12 +247,12 @@ export default function Home() {
         </div>
       </section>
 
-      {/* INCLUDED DISHES strip (uses itemById so Menus data is exercised) */}
+      {/* CLOSING CTA */}
       <section className="section-tight" style={{ background: 'var(--emerald)', color: '#fff' }}>
         <div className="wrap center">
           <h2 style={{ color: '#fff', marginBottom: 10 }}>Ready to plan yours?</h2>
           <p className="sub" style={{ color: 'rgba(255,255,255,.85)', maxWidth: 560, margin: '0 auto 24px' }}>
-            {itemById.size} sample dishes, {featured.length} featured venues, {EVENT_TYPES.length} event types — one smart estimate.
+            {itemById.size} sample dishes, {spaces.length} event spaces, {EVENT_TYPES.length} event types — one smart estimate.
           </p>
           <div style={{ display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap' }}>
             <Btn to="/calculator" variant="gold" size="lg">Calculate Your Wedding Cost</Btn>

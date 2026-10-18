@@ -13,7 +13,7 @@ import {
 import { tryAddBooking } from '../lib/availability';
 import { buildInquiryMessage, waLink } from '../lib/whatsapp';
 import {
-  Booking, BookingStatus, CITIES, EVENT_TYPES, Inquiry, InquiryStatus, MenuItem,
+  Booking, BookingStatus, EVENT_TYPES, Inquiry, InquiryStatus, MenuItem,
   MenuPackage, Promotion, SLOTS, Venue,
 } from '../data/types';
 
@@ -21,7 +21,7 @@ const GATE_KEY = 'shadisphere_dash_entered';
 
 const NAV: { to: string; label: string }[] = [
   { to: '/dashboard', label: 'Overview' },
-  { to: '/dashboard/venues', label: 'Venues' },
+  { to: '/dashboard/venues', label: 'Event Spaces' },
   { to: '/dashboard/menus', label: 'Menus & Packages' },
   { to: '/dashboard/bookings', label: 'Bookings' },
   { to: '/dashboard/inquiries', label: 'Inquiries' },
@@ -76,7 +76,7 @@ function DashGate({ children }: { children: React.ReactNode }) {
         <div className="eyebrow" style={{ justifyContent: 'center' }}><span className="rule" />ShadiSphere</div>
         <h1 style={{ fontSize: 30 }}>Owner Dashboard</h1>
         <p className="lead" style={{ marginTop: 8 }}>
-          Manage demo venues, menus, sample bookings, inquiries and promotions.
+          Manage your event spaces, menus, sample bookings, inquiries and promotions.
         </p>
         <div className="alert alert-warn" style={{ textAlign: 'left', marginTop: 16 }}>
           <strong>Demo only — no real authentication.</strong> Anyone can open this panel.
@@ -208,7 +208,7 @@ function Overview() {
 
   return (
     <div>
-      <PageHead eyebrow="Demo dashboard" title="Overview" lead="Sample business activity across your demo venues." />
+      <PageHead eyebrow="Demo dashboard" title="Overview" lead="Sample business activity at ShadiSphere Grand Marquee, Lahore." />
       <div className="kpi-grid">
         <div className="kpi">
           <div className="k-label">Total demo inquiries</div>
@@ -223,7 +223,7 @@ function Overview() {
         <div className="kpi">
           <div className="k-label">Booked sample slots</div>
           <div className="k-value">{booked.length}</div>
-          <div className="k-sub">across all demo venues</div>
+          <div className="k-sub">ShadiSphere Grand Marquee · Lahore</div>
         </div>
         <div className="kpi">
           <div className="k-label">Estimated booking value</div>
@@ -316,7 +316,7 @@ function Overview() {
   );
 }
 
-/* ---------------- 2. Venues ---------------- */
+/* ---------------- 2. Event spaces ---------------- */
 
 const VENUE_TYPES = ['Marquee', 'Banquet Hall', 'Lawn', 'Wedding Estate'] as const;
 const VENUE_CONFIGS = ['Indoor', 'Outdoor', 'Indoor + Outdoor'] as const;
@@ -349,19 +349,18 @@ function VenueMgmt() {
 
   return (
     <div>
-      <PageHead eyebrow="Demo dashboard" title="Venues" lead="Edit demo venue details, capacity and rental prices. Changes appear on the customer site immediately." />
+      <PageHead eyebrow="Demo dashboard" title="Event Spaces" lead="Edit our halls and lawn — capacity, rental prices, amenities. Changes appear on the customer site immediately." />
       <div className="table-wrap">
         <table className="tbl">
           <thead>
             <tr>
-              <th>Name</th><th>City</th><th>Type</th><th>Capacity</th><th>Evening rental</th><th>Featured</th><th></th>
+              <th>Space</th><th>Type</th><th>Capacity</th><th>Evening rental</th><th>Featured</th><th></th>
             </tr>
           </thead>
           <tbody>
             {state.venues.map(v => (
               <tr key={v.id}>
                 <td><strong>{v.name}</strong><br /><span className="muted small">{v.area}</span></td>
-                <td>{v.city}</td>
                 <td>{v.type}</td>
                 <td>{v.minGuests.toLocaleString()}–{v.maxGuests.toLocaleString()}</td>
                 <td className="price">{pkr(v.hallRental.evening)}</td>
@@ -374,15 +373,10 @@ function VenueMgmt() {
       </div>
 
       {edit && (
-        <Modal title={`Edit venue — ${edit.name}`} onClose={() => setEdit(null)} wide>
+        <Modal title={`Edit space — ${edit.name}`} onClose={() => setEdit(null)} wide>
           <div className="form-row c2">
             <Field label="Venue name">
               <input className="input" value={edit.name} onChange={e => setEdit({ ...edit, name: e.target.value })} />
-            </Field>
-            <Field label="City">
-              <select className="input" value={edit.city} onChange={e => setEdit({ ...edit, city: e.target.value })}>
-                {CITIES.map(c => <option key={c} value={c}>{c}</option>)}
-              </select>
             </Field>
             <Field label="Area">
               <input className="input" value={edit.area} onChange={e => setEdit({ ...edit, area: e.target.value })} />
@@ -397,7 +391,7 @@ function VenueMgmt() {
                 {VENUE_CONFIGS.map(c => <option key={c} value={c}>{c}</option>)}
               </select>
             </Field>
-            <Field label="Featured venue">
+            <Field label="Featured space">
               <label className="checkline" style={{ paddingTop: 6 }}>
                 <input type="checkbox" checked={edit.featured} onChange={e => setEdit({ ...edit, featured: e.target.checked })} />
                 Show in featured lists
@@ -618,7 +612,7 @@ function BookingMgmt() {
       <div className="form-row c3" style={{ marginBottom: 18 }}>
         <Field label="Venue">
           <select className="input" value={fVenue} onChange={e => setFVenue(e.target.value)}>
-            <option value="all">All venues</option>
+            <option value="all">All spaces</option>
             {state.venues.map(v => <option key={v.id} value={v.id}>{v.name}</option>)}
           </select>
         </Field>
@@ -698,7 +692,7 @@ function AddBookingModal({ onClose }: { onClose: () => void }) {
 
   const save = () => {
     const g = Math.max(0, Math.round(num(guests)));
-    if (!venueId) { setErr('Choose a venue.'); return; }
+    if (!venueId) { setErr('Choose an event space.'); return; }
     if (!date) { setErr('Choose a date.'); return; }
     const res = tryAddBooking(state.bookings, {
       venueId, date, slot, status,
@@ -718,7 +712,7 @@ function AddBookingModal({ onClose }: { onClose: () => void }) {
       <div className="form-row c2">
         <Field label="Venue">
           <select className="input" value={venueId} onChange={e => setVenueId(e.target.value)}>
-            {state.venues.map(v => <option key={v.id} value={v.id}>{v.name} — {v.city}</option>)}
+            {state.venues.map(v => <option key={v.id} value={v.id}>{v.name}</option>)}
           </select>
         </Field>
         <Field label="Date">
@@ -1115,7 +1109,7 @@ function Settings() {
       <div className="panel" style={{ maxWidth: 640, borderColor: 'var(--red)' }}>
         <h3 style={{ color: 'var(--red)' }}>Danger zone</h3>
         <p className="muted" style={{ marginBottom: 16 }}>
-          Resetting restores the original sample venues, menus, bookings, inquiries and promotions.
+          Resetting restores the original sample spaces, menus, bookings, inquiries and promotions.
           Your configured WhatsApp number is preserved.
         </p>
         <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
@@ -1127,7 +1121,7 @@ function Settings() {
       {resetConfirm && (
         <Confirm
           title="Reset all demo data?"
-          body="This restores venues, menus, packages, bookings, inquiries and promotions to their original sample state. Any edits made in this dashboard will be lost. Your WhatsApp demo number is kept."
+          body="This restores spaces, menus, packages, bookings, inquiries and promotions to their original sample state. Any edits made in this dashboard will be lost. Your WhatsApp demo number is kept."
           confirmLabel="Reset demo data"
           onConfirm={() => { setResetConfirm(false); resetDemo(); }}
           onCancel={() => setResetConfirm(false)}

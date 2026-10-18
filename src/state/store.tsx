@@ -18,9 +18,9 @@ export interface DemoState {
   whatsappNumber: string; // digits only; empty => operator enters it
 }
 
-const LS_KEY = 'shadisphere_demo_v3';
-const CALC_KEY = 'shadisphere_calc_v3';
-const VERSION = 3;
+const LS_KEY = 'shadisphere_demo_v4';
+const CALC_KEY = 'shadisphere_calc_v4';
+const VERSION = 4;
 
 function freshState(): DemoState {
   return {
@@ -39,7 +39,18 @@ function freshState(): DemoState {
 function loadState(): DemoState {
   try {
     const raw = localStorage.getItem(LS_KEY);
-    if (!raw) return freshState();
+    if (!raw) {
+      // Migrate the operator's WhatsApp number from the previous demo version.
+      const prev = localStorage.getItem('shadisphere_demo_v3');
+      const f = freshState();
+      if (prev) {
+        try {
+          const p = JSON.parse(prev) as DemoState;
+          if (p.whatsappNumber) f.whatsappNumber = p.whatsappNumber;
+        } catch { /* ignore */ }
+      }
+      return f;
+    }
     const s = JSON.parse(raw) as DemoState;
     if (s.version !== VERSION || !Array.isArray(s.venues) || !Array.isArray(s.bookings)) {
       return freshState();

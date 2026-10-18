@@ -130,14 +130,17 @@ export const SLOTS: { id: SlotId; label: string; time: string }[] = [
 
 export const EVENT_TYPES: EventType[] = ['Barat', 'Walima', 'Mehndi', 'Nikah', 'Reception', 'Engagement'];
 
-export const CITIES = [
-  'Kharian',
-  'Lahore',
-  'Karachi',
-  'Islamabad',
-  'Rawalpindi',
-  'Faisalabad',
-  'Gujranwala',
-  'Multan',
-  'Sialkot',
-];
+// Single-business identity: ShadiSphere is ONE fictional marriage hall in Lahore.
+// The `venues` collection below represents its internal event spaces — not
+// independent businesses.
+export const BUSINESS = {
+  name: 'ShadiSphere Grand Marquee',
+  city: 'Lahore',
+  area: 'DHA Phase 5',
+  address: 'Main Boulevard, DHA Phase 5, Lahore, Pakistan',
+  phone: '0300-0000000', // fictional demo number
+  email: 'hello@shadisphere.demo',
+  tagline: 'Your Celebration. Your Venue. Your Perfect Plan.',
+};
+
+export const CITIES = ['Lahore'];

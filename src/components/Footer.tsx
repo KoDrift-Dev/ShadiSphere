@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import { BUSINESS } from '../data/types';
 
 export default function Footer() {
   return (
@@ -9,12 +10,12 @@ export default function Footer() {
             <span className="brand-mark">S</span>
             <span className="brand-name" style={{ color: '#fff' }}>Shadi<span style={{ color: 'var(--gold-2)' }}>Sphere</span></span>
           </div>
-          <p style={{ fontSize: 14, maxWidth: 320 }}>Your Celebration. Your Venue. Your Perfect Plan. Explore venues, customize menus and plan your wedding with confidence.</p>
-          <p style={{ fontSize: 12.5, color: '#A9A28C' }}>Demo contact (sample only): hello@shadisphere.demo · 0300-0000000 · Lahore, Pakistan</p>
+          <p style={{ fontSize: 14, maxWidth: 320 }}>{BUSINESS.name} — {BUSINESS.tagline} Explore our spaces, customize menus and plan your wedding with confidence.</p>
+          <p style={{ fontSize: 12.5, color: '#A9A28C' }}>Demo contact (sample only): {BUSINESS.email} · {BUSINESS.phone} · {BUSINESS.address}</p>
         </div>
         <div>
           <h4>Explore</h4>
-          <Link to="/venues">Venues</Link>
+          <Link to="/venues">Our Spaces</Link>
           <Link to="/menus">Menus & Packages</Link>
           <Link to="/calculator">Cost Calculator</Link>
           <Link to="/calendar">Availability</Link>
@@ -28,12 +29,13 @@ export default function Footer() {
           <Link to="/dashboard">Owner Dashboard</Link>
         </div>
         <div>
-          <h4>Service Areas</h4>
-          <p style={{ fontSize: 14 }}>Kharian · Lahore · Karachi · Islamabad · Rawalpindi · Faisalabad · Gujranwala · Multan · Sialkot</p>
+          <h4>Visit Us</h4>
+          <p style={{ fontSize: 14 }}>{BUSINESS.name}<br />{BUSINESS.address}</p>
+          <p style={{ fontSize: 12.5, color: '#A9A28C' }}>Open for visits 11:00 – 21:00, all days (demo hours).</p>
         </div>
       </div>
       <div className="footer-bottom">
-        © 2026 ShadiSphere (demo). All venues, prices, availability and reviews are fictional sample data for demonstration only — not real businesses, quotations or reservations.
+        © 2026 {BUSINESS.name} (demo). All spaces, prices, availability and reviews are fictional sample data for demonstration only — not a real business, quotation or reservation.
       </div>
     </footer>
   );

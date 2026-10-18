@@ -9,7 +9,7 @@ import { calculate } from '../lib/calc';
 import { pkr, fmtDate, todayISO } from '../lib/format';
 import { buildWhatsAppMessage, waLink } from '../lib/whatsapp';
 import {
-  CITIES, EVENT_TYPES, SLOTS, Inquiry, SlotId, EventType,
+  BUSINESS, EVENT_TYPES, SLOTS, Inquiry, SlotId, EventType,
 } from '../data/types';
 
 function cleanPhone(raw: string): string {
@@ -25,7 +25,7 @@ export default function Quote() {
     name: '',
     phone: '',
     email: '',
-    city: calc.city,
+    city: BUSINESS.city,
     eventType: calc.eventType,
     date: calc.date >= todayISO() ? calc.date : todayISO(),
     slot: calc.slot,
@@ -73,7 +73,7 @@ export default function Quote() {
       name: form.name.trim(),
       phone: cleanPhone(form.phone),
       email: form.email.trim() || undefined,
-      city: form.city,
+      city: BUSINESS.city,
       eventType: form.eventType,
       date: form.date,
       slot: form.slot,
@@ -175,7 +175,7 @@ export default function Quote() {
             </div>
             <div className="small muted" style={{ margin: '10px 0 14px' }}>
               {guests.toLocaleString()} guests · {form.eventType} · {fmtDate(form.date)} ({slotLabel})
-              <br />{venue ? `${venue.name}, ${venue.area}, ${venue.city}` : 'No venue selected yet'} · {packageName}
+              <br />{venue ? `${BUSINESS.name} — ${venue.name}, ${venue.area}, Lahore` : 'No event space selected yet'} · {packageName}
             </div>
 
             {result.lines.map((l, i) => (
@@ -226,9 +226,7 @@ export default function Quote() {
             </Field>
             <div className="form-row" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
               <Field label="City">
-                <select value={form.city} onChange={e => setForm(f => ({ ...f, city: e.target.value }))} aria-label="City">
-                  {CITIES.map(c => <option key={c} value={c}>{c}</option>)}
-                </select>
+                <input value={BUSINESS.city} disabled aria-label="City" />
               </Field>
               <Field label="Event type">
                 <select value={form.eventType} onChange={e => setForm(f => ({ ...f, eventType: e.target.value as EventType }))} aria-label="Event type">
@@ -252,7 +250,7 @@ export default function Quote() {
                 onChange={e => setForm(f => ({ ...f, guests: e.target.value }))} aria-label="Guests" />
             </Field>
             <Field label="Venue" hint="Carried over from the calculator.">
-              <input value={venue ? `${venue.name} — ${venue.city}` : 'Not selected'} disabled aria-label="Venue" />
+              <input value={venue ? `${BUSINESS.name} — ${venue.name}` : 'Not selected'} disabled aria-label="Event space" />
             </Field>
             <Field label="Menu" hint="Carried over from the calculator.">
               <input value={packageName} disabled aria-label="Menu" />

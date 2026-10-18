@@ -1,12 +1,12 @@
 import React, { useMemo, useState } from 'react';
 import { useStore } from '../state/store';
 import { Btn, Badge, Img, Empty, PageHead, Field } from '../components/ui';
-import { CITIES, VenueConfig, VenueType } from '../data/types';
+import { BUSINESS, VenueConfig, VenueType } from '../data/types';
 import { pkr } from '../lib/format';
 
 type SortKey = 'recommended' | 'capacity' | 'price';
 
-const TYPES: VenueType[] = ['Marquee', 'Banquet Hall', 'Lawn', 'Wedding Estate'];
+const TYPES: VenueType[] = ['Banquet Hall', 'Lawn'];
 const CONFIGS: VenueConfig[] = ['Indoor', 'Outdoor', 'Indoor + Outdoor'];
 
 const minRental = (v: { hallRental: Record<string, number> }) =>
@@ -14,7 +14,6 @@ const minRental = (v: { hallRental: Record<string, number> }) =>
 
 export default function Venues() {
   const { state } = useStore();
-  const [city, setCity] = useState('All');
   const [type, setType] = useState('All');
   const [config, setConfig] = useState('All');
   const [amenity, setAmenity] = useState('All');
@@ -32,7 +31,6 @@ export default function Venues() {
     const g = Number(guests);
     const b = Number(budget);
     let list = state.venues.filter(v => {
-      if (city !== 'All' && v.city !== city) return false;
       if (type !== 'All' && v.type !== type) return false;
       if (config !== 'All' && v.config !== config) return false;
       if (amenity !== 'All' && !v.amenities.includes(amenity)) return false;
@@ -46,10 +44,10 @@ export default function Venues() {
       return Number(b2.featured) - Number(a.featured) || a.name.localeCompare(b2.name);
     });
     return list;
-  }, [state.venues, city, type, config, amenity, guests, budget, sort]);
+  }, [state.venues, type, config, amenity, guests, budget, sort]);
 
-  const clear = () => { setCity('All'); setType('All'); setConfig('All'); setAmenity('All'); setGuests(''); setBudget(''); setSort('recommended'); };
-  const hasFilters = city !== 'All' || type !== 'All' || config !== 'All' || amenity !== 'All' || guests !== '' || budget !== '';
+  const clear = () => { setType('All'); setConfig('All'); setAmenity('All'); setGuests(''); setBudget(''); setSort('recommended'); };
+  const hasFilters = type !== 'All' || config !== 'All' || amenity !== 'All' || guests !== '' || budget !== '';
 
   return (
     <div>
@@ -58,19 +56,14 @@ export default function Venues() {
       <div className="wrap">
         <div className="section-tight">
           <PageHead
-            eyebrow="Venue catalog"
-            title="Explore wedding venues"
-            lead={`${state.venues.length} fictional demo venues across ${CITIES.length} cities. All prices are illustrative.`}
+            eyebrow="Our venue"
+            title="Explore our event spaces"
+            lead={`${BUSINESS.name}, ${BUSINESS.area}, Lahore — ${state.venues.length} spaces for every kind of function. All prices are illustrative demo rates.`}
           />
 
           <div className="panel" style={{ marginBottom: 26 }}>
             <div className="grid filter-bar" style={{ gridTemplateColumns: 'repeat(4, 1fr)', gap: 14 }}>
-              <Field label="City">
-                <select className="input" value={city} onChange={e => setCity(e.target.value)}>
-                  <option>All</option>{CITIES.map(c => <option key={c} value={c}>{c}</option>)}
-                </select>
-              </Field>
-              <Field label="Venue type">
+              <Field label="Space type">
                 <select className="input" value={type} onChange={e => setType(e.target.value)}>
                   <option>All</option>{TYPES.map(t => <option key={t} value={t}>{t}</option>)}
                 </select>
@@ -106,13 +99,13 @@ export default function Venues() {
           </div>
 
           <p className="small muted" style={{ marginBottom: 18 }} aria-live="polite">
-            {results.length} {results.length === 1 ? 'venue' : 'venues'} found
+            {results.length} {results.length === 1 ? 'space' : 'spaces'} found
           </p>
 
           {results.length === 0 ? (
             <Empty
-              title="No venues match your filters"
-              body="Try widening the city, increasing the guest range or raising the budget."
+              title="No spaces match your filters"
+              body="Try adjusting the guest count or raising the budget."
               action={<Btn onClick={clear}>Clear all filters</Btn>}
             />
           ) : (
@@ -129,7 +122,7 @@ export default function Venues() {
                       <Badge>{v.config}</Badge>
                     </div>
                     <h3 className="card-title">{v.name}</h3>
-                    <p className="card-meta">{v.city} · {v.area}</p>
+                    <p className="card-meta">{BUSINESS.name} · {v.area}, Lahore</p>
                     <p className="card-meta">{v.minGuests.toLocaleString()} – {v.maxGuests.toLocaleString()} guests</p>
                     <p style={{ fontWeight: 700, color: 'var(--emerald)', marginBottom: 14 }}>
                       Hall from {pkr(minRental(v))}

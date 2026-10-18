@@ -8,7 +8,7 @@ import {
 import { recommend, planMultiEvent, RecInput, Recommendation, WindowMode, EventWish, EventPlanCombo } from '../lib/recommend';
 import { isoPlus, fmtDate, pkr, todayISO } from '../lib/format';
 import {
-  CITIES, EVENT_TYPES, SLOTS, SlotId, EventType, VenueType,
+  BUSINESS, EVENT_TYPES, SLOTS, SlotId, EventType, VenueType,
 } from '../data/types';
 
 const WINDOWS: { id: WindowMode; label: string }[] = [
@@ -19,14 +19,14 @@ const WINDOWS: { id: WindowMode; label: string }[] = [
   { id: 'custom', label: 'Custom range' },
 ];
 
-const VENUE_TYPES: VenueType[] = ['Marquee', 'Banquet Hall', 'Lawn', 'Wedding Estate'];
+const SPACE_TYPES: VenueType[] = ['Banquet Hall', 'Lawn'];
 
 export default function Planner() {
   const { state, calc, setCalc, toast } = useStore();
   const nav = useNavigate();
 
   const [form, setForm] = useState({
-    city: calc.city || 'Lahore',
+    city: BUSINESS.city,
     eventType: calc.eventType as EventType,
     guests: calc.guests || 400,
     preferredDate: calc.date >= todayISO() ? calc.date : isoPlus(30),
@@ -35,6 +35,7 @@ export default function Planner() {
     slot: '' as '' | SlotId,
     budget: '',
     venueType: '' as '' | VenueType,
+    spaceId: '',
   });
   const [result, setResult] = useState<ReturnType<typeof recommend> | null>(null);
 
@@ -44,7 +45,7 @@ export default function Planner() {
     { eventType: 'Barat', guests: 500, preferredDate: isoPlus(34) },
   ]);
   const [gapDays, setGapDays] = useState(4);
-  const [planCity, setPlanCity] = useState('Lahore');
+
   const [planSlot, setPlanSlot] = useState<SlotId>('evening');
   const [combos, setCombos] = useState<EventPlanCombo[] | null>(null);
 
@@ -53,7 +54,7 @@ export default function Planner() {
 
   const findDates = () => {
     const input: RecInput = {
-      city: form.city,
+      city: BUSINESS.city,
       eventType: form.eventType,
       guests: Math.max(1, Math.floor(Number(form.guests) || 0)),
       preferredDate: form.preferredDate,
@@ -62,6 +63,7 @@ export default function Planner() {
       slot: form.slot || undefined,
       budget: form.budget ? Number(form.budget) : undefined,
       venueType: form.venueType || '',
+      spaceId: form.spaceId || undefined,
     };
     setResult(recommend(input, state.venues, state.bookings, activePkg));
   };
@@ -69,7 +71,7 @@ export default function Planner() {
   const applyRec = (r: Recommendation, dest: 'calendar' | 'calculator') => {
     setCalc(c => ({
       ...c,
-      city: r.venue.city,
+      city: BUSINESS.city,
       venueId: r.venue.id,
       date: r.date,
       slot: r.slot,
@@ -91,12 +93,12 @@ export default function Planner() {
     const clean = wishes
       .filter(w => w.preferredDate && w.guests > 0)
       .map(w => ({ ...w, guests: Math.floor(w.guests) }));
-    setCombos(planMultiEvent(clean, Math.min(30, Math.max(1, gapDays)), planCity, state.venues, state.bookings, activePkg, planSlot));
+    setCombos(planMultiEvent(clean, Math.min(30, Math.max(1, gapDays)), BUSINESS.city, state.venues, state.bookings, activePkg, planSlot));
   };
 
   const usePlan = (combo: EventPlanCombo, first: EventWish) => {
     setCalc(c => ({
-      ...c, city: planCity, venueId: combo.venueId, date: combo.dates[0],
+      ...c, city: BUSINESS.city, venueId: combo.venueId, date: combo.dates[0],
       slot: combo.slot, guests: first.guests, eventType: first.eventType,
     }));
     toast('First function loaded into the calculator.');
@@ -118,19 +120,14 @@ export default function Planner() {
 
       <PageHead
         eyebrow="Find My Date"
-        title="Smart date & venue finder"
-        lead="Tell us your event, guests and flexibility — we scan the demo calendar and rank the best venue/date matches."
+        title="Smart date & space finder"
+        lead="Tell us your event, guests and flexibility — we scan our demo calendar and rank the best date, slot and event-space matches."
       />
 
       <div className="plan-grid">
         {/* ---------- form ---------- */}
         <div className="panel">
           <h2 className="side-title">Your event</h2>
-          <Field label="City">
-            <select value={form.city} onChange={e => setForm(f => ({ ...f, city: e.target.value }))} aria-label="City">
-              {CITIES.map(c => <option key={c} value={c}>{c}</option>)}
-            </select>
-          </Field>
           <Field label="Event type">
             <div className="chip-row" role="group" aria-label="Event type">
               {EVENT_TYPES.map(t => (
@@ -169,10 +166,10 @@ export default function Planner() {
                 {SLOTS.map(s => <option key={s.id} value={s.id}>{s.label} ({s.time})</option>)}
               </select>
             </Field>
-            <Field label="Venue type (optional)">
-              <select value={form.venueType} onChange={e => setForm(f => ({ ...f, venueType: e.target.value as '' | VenueType }))} aria-label="Venue type">
-                <option value="">Any type</option>
-                {VENUE_TYPES.map(t => <option key={t} value={t}>{t}</option>)}
+            <Field label="Preferred space (optional)">
+              <select value={form.spaceId} onChange={e => setForm(f => ({ ...f, spaceId: e.target.value }))} aria-label="Preferred space">
+                <option value="">Any space</option>
+                {state.venues.map(v => <option key={v.id} value={v.id}>{v.name}</option>)}
               </select>
             </Field>
           </div>
@@ -191,7 +188,7 @@ export default function Planner() {
           {!result && (
             <Empty
               title="No search yet"
-              body="Set your event details and press “Find dates” to see ranked venue/date recommendations from the demo calendar."
+              body="Set your event details and press “Find dates” to see ranked date, slot and space recommendations from our demo calendar."
             />
           )}
           {result && result.recs.length === 0 && (
@@ -220,7 +217,7 @@ export default function Planner() {
                       <div>
                         <h3 style={{ margin: '0 0 4px' }}>{r.venue.name}</h3>
                         <div className="small muted">
-                          {r.venue.city} · {r.venue.area} · {r.venue.type} · up to {r.venue.maxGuests.toLocaleString()} guests
+                          {BUSINESS.name} · {r.venue.type} · up to {r.venue.maxGuests.toLocaleString()} guests
                         </div>
                       </div>
                       {r.venue.featured && <Badge tone="gold">Featured</Badge>}
@@ -258,11 +255,6 @@ export default function Planner() {
         </div>
 
         <div className="form-row" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(160px,1fr))', gap: 14, marginBottom: 16 }}>
-          <Field label="City">
-            <select value={planCity} onChange={e => setPlanCity(e.target.value)} aria-label="Planner city">
-              {CITIES.map(c => <option key={c} value={c}>{c}</option>)}
-            </select>
-          </Field>
           <Field label="Gap between functions (days)">
             <input type="number" min={1} max={30} value={gapDays}
               onChange={e => setGapDays(Number(e.target.value) || 1)} aria-label="Gap days" />
@@ -310,7 +302,7 @@ export default function Planner() {
           <div style={{ marginTop: 16 }}>
             <Empty
               title="No open combination found"
-              body="No single venue in the demo data is free on every suggested date with your gap. Try a different gap, slot, or city."
+              body="No single venue in the demo data is free on every suggested date with your gap. Try a different gap or slot."
             />
           </div>
         )}
@@ -323,7 +315,7 @@ export default function Planner() {
                   <div style={{ display: 'flex', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap', alignItems: 'start' }}>
                     <div>
                       <h3 style={{ margin: '0 0 4px' }}>Option {i + 1} — {combo.venueName}</h3>
-                      <div className="small muted">{planCity} · {slotLabel} slot · {combo.note}</div>
+                      <div className="small muted">{BUSINESS.city} · {slotLabel} slot · {combo.note}</div>
                     </div>
                     <div style={{ textAlign: 'right' }}>
                       <div className="price">{pkr(combo.totalEstimate)}</div>

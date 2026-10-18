@@ -4,7 +4,7 @@ import { Btn } from './ui';
 
 const LINKS = [
   { to: '/', label: 'Home' },
-  { to: '/venues', label: 'Venues' },
+  { to: '/venues', label: 'Our Spaces' },
   { to: '/menus', label: 'Menus' },
   { to: '/calculator', label: 'Cost Calculator' },
   { to: '/calendar', label: 'Availability' },

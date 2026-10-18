@@ -11,7 +11,7 @@ import {
   pkr, fmtDate, todayISO, unitLabel,
 } from '../lib/format';
 import {
-  CITIES, EVENT_TYPES, SLOTS, MenuItem, SlotId, EventType,
+  BUSINESS, EVENT_TYPES, SLOTS, MenuItem, SlotId, EventType,
 } from '../data/types';
 
 const MIN_G = 50;
@@ -158,27 +158,19 @@ export default function Calculator() {
           <section className="panel">
             <h2 className="side-title">Event details</h2>
             <div className="form-row" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
-              <Field label="City">
-                <select value={calc.city} onChange={e => setCalc(c => ({ ...c, city: e.target.value, venueId: undefined }))} aria-label="City">
-                  {CITIES.map(ct => <option key={ct} value={ct}>{ct}</option>)}
-                </select>
+              <Field label="Venue">
+                <input className="input" value={`${BUSINESS.name} · ${BUSINESS.area}, Lahore`} readOnly aria-label="Venue (fixed)" />
               </Field>
-              <Field label="Venue (optional)">
+              <Field label="Event space (optional)">
                 <select
                   value={calc.venueId ?? ''}
                   onChange={e => setCalc(c => ({ ...c, venueId: e.target.value || undefined }))}
-                  aria-label="Venue"
+                  aria-label="Event space"
                 >
-                  <option value="">No venue yet</option>
-                  {CITIES.map(ct => {
-                    const vs = state.venues.filter(v => v.city === ct);
-                    if (!vs.length) return null;
-                    return (
-                      <optgroup key={ct} label={ct}>
-                        {vs.map(v => <option key={v.id} value={v.id}>{v.name} — up to {v.maxGuests.toLocaleString()}</option>)}
-                      </optgroup>
-                    );
-                  })}
+                  <option value="">No space selected yet</option>
+                  {state.venues.map(v => (
+                    <option key={v.id} value={v.id}>{v.name} — {v.minGuests.toLocaleString()}–{v.maxGuests.toLocaleString()} guests</option>
+                  ))}
                 </select>
               </Field>
             </div>

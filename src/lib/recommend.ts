@@ -1,6 +1,8 @@
-// Rule-based date + venue recommendation engine (no AI APIs).
+// Rule-based date + space recommendation engine for ONE business:
+// ShadiSphere Grand Marquee, Lahore. Never suggests competing venues — only
+// alternative dates, slots, or internal event spaces.
 import {
-  Booking, EventType, MenuPackage, SlotId, Venue, VenueType,
+  Booking, EventType, MenuPackage, SlotId, Venue, VenueType, BUSINESS,
 } from '../data/types';
 import { isPast, isoPlus } from './format';
 import { slotStatus } from './availability';
@@ -9,7 +11,7 @@ import { quickEstimate } from './calc';
 export type WindowMode = 'exact' | 'plus3' | 'plus7' | 'forward10' | 'custom';
 
 export interface RecInput {
-  city: string;
+  city: string; // kept for form compatibility; always BUSINESS.city
   eventType: EventType;
   guests: number;
   preferredDate: string;
@@ -17,11 +19,12 @@ export interface RecInput {
   customEnd?: string;
   slot?: SlotId; // undefined => any slot
   budget?: number;
-  venueType?: VenueType | '';
+  venueType?: VenueType | ''; // preferred internal space type
+  spaceId?: string; // preferred internal space
 }
 
 export interface Recommendation {
-  venue: Venue;
+  venue: Venue; // an event space of ShadiSphere Grand Marquee
   date: string;
   slot: SlotId;
   estimate: number;
@@ -74,25 +77,24 @@ export function recommend(
     return { recs: [], searched: 0, blockedReason: 'Please choose a valid future preferred date.' };
   }
   const slots = input.slot ? [input.slot] : SLOT_IDS;
-  const venuePool = venues.filter(v =>
-    v.city === input.city &&
+  // All spaces belong to the same business — filter by capacity + event fit only.
+  let pool = venues.filter(v =>
     v.eventTypes.includes(input.eventType) &&
-    input.guests >= v.minGuests && input.guests <= v.maxGuests &&
-    (!input.venueType || v.type === input.venueType),
+    input.guests >= v.minGuests && input.guests <= v.maxGuests,
   );
-  if (venuePool.length === 0) {
+  if (input.spaceId) pool = pool.filter(v => v.id === input.spaceId);
+  else if (input.venueType) pool = pool.filter(v => v.type === input.venueType);
+  if (pool.length === 0) {
     return {
       recs: [], searched: 0,
-      blockedReason: `No ${input.venueType || 'venue'} in ${input.city} fits ${input.guests.toLocaleString()} guests for a ${input.eventType}. Try another city, a different venue type, or adjust the guest count.`,
+      blockedReason: `None of our event spaces fits ${input.guests.toLocaleString()} guests for a ${input.eventType}. Our spaces host ${Math.min(...venues.map(v => v.minGuests)).toLocaleString()}–${Math.max(...venues.map(v => v.maxGuests)).toLocaleString()} guests — try adjusting the guest count.`,
     };
   }
 
   const recs: Recommendation[] = [];
   let searched = 0;
-  const prefIdx = (d: string) => Math.abs(dates.indexOf(input.preferredDate) - dates.indexOf(d));
-  void prefIdx;
 
-  for (const venue of venuePool) {
+  for (const venue of pool) {
     for (const date of dates) {
       const distFromPref = (() => {
         const [y1, m1, d1] = input.preferredDate.split('-').map(Number);
@@ -106,18 +108,17 @@ export function recommend(
         const estimate = quickEstimate(venue, input.guests, slot, pkg);
         if (input.budget && estimate > input.budget * 1.25) continue;
         const reasons: string[] = [];
-        // Capacity fit: smallest sufficient venue scores best.
         const headroom = venue.maxGuests - input.guests;
-        reasons.push(`Fits ${input.guests.toLocaleString()} guests comfortably (up to ${venue.maxGuests.toLocaleString()})`);
+        reasons.push(`${venue.name} fits ${input.guests.toLocaleString()} guests comfortably (up to ${venue.maxGuests.toLocaleString()})`);
         if (date === input.preferredDate) reasons.push('Available on your preferred date');
-        else reasons.push(`${distFromPref === 0 ? 'Same' : distFromPref + ' day(s) from'} preferred date`);
+        else reasons.push(`${distFromPref} day${distFromPref === 1 ? '' : 's'} from your preferred date — same venue`);
         if (input.budget && estimate <= input.budget) reasons.push('Within your budget');
         else if (input.budget) reasons.push('Slightly above budget — worth a look');
-        if (input.venueType) reasons.push(`Matches your ${input.venueType.toLowerCase()} preference`);
 
         let score = 100;
-        score -= headroom / 50; // prefer tighter fit
-        score -= distFromPref * 4; // prefer closer to preferred date
+        score -= headroom / 50;
+        score -= distFromPref * 4;
+        if (input.spaceId && venue.id === input.spaceId) score += 15;
         if (input.budget) {
           score -= Math.max(0, (estimate - input.budget) / input.budget) * 60;
           if (estimate <= input.budget) score += 10;
@@ -137,7 +138,7 @@ export function recommend(
   if (top.length === 0) {
     return {
       recs: [], searched,
-      blockedReason: 'Every suitable venue is already held on the dates in your window. Try widening the date window, choosing a different slot, or increasing the budget.',
+      blockedReason: `All our spaces are held on the dates in your window. Try widening the date window, choosing a different slot, or adjusting the guest count — our team can also suggest options on WhatsApp.`,
     };
   }
   return { recs: top, searched };
@@ -162,7 +163,7 @@ export interface EventPlanCombo {
 export function planMultiEvent(
   wishes: EventWish[],
   gapDays: number,
-  city: string,
+  _city: string,
   venues: Venue[],
   bookings: Booking[],
   pkg: MenuPackage | undefined,
@@ -171,9 +172,7 @@ export function planMultiEvent(
   const combos: EventPlanCombo[] = [];
   if (wishes.length === 0 || wishes.length > 4) return combos;
   const maxGuests = Math.max(...wishes.map(w => w.guests));
-  const pool = venues.filter(v =>
-    v.city === city && maxGuests >= v.minGuests && maxGuests <= v.maxGuests,
-  );
+  const pool = venues.filter(v => maxGuests >= v.minGuests && maxGuests <= v.maxGuests);
   const addDays = (iso: string, n: number): string => {
     const [y, m, d] = iso.split('-').map(Number);
     const dt = new Date(y, m - 1, d);
@@ -189,10 +188,9 @@ export function planMultiEvent(
       if (dates.some(isPast)) continue;
       const allFree = dates.every(d => slotStatus(venue.id, d, slot, bookings).status === 'available');
       if (!allFree) continue;
-      const totalEstimate = wishes.reduce((s, w, i) => s + quickEstimate(venue, w.guests, slot, pkg), 0);
-      void addDays;
+      const totalEstimate = wishes.reduce((s, w) => s + quickEstimate(venue, w.guests, slot, pkg), 0);
       combos.push({
-        dates, venueId: venue.id, venueName: venue.name, slot, totalEstimate,
+        dates, venueId: venue.id, venueName: `${BUSINESS.name} — ${venue.name}`, slot, totalEstimate,
         note: shift === 0
           ? `All ${wishes.length} functions fit your preferred dates with a ${gapDays}-day gap.`
           : `Shifted ${Math.abs(shift)} day${Math.abs(shift) > 1 ? 's' : ''} ${shift > 0 ? 'later' : 'earlier'} to find open slots.`,

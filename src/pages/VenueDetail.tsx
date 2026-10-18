@@ -17,13 +17,13 @@ export default function VenueDetail() {
   if (!venue) {
     return (
       <div className="wrap"><div className="section">
-        <Empty title="Venue not found" body="This demo venue may have been removed." action={<Btn to="/venues">← Back to venues</Btn>} />
+        <Empty title="Space not found" body="This event space may have been removed." action={<Btn to="/venues">← Back to our spaces</Btn>} />
       </div></div>
     );
   }
 
   const similar = state.venues
-    .filter(v => v.id !== venue.id && (v.city === venue.city || v.type === venue.type))
+    .filter(v => v.id !== venue.id)
     .slice(0, 3);
 
   const nextDays = Array.from({ length: 14 }, (_, i) => isoPlus(i));
@@ -34,7 +34,7 @@ export default function VenueDetail() {
 @media (max-width: 600px){ .avail-strip{grid-template-columns:repeat(4,1fr)!important;} }`}</style>
       <div className="wrap">
         <div className="section-tight">
-          <Link to="/venues" className="small" style={{ fontWeight: 600 }}>← All venues</Link>
+          <Link to="/venues" className="small" style={{ fontWeight: 600 }}>← All our spaces</Link>
 
           <div className="card" style={{ marginTop: 14 }}>
             <div style={{ position: 'relative' }}>
@@ -46,7 +46,7 @@ export default function VenueDetail() {
                   {venue.featured && <Badge tone="gold">Featured</Badge>}
                 </div>
                 <h1 style={{ color: '#fff', textShadow: '0 2px 12px rgba(0,0,0,.5)', margin: 0, fontSize: 'clamp(30px,4vw,46px)' }}>{venue.name}</h1>
-                <p style={{ color: 'rgba(255,255,255,.9)', margin: '6px 0 0', fontWeight: 500 }}>{venue.city} · {venue.area}</p>
+                <p style={{ color: 'rgba(255,255,255,.9)', margin: '6px 0 0', fontWeight: 500 }}>{venue.area}, Lahore</p>
               </div>
             </div>
           </div>
@@ -59,7 +59,7 @@ export default function VenueDetail() {
                 <div className="divider" />
                 <h3>Capacity & seating</h3>
                 <p><strong>{venue.minGuests.toLocaleString()} – {venue.maxGuests.toLocaleString()} guests</strong></p>
-                <p className="small muted">Seating is arranged per event type and confirmed with the venue team after your inquiry. Halls outside this range are flagged in the cost calculator.</p>
+                <p className="small muted">Seating is arranged per event type and confirmed with our team after your inquiry. Halls outside this range are flagged in the cost calculator.</p>
                 <div className="divider" />
                 <h3>Amenities</h3>
                 <div className="chip-row">
@@ -99,7 +99,7 @@ export default function VenueDetail() {
                   </tbody>
                 </table></div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginTop: 20 }}>
-                  <Btn onClick={() => { setCalc(c => ({ ...c, venueId: venue.id, city: venue.city })); nav('/calculator'); }} block>Calculate Cost for This Hall</Btn>
+                  <Btn onClick={() => { setCalc(c => ({ ...c, venueId: venue.id, city: 'Lahore' })); nav('/calculator'); }} block>Calculate Cost for This Hall</Btn>
                   <Btn to="/calendar" variant="outline" block>Check Availability</Btn>
                   <Btn to="/quote" variant="ghost" block>Request a Quote</Btn>
                 </div>
@@ -142,7 +142,7 @@ export default function VenueDetail() {
 
           {similar.length > 0 && (
             <div style={{ marginTop: 40 }}>
-              <h2 style={{ marginBottom: 18 }}>Similar venues</h2>
+              <h2 style={{ marginBottom: 18 }}>Our other spaces</h2>
               <div className="grid grid-3">
                 {similar.map(v => (
                   <article className="card" key={v.id}>
@@ -150,7 +150,7 @@ export default function VenueDetail() {
                     <div className="card-body">
                       <Badge tone="green">{v.type}</Badge>
                       <h3 className="card-title" style={{ marginTop: 8 }}>{v.name}</h3>
-                      <p className="card-meta">{v.city} · {v.area} · up to {v.maxGuests.toLocaleString()} guests</p>
+                      <p className="card-meta">{v.area}, Lahore · up to {v.maxGuests.toLocaleString()} guests</p>
                       <Btn to={`/venues/${v.id}`} variant="outline" block>View Details</Btn>
                     </div>
                   </article>

@@ -1,4 +1,4 @@
-// ShadiSphere demo availability calendar — venue-specific simulated slots.
+// ShadiSphere Grand Marquee — demo availability calendar for our event spaces.
 import React, { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useStore } from '../state/store';
@@ -88,7 +88,7 @@ export default function CalendarPage() {
       <PageHead
         eyebrow="Availability"
         title="Demo availability calendar"
-        lead="Simulated venue slots for demonstration. This is not a live reservation system."
+        lead="Simulated booking schedule of ShadiSphere Grand Marquee for demonstration. This is not a live reservation system."
       />
 
       <div className="alert alert-info" style={{ marginBottom: 20 }}>
@@ -99,10 +99,10 @@ export default function CalendarPage() {
       <div className="cal-wrap">
         <div className="panel">
           <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: 14, marginBottom: 16 }}>
-            <Field label="Venue">
-              <select value={venueId} onChange={e => setVenueId(e.target.value)} aria-label="Venue">
+            <Field label="Event space">
+              <select value={venueId} onChange={e => setVenueId(e.target.value)} aria-label="Event space">
                 {state.venues.map(v => (
-                  <option key={v.id} value={v.id}>{v.name} — {v.city}</option>
+                  <option key={v.id} value={v.id}>{v.name}</option>
                 ))}
               </select>
             </Field>
@@ -158,7 +158,7 @@ export default function CalendarPage() {
         {/* ---------- detail panel ---------- */}
         <aside className="panel">
           <h2 className="side-title">{fmtDate(selected)}</h2>
-          {!venue && <p className="muted">Select a venue to see slot details.</p>}
+          {!venue && <p className="muted">Select an event space to see slot details.</p>}
           {venue && SLOTS.map(s => {
             const { status, booking } = slotStatus(venue.id, selected, s.id as SlotId, state.bookings);
             const meta = SLOT_STATUS_META[status];
@@ -195,7 +195,7 @@ export default function CalendarPage() {
           {venue && (
             <div style={{ marginTop: 16, display: 'flex', gap: 10, flexWrap: 'wrap' }}>
               <Btn variant="gold" to="/calculator">Continue in calculator</Btn>
-              <Btn variant="outline" to={`/venues/${venue.id}`}>View venue</Btn>
+              <Btn variant="outline" to={`/venues/${venue.id}`}>View space</Btn>
             </div>
           )}
         </aside>
