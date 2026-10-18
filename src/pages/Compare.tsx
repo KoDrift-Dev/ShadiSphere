@@ -117,26 +117,33 @@ export default function Compare() {
         .cmp-controls { display: grid; gap: 14px; grid-template-columns: repeat(3, 1fr); }
         @media (max-width: 760px) { .cmp-controls { grid-template-columns: 1fr 1fr; } }
         @media (max-width: 520px) { .cmp-controls { grid-template-columns: 1fr; } }
-        .cmp-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; margin: 0 -6px; padding: 0 6px 8px; scrollbar-width: thin; }
-        .cmp-table { border-collapse: separate; border-spacing: 0; table-layout: fixed; min-width: 960px; width: 100%; }
+        .cmp-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; margin: 0 -26px; padding: 0 26px 10px; scrollbar-width: thin; }
+        @media (max-width: 700px) {
+          .cmp-scroll { margin: 0 -20px; padding: 0 20px 10px; }
+          .cmp-pkg-img { width: 44px; height: 44px; border-radius: 12px; }
+          .cmp-total { font-size: 18px; }
+        }
+        .cmp-table { border-collapse: separate; border-spacing: 0; table-layout: fixed; min-width: 962px; width: 100%; }
         .cmp-table th, .cmp-table td { padding: 12px 14px; text-align: center; border-bottom: 1px solid rgba(30,77,63,.1); vertical-align: middle; overflow: hidden; }
         .cmp-table thead th { border-bottom: 2px solid rgba(198,161,91,.4); }
-        /* sticky label column — fixed width, solid bg, stays put while sliding */
+        /* sticky label column — flush to the left edge, tiny labels, stays put while sliding */
         .cmp-table thead th:first-child, .cmp-table tbody th {
           position: sticky; left: 0; z-index: 2;
-          width: 168px; min-width: 168px; max-width: 168px;
-          background: #FBF8F1; text-align: left; font-size: 13px; color: var(--color-ink-600); font-weight: 600;
+          width: 62px; min-width: 62px; max-width: 62px;
+          padding: 10px 6px 10px 0;
+          background: #FBF8F1; text-align: left; font-size: 11px; line-height: 1.35;
+          color: var(--color-ink-600); font-weight: 700;
           border-right: 1px solid rgba(198,161,91,.25);
           box-shadow: 3px 0 8px rgba(11,31,25,.06);
         }
         .cmp-table thead th:first-child { z-index: 3; }
-        .cmp-table thead th:not(:first-child), .cmp-table td { min-width: 132px; }
+        .cmp-table thead th:not(:first-child), .cmp-table td { min-width: 150px; }
         .cmp-table td.selected, .cmp-table thead th.selected { background: rgba(198,161,91,.1); }
         .cmp-table thead th.selected { border-top: 2px solid var(--color-champagne-500); }
         .cmp-pkg-img { width: 54px; height: 54px; border-radius: 14px; object-fit: cover; margin: 0 auto 8px; display: block; }
         .cmp-total { font-family: var(--font-display); font-size: 21px; font-weight: 700; color: var(--color-pine-800); }
         tr.cmp-total-row td { background: rgba(30,77,63,.05); border-top: 2px solid rgba(30,77,63,.2); border-bottom: 2px solid rgba(30,77,63,.2); }
-        tr.cmp-total-row th { background: #F3EEE2; border-top: 2px solid rgba(30,77,63,.2); border-bottom: 2px solid rgba(30,77,63,.2); }
+        .cmp-table tr.cmp-total-row th { background: #F3EEE2; border-top: 2px solid rgba(30,77,63,.2); border-bottom: 2px solid rgba(30,77,63,.2); }
       `}</style>
 
       <Reveal>
@@ -230,7 +237,7 @@ export default function Compare() {
                     ))}
                   </tr>
                   <tr>
-                    <th scope="row">Hall rental{venue ? ` — ${venue.name}` : ''}</th>
+                    <th scope="row">Hall</th>
                     {cols.map(c => (
                       <td key={c.key} className={c.selected ? 'selected' : ''}>
                         {venue ? pkr(hall) : <span className="muted">No space selected</span>}
@@ -238,7 +245,7 @@ export default function Compare() {
                     ))}
                   </tr>
                   <tr>
-                    <th scope="row">Your extras</th>
+                    <th scope="row">Extras</th>
                     {cols.map(c => (
                       <td key={c.key} className={c.selected ? 'selected' : ''}>
                         {extrasCount > 0 ? `＋${pkr(extrasTotal)}` : <span className="muted">None</span>}
@@ -246,7 +253,7 @@ export default function Compare() {
                     ))}
                   </tr>
                   <tr className="cmp-total-row">
-                    <th scope="row">Estimated total</th>
+                    <th scope="row">Total</th>
                     {cols.map(c => (
                       <td key={c.key} className={c.selected ? 'selected' : ''}>
                         <span className="cmp-total">{pkr(Math.round(c.total))}</span>
@@ -254,7 +261,7 @@ export default function Compare() {
                     ))}
                   </tr>
                   <tr>
-                    <th scope="row">Effective per guest</th>
+                    <th scope="row">Net per guest</th>
                     {cols.map(c => (
                       <td key={c.key} className={c.selected ? 'selected' : ''}>
                         {guests >= MIN_G ? pkr(Math.round(c.total / guests)) : <span className="muted">—</span>}
