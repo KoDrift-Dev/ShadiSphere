@@ -461,16 +461,18 @@ table.tbl { @apply w-full text-[14.5px] min-w-[640px]; border-collapse: collapse
 .snav { @apply flex gap-2 overflow-x-auto pb-1; }
 
 /* ================= footer ================= */
-.footer { @apply mt-20 relative overflow-hidden; background: linear-gradient(170deg, var(--color-pine-700), var(--color-pine-900)); color: #D8D2C0; }
+.footer { @apply mt-12 relative overflow-hidden; background: linear-gradient(170deg, var(--color-pine-700), var(--color-pine-900)); color: #D8D2C0; }
 .footer::before {
   content: ""; @apply absolute inset-0 pointer-events-none;
   background: radial-gradient(800px 300px at 50% 0%, rgba(198,161,91,.16), transparent 65%);
 }
-.footer-inner { @apply relative max-w-[1240px] mx-auto px-6 pt-14 pb-[30px] grid gap-9; grid-template-columns: 1.4fr 1fr 1fr 1fr; }
-.footer h4 { color: #fff; @apply text-[16px] mb-3.5; font-family: var(--font-sans); font-weight: 700; }
-.footer a { color: #D8D2C0; @apply no-underline text-[14px] block mb-[9px]; transition: color .15s ease, transform .15s ease; }
+.footer-inner { @apply relative max-w-[1240px] mx-auto px-6 pt-9 pb-6 grid gap-6; grid-template-columns: 1.4fr 1fr 1fr 1fr; }
+.footer h4 { color: #fff; @apply text-[14px] mb-2.5; font-family: var(--font-sans); font-weight: 700; }
+.footer a { color: #D8D2C0; @apply no-underline text-[13px] block mb-[7px]; transition: color .15s ease, transform .15s ease; }
 .footer a:hover { color: var(--color-champagne-300); transform: translateX(3px); }
-.footer-bottom { @apply relative border-t text-center text-[12.5px] px-6 py-[18px] max-w-[1240px] mx-auto; border-color: rgba(255,255,255,.12); color: #A9A28C; }
+.footer-bottom { @apply relative border-t text-center text-[12px] px-6 py-4 max-w-[1240px] mx-auto; border-color: rgba(255,255,255,.12); color: #A9A28C; }
+.footer-bottom a { display: inline; margin: 0; font-size: 12px; color: var(--color-champagne-300); font-weight: 600; }
+.footer-bottom .credit { display: block; margin-top: 6px; }
 
 /* ================= promo / misc ================= */
 .promo-strip {
@@ -576,6 +578,35 @@ table.tbl { @apply w-full text-[14.5px] min-w-[640px]; border-collapse: collapse
 .bg-wash-warm { background: linear-gradient(180deg, rgba(198,161,91,.1), rgba(198,161,91,.03)); }
 .bg-wash-mint { background: linear-gradient(180deg, rgba(30,77,63,.07), rgba(30,77,63,.02)); }
 
+/* ---------- home refinements ---------- */
+/* 1 — space cards: single-row tags, slightly slimmer vertically */
+.space-card .card-img { aspect-ratio: 16/8; }
+.space-card .card-body { padding: 18px 20px; }
+.tag-row { flex-wrap: nowrap; }
+.tag-row .badge { flex-shrink: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+
+/* 2 — one-row button pair */
+.btn-pair { display: flex; gap: 10px; margin-top: 18px; flex-wrap: nowrap; align-items: center; }
+.btn-pair.center { justify-content: center; }
+.btn-pair .btn { flex-shrink: 1; min-width: 0; }
+
+/* 3 — grid blowout guard (nowrap buttons must not push columns off-screen) */
+.grid > * { min-width: 0; }
+
+/* 4 — testimonials marquee, flowing left → right */
+.marquee { overflow: hidden; margin: 0 -24px; padding: 6px 24px 12px; -webkit-mask-image: linear-gradient(90deg, transparent, #000 7%, #000 93%, transparent); mask-image: linear-gradient(90deg, transparent, #000 7%, #000 93%, transparent); }
+.marquee-track { display: flex; gap: 18px; width: max-content; animation: marquee-ltr 32s linear infinite; }
+.marquee:hover .marquee-track { animation-play-state: paused; }
+.t-slide { width: 300px; flex-shrink: 0; }
+@keyframes marquee-ltr { from { transform: translateX(-50%); } to { transform: translateX(0); } }
+@media (prefers-reduced-motion: reduce) { .marquee-track { animation: none; } }
+
+/* 5 — gold closing CTA band */
+.cta-gold { position: relative; overflow: hidden; background: linear-gradient(115deg, #F4E2B8 0%, #EDCE95 48%, #F8EDD4 100%); }
+.cta-gold::before { content: ""; position: absolute; inset: 0; pointer-events: none; background: radial-gradient(700px 240px at 50% 125%, rgba(30,77,63,.16), transparent 65%); }
+.cta-gold h2 { color: var(--color-pine-800); }
+.cta-gold .cta-sub { color: rgba(30,77,63,.78); max-width: 560px; margin: 0 auto 4px; font-size: 15.5px; }
+
 /* reveal-on-scroll helper (used with framer-motion) */
 .reveal { will-change: transform, opacity; }
 
@@ -673,6 +704,13 @@ table.tbl { @apply w-full text-[14.5px] min-w-[640px]; border-collapse: collapse
   .breakdown-sticky { position: static; }
   .wish-row { grid-template-columns: 1fr; }
   .nav { @apply top-2; }
+  /* home refinements — mobile */
+  .tag-row { gap: 6px; }
+  .tag-row .badge { font-size: 10px; padding: 4px 8px; }
+  .btn-pair .btn { font-size: 12px; padding: 9px 13px; min-height: 40px; }
+  .card .btn, .panel .btn { white-space: normal; text-align: center; }
+  .t-slide { width: 262px; }
+  .marquee { margin: 0 -16px; padding-left: 16px; padding-right: 16px; }
 }
 
 /* ---------- print ---------- */

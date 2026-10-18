@@ -6,10 +6,10 @@ import { Btn } from './ui';
 // About is also kept in the mobile menu, Owner Login stays footer-only.
 const LINKS = [
   { to: '/', label: 'Home' },
-  { to: '/venues', label: 'Our Spaces' },
-  { to: '/menus', label: 'Menus' },
   { to: '/calculator', label: 'Cost Calculator' },
   { to: '/calendar', label: 'Availability' },
+  { to: '/venues', label: 'Our Spaces' },
+  { to: '/menus', label: 'Menus' },
   { to: '/planner', label: 'Date Finder' },
 ];
 const MOBILE_EXTRA = [{ to: '/about', label: 'About' }];

@@ -35,7 +35,8 @@ export default function Footer() {
         </div>
       </div>
       <div className="footer-bottom">
-        © 2026 {BUSINESS.name}. All spaces, prices, availability and reviews are fictional sample data for illustration — not a real business, quotation or reservation.
+        <span>© 2026 {BUSINESS.name}. All spaces, prices, availability and reviews are fictional sample data for illustration — not a real business, quotation or reservation.</span>
+        <span className="credit">Developed by <a href="https://kodriftdev.vercel.app/" target="_blank" rel="noreferrer">KoDriftDev</a></span>
       </div>
     </footer>
   );

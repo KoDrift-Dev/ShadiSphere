@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useStore } from '../state/store';
 import { Btn, Badge, Img, SectionHead, Field, Reveal, Stagger, StaggerItem } from '../components/ui';
 import { BUSINESS, EVENT_TYPES, EventType } from '../data/types';
@@ -117,11 +117,11 @@ export default function Home() {
           <Stagger className="grid grid-3 grid-2m" gap={0.1}>
             {spaces.map((v, i) => (
               <StaggerItem key={v.id} className="h-full">
-              <article className="card pkg-card h-full transition-transform duration-300 hover:-translate-y-1.5">
+              <article className="card pkg-card space-card h-full transition-transform duration-300 hover:-translate-y-1.5">
                 {i === 0 && <span className="badge badge-gold pkg-flag">Most loved</span>}
                 <div className="card-img"><Img src={v.image} alt={v.name} /></div>
                 <div className="card-body">
-                  <div className="chip-row" style={{ marginBottom: 10 }}>
+                  <div className="chip-row tag-row" style={{ marginBottom: 10 }}>
                     <Badge tone="green">{v.type}</Badge>
                     <Badge tone="gold">{v.config}</Badge>
                   </div>
@@ -151,7 +151,7 @@ export default function Home() {
               <div>
                 <span className="eyebrow"><span className="rule" />Smart cost calculator</span>
                 <h2 style={{ fontSize: 'clamp(22px,2.6vw,28px)', marginBottom: 12 }}>Know your wedding cost in minutes.</h2>
-                <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', marginTop: 18 }}>
+                <div className="btn-pair">
                   <Btn to="/calculator" size="sm">Calculate Your Wedding Cost</Btn>
                   <Btn to="/menus" variant="outline" size="sm">Compare packages →</Btn>
                 </div>
@@ -290,31 +290,33 @@ export default function Home() {
       <section className="section-tight">
         <div className="wrap">
           <Reveal><SectionHead eyebrow="Kind words" title="What families say" lead="Real-feel testimonials from fictional families." center /></Reveal>
-          <Stagger className="grid grid-3 grid-2m" gap={0.1}>
-            {TESTIMONIALS.map(t => (
-              <StaggerItem key={t.who} className="h-full">
-                <div className="card testimonial h-full transition-transform duration-300 hover:-translate-y-1.5" style={{ padding: 20 }}>
+        </div>
+        <Reveal>
+          <div className="marquee" aria-label="Testimonials">
+            <div className="marquee-track">
+              {[...TESTIMONIALS, ...TESTIMONIALS].map((t, i) => (
+                <div className="card testimonial t-slide" key={`${t.who}-${i}`} style={{ padding: 20 }}>
                   <div className="mb-3 text-champagne-500 tracking-[3px]" aria-label="Rated 5 out of 5">★★★★★</div>
                   <p>"{t.q}"</p>
                   <div className="who">{t.who}</div>
                   <div className="role hide-m">{t.role} · Sample testimonial — fictional</div>
                 </div>
-              </StaggerItem>
-            ))}
-          </Stagger>
-        </div>
+              ))}
+            </div>
+          </div>
+        </Reveal>
       </section>
 
       {/* CLOSING CTA */}
-      <section className="section-tight relative overflow-hidden" style={{ background: 'var(--color-pine-600)', color: '#fff' }}>
-        <div aria-hidden="true" className="pointer-events-none absolute -top-32 left-1/2 h-64 w-[36rem] -translate-x-1/2 rounded-full bg-champagne-400/20 blur-3xl" />
+      <section className="section-tight cta-gold">
         <div className="wrap center relative">
           <Reveal>
-            <div aria-hidden="true" className="mx-auto mb-6 h-[2px] w-24 rounded-full bg-gradient-to-r from-transparent via-champagne-400 to-transparent" />
-            <h2 style={{ color: '#fff', marginBottom: 6 }}>Ready to plan yours?</h2>
-            <div style={{ display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap' }}>
-              <Btn to="/calculator" variant="gold" size="sm">Calculate Your Wedding Cost</Btn>
-              <Link to="/planner" style={{ color: '#fff', alignSelf: 'center', fontWeight: 600 }}>Find my date →</Link>
+            <div aria-hidden="true" className="mx-auto mb-6 h-[2px] w-24 rounded-full bg-gradient-to-r from-transparent via-pine-700 to-transparent" />
+            <h2 style={{ marginBottom: 8 }}>Ready to plan yours?</h2>
+            <p className="cta-sub">Get an itemized estimate in minutes, then find a date that fits your celebration.</p>
+            <div className="btn-pair center" style={{ marginTop: 20 }}>
+              <Btn to="/calculator" variant="dark" size="sm">Calculate Your Wedding Cost</Btn>
+              <Btn to="/planner" variant="outline" size="sm">Find my date →</Btn>
             </div>
           </Reveal>
         </div>
