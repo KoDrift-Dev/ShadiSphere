@@ -36,9 +36,15 @@ export default function Navbar() {
         <span className="nav-cta"><Btn to="/calculator" size="sm">Calculate Your Wedding Cost</Btn></span>
       </div>
       <style>{`
-        @media (max-width: 1020px) {
+        .nav-links a { font-size: 13.5px; padding: 8px 10px; white-space: nowrap; }
+        .nav-links { gap: 2px; }
+        .nav-inner { gap: 18px; }
+        .nav-cta .btn { font-size: 13px; padding: 10px 18px; white-space: nowrap; }
+        .brand-name { font-size: 20px; }
+        @media (max-width: 1120px) {
           .nav-links { display: none; position: absolute; top: 70px; left: 0; right: 0; background: var(--ivory); flex-direction: column; padding: 12px 20px 20px; border-bottom: 1px solid var(--line); }
           .nav-links.mobile-open { display: flex; }
+          .nav-links a { font-size: 15px; padding: 10px 13px; }
           .nav-toggle { display: block; }
           .nav-cta { display: none; }
         }
