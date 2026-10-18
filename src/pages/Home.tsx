@@ -28,7 +28,6 @@ const TESTIMONIALS = [
   { q: 'As someone planning from abroad, seeing real per-guest math for the Pearl Intimate Hall before calling anyone made the whole process feel honest and easy.', who: 'Imran S.', role: 'Overseas Pakistani, Nikah at ShadiSphere' },
 ];
 
-const HERO_CHIPS = ['3 Event Spaces', 'Lahore · DHA Phase 5', '5 Curated Packages'];
 
 const HOW_IT_WORKS = [
   { n: '01', k: 'Estimate', t: 'Know your cost', d: 'Pick a menu package, customize dishes and add-ons, and watch an itemized estimate update instantly.', to: '/calculator', c: 'Open the calculator' },
@@ -81,7 +80,7 @@ export default function Home() {
 
   return (
     <div>
-      <style>{`@media (max-width: 900px){ .hero-search{grid-template-columns:1fr 1fr !important;} .grid-3,.grid-4,.grid-2{grid-template-columns:1fr;} .hero-inner{padding:64px 24px 56px;} }
+      <style>{`@media (max-width: 900px){ .hero-search{grid-template-columns:1fr 1fr !important;} .grid-3,.grid-4,.grid-2{grid-template-columns:1fr;} }
 @media (max-width: 560px){ .hero-search{grid-template-columns:1fr !important;} }
 .hero-ctas .hero-cta-wrap { flex: 1 1 0; min-width: 200px; }
 @media (max-width: 700px){ .hero-ctas .hero-cta-wrap { flex: 1 1 100%; min-width: 0; } }`}</style>
@@ -95,24 +94,9 @@ export default function Home() {
         <div className="hero-inner">
           <span className="eyebrow" style={{ color: 'var(--color-champagne-300)' }}><span className="rule" />{BUSINESS.name} · {BUSINESS.area}, Lahore</span>
           <h1>Plan Your <em>Perfect Wedding</em> Celebration.</h1>
-          <p className="sub">
-            Explore our halls and lawns, customize your wedding menu and estimate your celebration cost
-            with confidence — all at {BUSINESS.name}, {BUSINESS.area}, Lahore.
-          </p>
-          <div aria-hidden="true" className="my-5 h-[2px] w-28 rounded-full bg-gradient-to-r from-transparent via-champagne-400 to-transparent" style={{ backgroundSize: '200% 100%', animation: 'shimmer 5s linear infinite' }} />
           <Stagger className="hero-ctas" gap={0.12}>
             <StaggerItem className="hero-cta-wrap"><Btn to="/calculator" variant="gold" size="lg" block>Calculate Your Wedding Cost</Btn></StaggerItem>
             <StaggerItem className="hero-cta-wrap"><Btn to="/venues" variant="light" size="lg" block>Explore Our Spaces</Btn></StaggerItem>
-          </Stagger>
-          <Stagger className="mt-7 flex flex-wrap items-center gap-2.5" gap={0.1} aria-label="Highlights">
-            {HERO_CHIPS.map(c => (
-              <StaggerItem key={c}>
-                <span className="inline-flex items-center gap-2 rounded-full border border-white/25 bg-white/10 px-4 py-2 text-[13px] font-medium text-cream-50 shadow-lg backdrop-blur-md">
-                  <span className="h-1.5 w-1.5 rounded-full bg-champagne-400" aria-hidden="true" />
-                  {c}
-                </span>
-              </StaggerItem>
-            ))}
           </Stagger>
           <HeroSearch />
           <p className="hero-note">Demo availability — illustrative estimates. Not a live reservation system.</p>
