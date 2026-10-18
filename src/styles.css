@@ -584,8 +584,22 @@ table.tbl { @apply w-full text-[14.5px] min-w-[640px]; border-collapse: collapse
   .hero-ctas { @apply mb-4 gap-2.5; }
   .hero-search { @apply p-3 gap-2.5; }
   .hero-note { @apply mt-2.5 text-[12px]; }
-  .hero-ctas .btn { flex: 1 1 100%; }
-  .hero-search { grid-template-columns: 1fr !important; }
+  .hero-ctas { flex-wrap: nowrap; gap: 10px; }
+  .hero-ctas .btn { font-size: 12.5px; padding: 10px 8px; min-height: 46px; }
+  /* compact pill search bar instead of stacked card */
+  .hero-search {
+    display: flex; align-items: stretch; gap: 0;
+    border-radius: 999px; padding: 5px;
+  }
+  .hero-search .field { flex: 1 1 0; min-width: 0; padding: 5px 12px; justify-content: center; }
+  .hero-search .field + .field { border-left: 1px solid rgba(30,77,63,.14); }
+  .hero-search .field > label { font-size: 9px; text-transform: uppercase; letter-spacing: .1em; margin-bottom: 1px; }
+  .hero-search .input { border: 0; background: transparent; box-shadow: none; padding: 1px 0; font-size: 13px; min-height: 0; border-radius: 0; }
+  .hero-search .input:focus { box-shadow: none; }
+  .hero-search .field:last-child { flex: 0 0 auto; padding: 0; align-items: center; }
+  .hero-search .field:last-child > label { display: none; }
+  .hero-search .field:last-child .btn { width: 46px; min-width: 46px; min-height: 46px; border-radius: 999px; padding: 0; font-size: 18px; }
+  .hero-search .hide-on-bar { display: none; }
   .promo-strip { @apply flex-col items-start p-6; }
   .footer-inner { grid-template-columns: 1fr; @apply gap-6; }
   .gallery { grid-template-columns: 1fr; }

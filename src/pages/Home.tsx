@@ -66,7 +66,7 @@ function HeroSearch() {
       </Field>
       <div className="field">
         <label>&nbsp;</label>
-        <Btn type="submit" variant="gold" block>Find My Date →</Btn>
+        <Btn type="submit" variant="gold" block><span className="hide-on-bar">Find My Date&nbsp;</span>→</Btn>
       </div>
     </form>
   );
@@ -83,7 +83,7 @@ export default function Home() {
       <style>{`@media (max-width: 900px){ .hero-search{grid-template-columns:1fr 1fr !important;} .grid-3,.grid-4,.grid-2{grid-template-columns:1fr;} }
 @media (max-width: 560px){ .hero-search{grid-template-columns:1fr !important;} }
 .hero-ctas .hero-cta-wrap { flex: 1 1 0; min-width: 200px; }
-@media (max-width: 700px){ .hero-ctas .hero-cta-wrap { flex: 1 1 100%; min-width: 0; } }`}</style>
+@media (max-width: 700px){ .hero-ctas .hero-cta-wrap { flex: 1 1 0; min-width: 0; } }`}</style>
 
       {/* HERO */}
       <section className="hero">
@@ -95,8 +95,8 @@ export default function Home() {
           <span className="eyebrow" style={{ color: 'var(--color-champagne-300)' }}><span className="rule" />{BUSINESS.name} · {BUSINESS.area}, Lahore</span>
           <h1>Plan Your <em>Perfect Wedding</em> Celebration.</h1>
           <Stagger className="hero-ctas" gap={0.12}>
-            <StaggerItem className="hero-cta-wrap"><Btn to="/calculator" variant="gold" size="lg" block>Calculate Your Wedding Cost</Btn></StaggerItem>
-            <StaggerItem className="hero-cta-wrap"><Btn to="/venues" variant="light" size="lg" block>Explore Our Spaces</Btn></StaggerItem>
+            <StaggerItem className="hero-cta-wrap"><Btn to="/calculator" variant="gold" size="lg" block>Calculate Cost</Btn></StaggerItem>
+            <StaggerItem className="hero-cta-wrap"><Btn to="/venues" variant="light" size="lg" block>Explore Spaces</Btn></StaggerItem>
           </Stagger>
           <HeroSearch />
           <p className="hero-note">Demo availability — illustrative estimates. Not a live reservation system.</p>
