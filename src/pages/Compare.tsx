@@ -117,16 +117,26 @@ export default function Compare() {
         .cmp-controls { display: grid; gap: 14px; grid-template-columns: repeat(3, 1fr); }
         @media (max-width: 760px) { .cmp-controls { grid-template-columns: 1fr 1fr; } }
         @media (max-width: 520px) { .cmp-controls { grid-template-columns: 1fr; } }
-        .cmp-scroll { overflow-x: auto; margin: 0 -6px; padding: 0 6px 8px; }
-        .cmp-table { border-collapse: separate; border-spacing: 0; min-width: 880px; width: 100%; }
-        .cmp-table th, .cmp-table td { padding: 12px 14px; text-align: center; border-bottom: 1px solid rgba(30,77,63,.1); vertical-align: middle; }
+        .cmp-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; margin: 0 -6px; padding: 0 6px 8px; scrollbar-width: thin; }
+        .cmp-table { border-collapse: separate; border-spacing: 0; table-layout: fixed; min-width: 960px; width: 100%; }
+        .cmp-table th, .cmp-table td { padding: 12px 14px; text-align: center; border-bottom: 1px solid rgba(30,77,63,.1); vertical-align: middle; overflow: hidden; }
         .cmp-table thead th { border-bottom: 2px solid rgba(198,161,91,.4); }
-        .cmp-table tbody th { text-align: left; font-size: 13px; color: var(--color-ink-600); font-weight: 600; white-space: nowrap; background: rgba(255,255,255,.6); position: sticky; left: 0; }
+        /* sticky label column — fixed width, solid bg, stays put while sliding */
+        .cmp-table thead th:first-child, .cmp-table tbody th {
+          position: sticky; left: 0; z-index: 2;
+          width: 168px; min-width: 168px; max-width: 168px;
+          background: #FBF8F1; text-align: left; font-size: 13px; color: var(--color-ink-600); font-weight: 600;
+          border-right: 1px solid rgba(198,161,91,.25);
+          box-shadow: 3px 0 8px rgba(11,31,25,.06);
+        }
+        .cmp-table thead th:first-child { z-index: 3; }
+        .cmp-table thead th:not(:first-child), .cmp-table td { min-width: 132px; }
         .cmp-table td.selected, .cmp-table thead th.selected { background: rgba(198,161,91,.1); }
         .cmp-table thead th.selected { border-top: 2px solid var(--color-champagne-500); }
         .cmp-pkg-img { width: 54px; height: 54px; border-radius: 14px; object-fit: cover; margin: 0 auto 8px; display: block; }
         .cmp-total { font-family: var(--font-display); font-size: 21px; font-weight: 700; color: var(--color-pine-800); }
-        tr.cmp-total-row th, tr.cmp-total-row td { background: rgba(30,77,63,.05); border-top: 2px solid rgba(30,77,63,.2); border-bottom: 2px solid rgba(30,77,63,.2); }
+        tr.cmp-total-row td { background: rgba(30,77,63,.05); border-top: 2px solid rgba(30,77,63,.2); border-bottom: 2px solid rgba(30,77,63,.2); }
+        tr.cmp-total-row th { background: #F3EEE2; border-top: 2px solid rgba(30,77,63,.2); border-bottom: 2px solid rgba(30,77,63,.2); }
       `}</style>
 
       <Reveal>
@@ -181,39 +191,7 @@ export default function Compare() {
           </section>
         </Reveal>
 
-        <Reveal>
-          <section className="panel" style={{ marginTop: 24 }}>
-            <h2 className="font-sans text-[13px] font-bold uppercase tracking-[0.18em] text-pine-600 mb-4">
-              <span className="inline-block w-7 h-[2px] rounded-full bg-gradient-to-r from-champagne-500 to-champagne-300 mr-2.5 -translate-y-[3px]" />
-              Add-ons &amp; extras{extrasCount > 0 ? ` (${extrasCount} selected)` : ''}
-            </h2>
-            <p className="hint" style={{ marginBottom: 12 }}>Tap to add to every package column — your selection is saved to the calculator.</p>
-            {([['Beverages', beverages], ['Live stations', liveStations], ['Decoration & services', decorServices]] as [string, MenuItem[]][]).map(([title, items]) => (
-              <div key={title} style={{ marginBottom: 6 }}>
-                <p className="small" style={{ fontWeight: 700, marginBottom: 8 }}>{title}</p>
-                <div className="dish-pick-list" style={{ marginBottom: 10 }}>
-                  {items.map(it => {
-                    const sel = (addedMap.get(it.id) ?? 0) > 0;
-                    return (
-                      <button
-                        key={it.id} type="button"
-                        className={`dish-toggle${sel ? ' sel' : ''}`}
-                        onClick={() => setAdded(it.id, sel ? 0 : 1)}
-                        aria-pressed={sel}
-                      >
-                        <span className="dish-check" aria-hidden="true">{sel ? '✓' : ''}</span>
-                        <span className="grow">
-                          <span className="nm">{it.name}</span>
-                          <span className="pr">{pkr(it.price)} {unitLabel(it.unit)}</span>
-                        </span>
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-            ))}
-          </section>
-        </Reveal>
+
 
         <Reveal>
           <section className="panel" style={{ marginTop: 24 }}>
@@ -302,6 +280,40 @@ export default function Compare() {
               Totals include hall rental{venue ? ` (${venue.name}, ${SLOTS.find(s => s.id === calc.slot)?.label})` : ''} and your selected extras.
               Promotions are applied on the calculator screen.
             </p>
+          </section>
+        </Reveal>
+
+        <Reveal>
+          <section className="panel" style={{ marginTop: 24 }}>
+            <h2 className="font-sans text-[13px] font-bold uppercase tracking-[0.18em] text-pine-600 mb-4">
+              <span className="inline-block w-7 h-[2px] rounded-full bg-gradient-to-r from-champagne-500 to-champagne-300 mr-2.5 -translate-y-[3px]" />
+              Add-ons &amp; extras{extrasCount > 0 ? ` (${extrasCount} selected)` : ''}
+            </h2>
+            <p className="hint" style={{ marginBottom: 12 }}>Tap to add to every package column — your selection is saved to the calculator.</p>
+            {([['Beverages', beverages], ['Live stations', liveStations], ['Decoration & services', decorServices]] as [string, MenuItem[]][]).map(([title, items]) => (
+              <div key={title} style={{ marginBottom: 6 }}>
+                <p className="small" style={{ fontWeight: 700, marginBottom: 8 }}>{title}</p>
+                <div className="dish-pick-list" style={{ marginBottom: 10 }}>
+                  {items.map(it => {
+                    const sel = (addedMap.get(it.id) ?? 0) > 0;
+                    return (
+                      <button
+                        key={it.id} type="button"
+                        className={`dish-toggle${sel ? ' sel' : ''}`}
+                        onClick={() => setAdded(it.id, sel ? 0 : 1)}
+                        aria-pressed={sel}
+                      >
+                        <span className="dish-check" aria-hidden="true">{sel ? '✓' : ''}</span>
+                        <span className="grow">
+                          <span className="nm">{it.name}</span>
+                          <span className="pr">{pkr(it.price)} {unitLabel(it.unit)}</span>
+                        </span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            ))}
           </section>
         </Reveal>
       </div>
