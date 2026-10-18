@@ -26,7 +26,6 @@ export default function Navbar() {
           <span className="brand-mark">S</span>
           <span className="brand-name">Shadi<span>Sphere</span></span>
         </Link>
-        <span className="demo-pill">Demo</span>
         <button className="nav-toggle" onClick={() => setOpen(o => !o)} aria-label="Menu" aria-expanded={open}>☰</button>
         <nav className={`nav-links${open ? ' mobile-open' : ''}`} aria-label="Primary">
           {LINKS.map(l => (
