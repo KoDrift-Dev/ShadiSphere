@@ -4,13 +4,13 @@ import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useStore } from '../state/store';
 import {
-  Btn, Badge, Field, Empty, PageHead, Qty, Img, Modal, MiniCalendar,
+  Btn, Badge, Field, PageHead, Qty, Img, Modal,
   Reveal, Stagger, StaggerItem,
 } from '../components/ui';
-import { calculate, quickEstimate, MAX_DISCOUNT_PCT } from '../lib/calc';
+import { calculate, MAX_DISCOUNT_PCT } from '../lib/calc';
 import { slotStatus, isSlotBookable } from '../lib/availability';
 import {
-  pkr, fmtDate, todayISO, unitLabel,
+  pkr, fmtDate, unitLabel,
 } from '../lib/format';
 import {
   BUSINESS, EVENT_TYPES, SLOTS, MenuItem, SlotId, EventType,
@@ -18,7 +18,6 @@ import {
 
 const MIN_G = 50;
 const MAX_G = 3000;
-const COMPARE_ORDER = ['basic', 'standard', 'premium', 'vip', 'luxury'];
 
 /** Small premium section label for calculator panels. */
 function SectionLabel({ children, style }: { children: React.ReactNode; style?: React.CSSProperties }) {
@@ -34,9 +33,7 @@ function SectionLabel({ children, style }: { children: React.ReactNode; style?: 
 export default function Calculator() {
   const { state, calc, setCalc, toast } = useStore();
   const nav = useNavigate();
-  const [showCompare, setShowCompare] = useState(false);
   const [showEstimate, setShowEstimate] = useState(false);
-  const [tileKey, setTileKey] = useState<string | null>(null);
   const [customCat, setCustomCat] = useState('');
 
   const result = useMemo(
@@ -52,7 +49,6 @@ export default function Calculator() {
     : guests > MAX_G
       ? `Guest count cannot exceed ${MAX_G.toLocaleString()}.`
       : '';
-  const dateError = calc.date < todayISO() ? 'Please choose today or a future date.' : '';
   const capWarn = venue && guests > 0 && (guests < venue.minGuests || guests > venue.maxGuests)
     ? `This venue fits ${venue.minGuests.toLocaleString()}–${venue.maxGuests.toLocaleString()} guests.` : '';
   const ss = (venue && calc.date) ? slotStatus(venue.id, calc.date, calc.slot, state.bookings) : null;
@@ -84,9 +80,16 @@ export default function Calculator() {
 
   const addOnItems = state.menuItems.filter(i => i.enabled && i.addOnOnly);
   const beverages = addOnItems.filter(i => i.category === 'Beverages');
-  const stationsAndServices = addOnItems.filter(
-    i => i.category === 'Live Stations' || i.category === 'Decoration & Services',
-  );
+  const liveStations = addOnItems.filter(i => i.category === 'Live Stations');
+  const decorServices = addOnItems.filter(i => i.category === 'Decoration & Services');
+
+  // Add-custom browser popup + stacked package-dishes popup.
+  const [menuCard, setMenuCard] = useState<'custom' | null>(null);
+  const [showPkgItems, setShowPkgItems] = useState(false);
+  const extrasCount = calc.added.filter(a => {
+    const it = state.menuItems.find(i => i.id === a.itemId);
+    return it && it.addOnOnly;
+  }).length;
   const extraFood = state.menuItems.filter(
     i => i.enabled && !i.addOnOnly && i.unit === 'per_guest',
   );
@@ -103,19 +106,6 @@ export default function Calculator() {
 
   const includedIds = new Set(pkg?.included ?? []);
   const pkgAddables = extraFood.filter(i => !includedIds.has(i.id) && !calc.removed.includes(i.id));
-
-  const compareRows = useMemo(() => {
-    if (!showCompare) return [];
-    return COMPARE_ORDER
-      .map(id => state.packages.find(p => p.id === id && p.enabled))
-      .filter((p): p is NonNullable<typeof p> => !!p)
-      .map(p => {
-        const total = venue
-          ? quickEstimate(venue, guests, calc.slot, p)
-          : p.pricePerGuest * guests;
-        return { pkg: p, total, perGuest: guests > 0 ? total / guests : 0 };
-      });
-  }, [showCompare, state.packages, venue, guests, calc.slot]);
 
   const resetMenu = () => {
     setCalc(c => ({ ...c, removed: [], added: [] }));
@@ -138,7 +128,8 @@ export default function Calculator() {
   };
 
   // Estimate tiles: group breakdown lines into 4 tappable tiles (2×2).
-  const tiles = useMemo(() => {
+  // Full itemized breakdown for the estimate box, grouped by charge kind.
+  const breakdown = useMemo(() => {
     const groups: Record<string, { label: string; icon: string; lines: typeof result.lines }> = {
       food: { label: 'Menu', icon: '🍽️', lines: [] },
       hall: { label: 'Venue', icon: '🏛️', lines: [] },
@@ -146,7 +137,7 @@ export default function Calculator() {
       savings: { label: 'Savings', icon: '🎉', lines: [] },
     };
     for (const l of result.lines) {
-      if (l.kind === 'food') groups.food.lines.push(l);
+      if (l.kind === 'food' || l.kind === 'info') groups.food.lines.push(l);
       else if (l.kind === 'hall') groups.hall.lines.push(l);
       else if (l.kind === 'discount') groups.savings.lines.push(l);
       else groups.extras.lines.push(l);
@@ -156,7 +147,6 @@ export default function Calculator() {
       total: g.lines.reduce((s, l) => s + l.amount, 0),
     }));
   }, [result]);
-  const activeTile = tiles.find(t => t.key === tileKey) ?? null;
 
   const handleCalculate = () => {
     if (guestError) {
@@ -194,58 +184,64 @@ export default function Calculator() {
         .cmp-table td, .cmp-table th { padding: 10px 12px; }
         .cmp-table tr.selected td { background: rgba(198,161,91,.12); font-weight: 700; }
 
-        /* smart category dish picker */
-        .smart-cat-bar { display: flex; gap: 10px; align-items: flex-end; margin-bottom: 12px; }
-        .smart-cat-bar .field { flex: 1; margin-bottom: 0; }
-        .dish-pick-list { display: grid; gap: 8px; }
-        @media (min-width: 640px) { .dish-pick-list { grid-template-columns: 1fr 1fr; } }
-        .dish-toggle {
-          display: flex; align-items: center; gap: 10px; text-align: left; cursor: pointer;
-          border: 1px solid rgba(30,77,63,.16); border-radius: 12px; padding: 9px 12px;
-          background: rgba(255,255,255,.8); transition: all .15s ease; font-family: inherit; width: 100%;
-        }
-        .dish-toggle:hover { border-color: var(--color-pine-500); transform: translateY(-1px); }
-        .dish-toggle.sel { border-color: var(--color-pine-700); background: linear-gradient(165deg, rgba(30,77,63,.09), rgba(30,77,63,.03)); box-shadow: 0 0 0 3px rgba(30,77,63,.08); }
-        .dish-check {
-          width: 22px; height: 22px; border-radius: 8px; flex-shrink: 0;
-          border: 1.5px solid rgba(30,77,63,.3); display: flex; align-items: center; justify-content: center;
-          font-size: 13px; font-weight: 800; color: #fff; background: #fff;
-        }
-        .dish-toggle.sel .dish-check { background: linear-gradient(180deg, var(--color-pine-500), var(--color-pine-700)); border-color: var(--color-pine-700); }
-        .dish-toggle .nm { font-weight: 600; font-size: 13.5px; color: var(--color-ink-900); display: block; }
-        .dish-toggle .pr { font-size: 12px; color: var(--color-ink-400); }
-        .picked-summary { margin-top: 14px; }
-        .picked-summary .chip button { background: none; border: 0; cursor: pointer; font-weight: 800; color: inherit; padding: 0 0 0 4px; font-size: 13px; }
-
         /* package full menu */
         .pkg-full-menu { margin-top: 14px; border-top: 1px dashed rgba(198,161,91,.4); padding-top: 16px; }
         .pkg-menu-head { display: flex; gap: 14px; align-items: center; margin-bottom: 14px; }
         .pkg-menu-head img { width: 64px; height: 64px; border-radius: 14px; object-fit: cover; flex-shrink: 0; }
 
-        /* estimate box: 2x2 tiles + popup */
-        .estimate-box { border-color: rgba(198,161,91,.45); background: linear-gradient(165deg, rgba(30,77,63,.97), rgba(16,42,35,.96)); color: #F2EEDF; }
-        .est-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 14px; flex-wrap: wrap; margin-bottom: 6px; }
-        .est-head h2 { margin: 0; }
-        .est-date { min-width: 220px; }
-        .est-date > span { display: block; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .14em; color: var(--color-champagne-300); margin-bottom: 6px; }
-        .est-tiles { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 16px 0 6px; }
-        .est-tile {
-          text-align: left; cursor: pointer; font-family: inherit; width: 100%;
-          border: 1px solid rgba(198,161,91,.3); border-radius: 16px; padding: 14px 16px;
-          background: rgba(255,255,255,.06); color: #F2EEDF;
-          transition: transform .15s ease, border-color .15s ease, background .15s ease;
+        /* option rows (add-custom browser, package row) */
+        .opt-row {
+          display: flex; align-items: center; gap: 12px; text-align: left; cursor: pointer;
+          font-family: inherit; width: 100%;
+          border: 1px solid rgba(30,77,63,.2); border-radius: 16px; padding: 14px;
+          background: linear-gradient(165deg, rgba(198,161,91,.1), rgba(198,161,91,.03));
+          transition: transform .15s ease, border-color .15s ease;
         }
-        .est-tile:hover { transform: translateY(-2px); border-color: rgba(198,161,91,.6); background: rgba(255,255,255,.09); }
-        .est-tile .t-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
-        .est-tile .t-label { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .12em; color: var(--color-champagne-300); }
-        .est-tile .t-icon { font-size: 20px; }
-        .est-tile .t-amt { font-family: var(--font-display); font-size: 24px; font-weight: 700; color: #fff; }
-        .est-tile .t-count { font-size: 12px; color: rgba(255,255,255,.6); margin-top: 2px; }
-        .tile-lines { display: grid; gap: 10px; }
-        .tile-line { display: flex; justify-content: space-between; gap: 12px; padding: 12px 14px; border: 1px solid rgba(30,77,63,.14); border-radius: 12px; background: rgba(255,255,255,.75); }
-        .tile-line .lbl { font-weight: 600; font-size: 14px; color: var(--color-ink-900); }
-        .tile-line .det { font-size: 12.5px; color: var(--color-ink-400); margin-top: 2px; }
-        .tile-line strong { white-space: nowrap; }
+        .opt-row:hover { transform: translateY(-2px); border-color: var(--color-pine-500); }
+        .opt-row:focus-visible { outline: 3px solid var(--color-champagne-300); outline-offset: 2px; }
+        .opt-icon { font-size: 28px; flex-shrink: 0; width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; border-radius: 14px; background: rgba(255,255,255,.7); }
+        .opt-body { display: flex; flex-direction: column; gap: 2px; min-width: 0; flex: 1; }
+        .opt-body strong { font-size: 14.5px; color: var(--color-ink-900); }
+        .opt-sub { font-size: 12.5px; color: var(--color-ink-600); }
+        .mc-arrow { font-size: 24px; line-height: 1; color: var(--color-champagne-500); flex-shrink: 0; }
+
+        /* sticky calculate bar */
+        .calc-sticky-bar {
+          position: sticky; bottom: 12px; z-index: 30;
+          display: flex; align-items: center; justify-content: space-between; gap: 12px;
+          margin-top: 24px; padding: 12px 12px 12px 18px;
+          background: rgba(255,253,248,.96); backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px);
+          border: 1px solid rgba(198,161,91,.45); border-radius: 18px;
+          box-shadow: 0 12px 34px rgba(11,31,25,.16), inset 0 1px 0 #fff;
+        }
+        .csb-summary { display: flex; flex-direction: column; min-width: 0; flex: 1; }
+        .csb-total { font-family: var(--font-display); font-weight: 700; font-size: 19px; color: var(--color-pine-800); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .csb-sub { font-size: 12px; color: var(--color-ink-400); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .calc-sticky-bar .btn { flex-shrink: 0; }
+        @media (max-width: 560px) {
+          .calc-sticky-bar { bottom: 8px; padding: 10px 10px 10px 14px; border-radius: 16px; }
+          .csb-total { font-size: 16px; }
+        }
+        /* mobile: no menu / extras — event details flow straight into calculate */
+        @media (max-width: 700px) {
+          .menu-extras-sec { display: none; }
+        }
+
+        /* estimate box: full itemized breakdown */
+        .estimate-box { border-color: rgba(198,161,91,.45); background: linear-gradient(165deg, rgba(30,77,63,.97), rgba(16,42,35,.96)); color: #F2EEDF; }
+        .est-head { margin-bottom: 6px; }
+        .est-head h2 { margin: 0; }
+        .est-breakdown { display: grid; gap: 14px; margin: 16px 0 6px; }
+        .est-group { border: 1px solid rgba(198,161,91,.28); border-radius: 16px; padding: 14px 16px; background: rgba(255,255,255,.05); }
+        .est-group-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+        .est-group-head > span:first-child { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .12em; color: var(--color-champagne-300); }
+        .est-group-head strong { font-family: var(--font-display); font-size: 18px; color: #E8C873; }
+        .est-line { display: flex; justify-content: space-between; gap: 12px; padding: 10px 0; border-top: 1px solid rgba(198,161,91,.16); }
+        .est-line .lbl { font-weight: 600; font-size: 13.5px; color: #F2EEDF; }
+        .est-line .det { font-size: 12px; color: rgba(255,255,255,.55); margin-top: 2px; }
+        .est-line strong { white-space: nowrap; color: #fff; font-size: 13.5px; }
+        .est-line strong.neg { color: #7BD8A4; }
+        .est-line .badge { margin-left: 6px; vertical-align: 1px; }
       `}</style>
 
       <Reveal>
@@ -291,6 +287,7 @@ export default function Calculator() {
                 </Field>
                 <Field label="Number of guests" error={guestError} hint={capWarn || undefined}>
                   <input
+                    className="input"
                     type="number" min={MIN_G} max={MAX_G}
                     value={guests || ''}
                     placeholder={`e.g. ${MIN_G * 8}`}
@@ -342,24 +339,13 @@ export default function Calculator() {
             </section>
           </Reveal>
 
-          {/* ---------- Your menu ---------- */}
+          {/* ---------- Your menu (direct — no cards) ---------- */}
           {(pkg || !calc.packageId) && (
           <Reveal>
-            <section className="panel" style={{ marginTop: 24 }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
-                <SectionLabel style={{ marginBottom: 0 }}>{pkg ? `${pkg.name} — full menu` : 'Build your menu'}</SectionLabel>
-                {pkg && (
-                  <button type="button" className="btn btn-outline btn-sm" onClick={resetMenu}>Reset menu</button>
-                )}
-              </div>
-              {pkg && (
-                <p className="hint" style={{ marginBottom: 4, marginTop: 10 }}>
-                  The package rate covers every included dish — you are never charged per-dish for what is included.
-                </p>
-              )}
-
-              {pkg && (
-                <div className="pkg-full-menu">
+            <section className="panel menu-extras-sec" style={{ marginTop: 24 }}>
+              <SectionLabel>Your menu</SectionLabel>
+              {pkg ? (
+                <>
                   <div className="pkg-menu-head">
                     <Img src={pkg.image} alt={pkg.name} />
                     <div>
@@ -371,60 +357,20 @@ export default function Calculator() {
                       </div>
                     </div>
                   </div>
-                  <h3 className="font-display" style={{ fontSize: 17, marginBottom: 10 }}>
-                    Full menu <span className="badge badge-green ml-1">{includedItems.length}</span>
-                  </h3>
-                  <Stagger gap={0.04}>
-                    {includedItems.map(it => (
-                      <StaggerItem key={it.id}>
-                        <div className="addon-row">
-                          <Img src={it.image} alt={it.name} className="addon-thumb" />
-                          <div className="grow">
-                            <strong>{it.name}</strong>
-                            <div className="small muted">{it.category} · included in {pkg.name}</div>
-                          </div>
-                          <button
-                            type="button" className="btn btn-outline btn-sm"
-                            onClick={() => setCalc(c => ({ ...c, removed: [...c.removed, it.id] }))}
-                          >
-                            Remove (−{pkr(it.creditPerGuest)}/guest)
-                          </button>
-                        </div>
-                      </StaggerItem>
-                    ))}
-                  </Stagger>
-                  {removedItems.length > 0 && (
-                    <>
-                      <h3 className="font-display" style={{ fontSize: 17, margin: '20px 0 10px' }}>
-                        Removed <span className="badge badge-amber ml-1">{removedItems.length}</span>
-                      </h3>
-                      {removedItems.map(it => (
-                        <div key={it.id} className="addon-row" style={{ opacity: 0.75 }}>
-                          <div className="grow">
-                            <strong>{it.name}</strong>
-                            <div className="small muted">Credit applied: {pkr(it.creditPerGuest)}/guest</div>
-                          </div>
-                          <button
-                            type="button" className="btn btn-outline btn-sm"
-                            onClick={() => setCalc(c => ({ ...c, removed: c.removed.filter(r => r !== it.id) }))}
-                          >
-                            Add back
-                          </button>
-                        </div>
-                      ))}
-                    </>
-                  )}
-                  {pkgAddables.length > 0 && (
-                    <>
-                      <h3 className="font-display" style={{ fontSize: 17, margin: '20px 0 10px' }}>Add extra dishes</h3>
-                      {pkgAddables.map(it => (
-                        <AddonRow key={it.id} item={it} qty={addedMap.get(it.id) ?? 0} onQty={v => setAdded(it.id, v)} guests={guests} />
-                      ))}
-                    </>
-                  )}
-                </div>
-              )}
-
+                  <p className="hint" style={{ marginBottom: 12 }}>
+                    The package rate covers every included dish — you are never charged per-dish for what is included.
+                  </p>
+                  <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+                    <Btn variant="gold" size="sm" onClick={() => setMenuCard('custom')}>
+                      ＋ Add Custom{extrasCount > 0 ? ` (${extrasCount})` : ''}
+                    </Btn>
+                    <Btn variant="outline" size="sm" onClick={() => setShowPkgItems(true)}>
+                      View {pkg.name} dishes →
+                    </Btn>
+                  </div>
+                </>
+              ) : (
+                <>
                 {!calc.packageId && (
                   <>
                     <h3 className="font-display" style={{ fontSize: 17, marginBottom: 4 }}>Build your menu, category by category</h3>
@@ -483,59 +429,167 @@ export default function Calculator() {
                     )}
                   </>
                 )}
-
-                <h3 className="font-display" style={{ fontSize: 17, margin: '24px 0 10px' }}>Beverages</h3>
-                {beverages.map(it => (
-                  <AddonRow key={it.id} item={it} qty={addedMap.get(it.id) ?? 0} onQty={v => setAdded(it.id, v)} guests={guests} />
-                ))}
-
-                <h3 className="font-display" style={{ fontSize: 17, margin: '24px 0 10px' }}>Live stations &amp; decoration</h3>
-                {stationsAndServices.map(it => (
-                  <AddonRow key={it.id} item={it} qty={addedMap.get(it.id) ?? 0} onQty={v => setAdded(it.id, v)} />
-                ))}
-              </section>
-            </Reveal>
+                  <div style={{ marginTop: 14 }}>
+                    <Btn variant="gold" size="sm" onClick={() => setMenuCard('custom')}>
+                      ＋ Add Custom — extras{extrasCount > 0 ? ` (${extrasCount})` : ''}
+                    </Btn>
+                  </div>
+                </>
+              )}
+            </section>
+          </Reveal>
+          )}
+          {/* ---------- Add Custom browser popup (toggle only — no steppers) ---------- */}
+          {menuCard === 'custom' && (
+            <Modal title="＋ Add custom" wide onClose={() => setMenuCard(null)}>
+              {pkg && (
+                <button type="button" className="opt-row" onClick={() => setShowPkgItems(true)} aria-haspopup="dialog">
+                  <span className="opt-icon" aria-hidden="true">🍽️</span>
+                  <span className="opt-body">
+                    <strong>{pkg.name}</strong>
+                    <span className="opt-sub">{includedItems.length} dishes included · {pkr(pkg.pricePerGuest)}/guest — tap to view →</span>
+                  </span>
+                  <span className="mc-arrow" aria-hidden="true">›</span>
+                </button>
+              )}
+              <h3 className="font-display" style={{ fontSize: 17, margin: '18px 0 10px' }}>Menu — tap to select</h3>
+              {customCats.map(c => (
+                <div key={c} style={{ marginBottom: 6 }}>
+                  <p className="small" style={{ fontWeight: 700, marginBottom: 8 }}>{c}</p>
+                  <div className="dish-pick-list" style={{ marginBottom: 10 }}>
+                    {customMains.filter(i => i.category === c).map(it => {
+                      const included = !!pkg && includedIds.has(it.id) && !calc.removed.includes(it.id);
+                      const sel = (addedMap.get(it.id) ?? 0) > 0;
+                      return (
+                        <button
+                          key={it.id} type="button"
+                          className={`dish-toggle${sel ? ' sel' : ''}`}
+                          disabled={included}
+                          onClick={() => setAdded(it.id, sel ? 0 : 1)}
+                          aria-pressed={sel}
+                        >
+                          <span className="dish-check" aria-hidden="true">{sel ? '✓' : ''}</span>
+                          <span className="grow">
+                            <span className="nm">{it.name}</span>
+                            <span className="pr">{pkr(it.price)} per guest</span>
+                          </span>
+                          {included && <span className="badge badge-green">Included</span>}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              ))}
+              {([['Beverages', beverages], ['Live stations', liveStations], ['Decoration & services', decorServices]] as [string, MenuItem[]][]).map(([title, items]) => (
+                <div key={title} style={{ marginBottom: 6 }}>
+                  <h3 className="font-display" style={{ fontSize: 17, margin: '18px 0 10px' }}>{title} — tap to select</h3>
+                  <div className="dish-pick-list" style={{ marginBottom: 10 }}>
+                    {items.map(it => {
+                      const sel = (addedMap.get(it.id) ?? 0) > 0;
+                      return (
+                        <button
+                          key={it.id} type="button"
+                          className={`dish-toggle${sel ? ' sel' : ''}`}
+                          onClick={() => setAdded(it.id, sel ? 0 : 1)}
+                          aria-pressed={sel}
+                        >
+                          <span className="dish-check" aria-hidden="true">{sel ? '✓' : ''}</span>
+                          <span className="grow">
+                            <span className="nm">{it.name}</span>
+                            <span className="pr">{pkr(it.price)} {unitLabel(it.unit)}</span>
+                          </span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              ))}
+            </Modal>
           )}
 
-          <Reveal>
-            <div style={{ marginTop: 24 }}>
-              <Btn variant="gold" size="lg" block onClick={handleCalculate}>
-                Calculate My Estimate →
-              </Btn>
-              <p className="hint center" style={{ marginTop: 10 }}>
-                Fill in your event details above, then tap calculate to reveal your itemized estimate.
-              </p>
-            </div>
-          </Reveal>
-
+          {/* ---------- package dishes popup (stacked above the browser) ---------- */}
+          {showPkgItems && pkg && (
+            <Modal title={`🍽️ ${pkg.name} — dishes`} onClose={() => setShowPkgItems(false)}>
+              <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 8 }}>
+                <button type="button" className="btn btn-outline btn-sm" onClick={resetMenu}>Reset menu</button>
+              </div>
+              <h3 className="font-display" style={{ fontSize: 17, marginBottom: 10 }}>
+                Included <span className="badge badge-green ml-1">{includedItems.length}</span>
+              </h3>
+              <Stagger gap={0.04}>
+                {includedItems.map(it => (
+                  <StaggerItem key={it.id}>
+                    <div className="addon-row">
+                      <Img src={it.image} alt={it.name} className="addon-thumb" />
+                      <div className="grow">
+                        <strong>{it.name}</strong>
+                        <div className="small muted">{it.category} · included in {pkg.name}</div>
+                      </div>
+                      <button
+                        type="button" className="btn btn-outline btn-sm"
+                        onClick={() => setCalc(c => ({ ...c, removed: [...c.removed, it.id] }))}
+                      >
+                        Remove (−{pkr(it.creditPerGuest)}/guest)
+                      </button>
+                    </div>
+                  </StaggerItem>
+                ))}
+              </Stagger>
+              {removedItems.length > 0 && (
+                <>
+                  <h3 className="font-display" style={{ fontSize: 17, margin: '20px 0 10px' }}>
+                    Removed <span className="badge badge-amber ml-1">{removedItems.length}</span>
+                  </h3>
+                  {removedItems.map(it => (
+                    <div key={it.id} className="addon-row" style={{ opacity: 0.75 }}>
+                      <div className="grow">
+                        <strong>{it.name}</strong>
+                        <div className="small muted">Credit applied: {pkr(it.creditPerGuest)}/guest</div>
+                      </div>
+                      <button
+                        type="button" className="btn btn-outline btn-sm"
+                        onClick={() => setCalc(c => ({ ...c, removed: c.removed.filter(r => r !== it.id) }))}
+                      >
+                        Add back
+                      </button>
+                    </div>
+                  ))}
+                </>
+              )}
+            </Modal>
+          )}
           {/* ---------- Estimate box (created on Calculate) ---------- */}
           {showEstimate && (
             <Reveal>
               <section id="estimate-box" className="panel estimate-box" style={{ marginTop: 24 }}>
                 <div className="est-head">
                   <h2 className="font-sans text-[13px] font-bold uppercase tracking-[0.18em] text-champagne-300">Your estimate</h2>
-                  <div className="est-date">
-                    <span>Event date</span>
-                    <MiniCalendar value={calc.date} onChange={iso => setCalc(c => ({ ...c, date: iso }))} ariaLabel="Event date" />
-                  </div>
                 </div>
-                {dateError && <div className="alert alert-err" style={{ marginBottom: 10 }}>{dateError}</div>}
                 <div className="small" style={{ marginBottom: 4, color: 'rgba(255,255,255,.72)' }}>
                   {guests.toLocaleString()} guests · {calc.eventType} · {SLOTS.find(s => s.id === calc.slot)?.label}
                   {venue ? ` · ${venue.name}` : ' · No venue yet'}
                   {calc.date && ` · ${fmtDate(calc.date)}`}
                 </div>
 
-                <div className="est-tiles">
-                  {tiles.map(t => (
-                    <button key={t.key} type="button" className="est-tile" onClick={() => setTileKey(t.key)}>
-                      <div className="t-top">
-                        <span className="t-label">{t.label}</span>
-                        <span className="t-icon" aria-hidden="true">{t.icon}</span>
+                <div className="est-breakdown">
+                  {breakdown.map(g => g.lines.length > 0 && (
+                    <div key={g.key} className="est-group">
+                      <div className="est-group-head">
+                        <span><span aria-hidden="true">{g.icon}</span> {g.label}</span>
+                        <strong>{g.total < 0 ? '−' : ''}{pkr(Math.abs(Math.round(g.total)))}</strong>
                       </div>
-                      <div className="t-amt">{t.total < 0 ? '−' : ''}{pkr(Math.abs(Math.round(t.total)))}</div>
-                      <div className="t-count">{t.lines.length} item{t.lines.length === 1 ? '' : 's'} · tap for details →</div>
-                    </button>
+                      {g.lines.map((l, i) => (
+                        <div key={i} className="est-line">
+                          <div>
+                            <div className="lbl">{l.label} {kindBadge(l.kind)}</div>
+                            {l.detail && <div className="det">{l.detail}</div>}
+                          </div>
+                          <strong className={l.amount < 0 ? 'neg' : ''}>
+                            {l.amount < 0 ? '−' : ''}{pkr(Math.abs(Math.round(l.amount)))}
+                          </strong>
+                        </div>
+                      ))}
+                    </div>
                   ))}
                 </div>
 
@@ -578,32 +632,7 @@ export default function Calculator() {
                 </p>
 
                 <div style={{ marginTop: 14 }}>
-                  <button
-                    type="button" className="btn btn-light btn-sm"
-                    onClick={() => setShowCompare(v => !v)}
-                    aria-expanded={showCompare}
-                  >
-                    {showCompare ? 'Hide package comparison' : 'Compare packages'}
-                  </button>
-                  {showCompare && (
-                    <div className="table-wrap" style={{ marginTop: 10 }}>
-                      <table className="tbl cmp-table">
-                        <thead>
-                          <tr><th>Package</th><th>Per guest</th><th>Total</th></tr>
-                        </thead>
-                        <tbody>
-                          {compareRows.map(r => (
-                            <tr key={r.pkg.id} className={calc.packageId === r.pkg.id ? 'selected' : ''}>
-                              <td>{r.pkg.name}</td>
-                              <td>{pkr(r.pkg.pricePerGuest)}</td>
-                              <td><strong>{pkr(r.total)}</strong></td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                      <p className="small" style={{ color: 'rgba(255,255,255,.6)' }}>Same guest count{venue ? ` · includes ${venue.name} hall rental` : ''}.</p>
-                    </div>
-                  )}
+                  <Btn variant="light" size="sm" to="/compare">Compare packages →</Btn>
                 </div>
 
                 <div style={{ marginTop: 18, display: 'flex', gap: 12, flexWrap: 'wrap' }}>
@@ -617,32 +646,26 @@ export default function Calculator() {
             </Reveal>
           )}
 
-          {/* ---------- tile detail popup ---------- */}
-          {activeTile && (
-            <Modal title={`${activeTile.icon} ${activeTile.label} — details`} onClose={() => setTileKey(null)}>
-              {activeTile.lines.length === 0 ? (
-                <Empty title="Nothing here yet" body={`No ${activeTile.label.toLowerCase()} charges in this estimate.`} />
+          {/* ---------- sticky calculate bar: always reachable, no long scroll ---------- */}
+          <div className="calc-sticky-bar" role="region" aria-label="Calculate estimate">
+            <div className="csb-summary">
+              {showEstimate ? (
+                <>
+                  <span className="csb-total">{pkr(result.grandTotal)}</span>
+                  <span className="csb-sub">estimated total · {guests.toLocaleString()} guests</span>
+                </>
               ) : (
-                <div className="tile-lines">
-                  {activeTile.lines.map((l, i) => (
-                    <div key={i} className="tile-line">
-                      <div>
-                        <div className="lbl">{l.label} {kindBadge(l.kind)}</div>
-                        {l.detail && <div className="det">{l.detail}</div>}
-                      </div>
-                      <strong style={{ color: l.amount < 0 ? '#1E7A4F' : 'var(--color-ink-900)' }}>
-                        {l.amount < 0 ? '−' : ''}{pkr(Math.abs(l.amount))}
-                      </strong>
-                    </div>
-                  ))}
-                  <div className="tile-line" style={{ background: 'rgba(30,77,63,.06)', borderStyle: 'dashed' }}>
-                    <div className="lbl">Subtotal</div>
-                    <strong>{activeTile.total < 0 ? '−' : ''}{pkr(Math.abs(Math.round(activeTile.total)))}</strong>
-                  </div>
-                </div>
+                <>
+                  <span className="csb-total">{pkg ? pkg.name : 'Custom menu'}</span>
+                  <span className="csb-sub">{guests.toLocaleString()} guests · {calc.eventType} · tap calculate →</span>
+                </>
               )}
-            </Modal>
-          )}
+            </div>
+            <Btn variant="gold" size="lg" onClick={handleCalculate}>
+              {showEstimate ? 'Update ↑' : 'Calculate →'}
+            </Btn>
+          </div>
+
         </div>
       </div>
     </div>

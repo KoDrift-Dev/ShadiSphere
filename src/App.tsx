@@ -9,6 +9,7 @@ import Venues from './pages/Venues';
 import VenueDetail from './pages/VenueDetail';
 import Menus from './pages/Menus';
 import Calculator from './pages/Calculator';
+import Compare from './pages/Compare';
 import CalendarPage from './pages/CalendarPage';
 import Planner from './pages/Planner';
 import Quote from './pages/Quote';
@@ -33,6 +34,7 @@ function AnimatedRoutes() {
           <Route path="/venues/:id" element={<VenueDetail />} />
           <Route path="/menus" element={<Menus />} />
           <Route path="/calculator" element={<Calculator />} />
+          <Route path="/compare" element={<Compare />} />
           <Route path="/calendar" element={<CalendarPage />} />
           <Route path="/planner" element={<Planner />} />
           <Route path="/quote" element={<Quote />} />

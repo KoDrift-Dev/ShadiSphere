@@ -36,11 +36,13 @@ const HOW_IT_WORKS = [
 ];
 
 function HeroSearch() {
-  const { setCalc } = useStore();
+  const { calc, setCalc } = useStore();
   const nav = useNavigate();
-  const [date, setDate] = useState(todayISO());
-  const [eventType, setEventType] = useState<EventType>('Barat');
-  const [guests, setGuests] = useState(400);
+  // Initialize from the persisted calc state so selections survive
+  // a trip to the planner and back (no reset).
+  const [date, setDate] = useState(calc.date || todayISO());
+  const [eventType, setEventType] = useState<EventType>(calc.eventType || 'Barat');
+  const [guests, setGuests] = useState(calc.guests || 400);
   return (
     <form
       className="hero-search"

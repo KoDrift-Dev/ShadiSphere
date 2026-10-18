@@ -1,5 +1,6 @@
 // Reusable design-system components.
 import React from 'react';
+import { createPortal } from 'react-dom';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { todayISO, fmtDate } from '../lib/format';
@@ -176,12 +177,15 @@ export function Confirm({ title, body, confirmLabel, onConfirm, onCancel }: {
     </Modal>
   );
 }
-
-/** Theme-styled mini month calendar picker — drop-in replacement for <input type="date">. */
+/** Theme-styled mini month calendar picker — drop-in replacement for <input type="date">.
+ *  Renders in a portal with smart flip so it is never cut off by overflow or viewport edges. */
 export function MiniCalendar({ value, onChange, minDate, ariaLabel }: {
   value: string; onChange: (iso: string) => void; minDate?: string; ariaLabel?: string;
 }) {
   const [open, setOpen] = React.useState(false);
+  const [pos, setPos] = React.useState<{ top: number; left: number } | null>(null);
+  const btnRef = React.useRef<HTMLButtonElement>(null);
+  const popRef = React.useRef<HTMLDivElement>(null);
   const min = minDate === undefined ? todayISO() : minDate;
   const [view, setView] = React.useState(() => {
     const src = value && (!min || value >= min) ? value : (min || todayISO());
@@ -201,20 +205,65 @@ export function MiniCalendar({ value, onChange, minDate, ariaLabel }: {
       const m = v.m + dir;
       return { y: v.y + Math.floor(m / 12), m: ((m % 12) + 12) % 12 };
     });
+
+  const toggle = () => {
+    if (!open && btnRef.current) {
+      const r = btnRef.current.getBoundingClientRect();
+      const estH = 350;
+      const below = window.innerHeight - r.bottom;
+      const up = below < estH + 12 && r.top > estH + 12;
+      setPos({
+        left: Math.max(8, Math.min(r.left, window.innerWidth - 298)),
+        top: up ? Math.max(8, r.top - estH - 8) : r.bottom + 8,
+      });
+    }
+    setOpen(o => !o);
+  };
+
+  // Measure after render and correct any viewport overflow.
+  React.useEffect(() => {
+    if (!open || !popRef.current) return;
+    const r = popRef.current.getBoundingClientRect();
+    setPos(p => {
+      if (!p) return p;
+      let { top, left } = p;
+      if (r.bottom > window.innerHeight - 8) {
+        const b = btnRef.current?.getBoundingClientRect();
+        top = Math.max(8, (b ? b.top : window.innerHeight - r.height - 16) - r.height - 8);
+      }
+      if (r.right > window.innerWidth - 8) left = Math.max(8, window.innerWidth - r.width - 8);
+      return { top, left };
+    });
+  }, [open ]);
+
+  // Close on scroll/resize so the fixed popup never detaches from its field.
+  React.useEffect(() => {
+    if (!open) return;
+    const close = () => setOpen(false);
+    window.addEventListener('scroll', close, true);
+    window.addEventListener('resize', close);
+    return () => {
+      window.removeEventListener('scroll', close, true);
+      window.removeEventListener('resize', close);
+    };
+  }, [open ]);
+
   return (
     <div className="mini-cal-wrap">
       <button
+        ref={btnRef}
         type="button" className="input mini-cal-btn"
-        onClick={() => setOpen(o => !o)} aria-haspopup="dialog" aria-expanded={open}
+        onClick={toggle} aria-haspopup="dialog" aria-expanded={open}
         aria-label={ariaLabel || 'Choose date'}
       >
         <span>{value ? fmtDate(value) : 'Select date'}</span>
         <span aria-hidden="true" style={{ color: 'var(--color-pine-600)' }}>📅</span>
       </button>
-      {open && (
+      {open && pos && createPortal(
         <>
           <div className="mini-cal-veil" onClick={() => setOpen(false)} />
-          <div className="mini-cal-pop" role="dialog" aria-label={ariaLabel || 'Choose date'}>
+          <div ref={popRef} className="mini-cal-pop" role="dialog" aria-label={ariaLabel || 'Choose date'}
+            style={{ top: pos.top, left: pos.left }}>
             <div className="mini-cal-head">
               <button type="button" className="mini-cal-nav" onClick={() => shift(-1)} aria-label="Previous month">‹</button>
               <strong>{first.toLocaleString('en-US', { month: 'long', year: 'numeric' })}</strong>
@@ -235,7 +284,8 @@ export function MiniCalendar({ value, onChange, minDate, ariaLabel }: {
               ))}
             </div>
           </div>
-        </>
+        </>,
+        document.body
       )}
     </div>
   );

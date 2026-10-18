@@ -160,7 +160,7 @@ export default function Planner() {
             </Field>
             <div className="form-row" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
               <Field label="Guests">
-                <input type="number" min={50} max={3000} value={form.guests}
+                <input className="input" type="number" min={50} max={3000} value={form.guests}
                   onChange={e => setForm(f => ({ ...f, guests: Number(e.target.value) }))} aria-label="Guests" />
               </Field>
               <Field label="Preferred date">
@@ -194,7 +194,7 @@ export default function Planner() {
               </Field>
             </div>
             <Field label="Approximate budget, PKR (optional)" hint="Recommendations slightly above budget are still shown and labelled.">
-              <input type="number" min={0} value={form.budget} placeholder="e.g. 2000000"
+              <input className="input" type="number" min={0} value={form.budget} placeholder="e.g. 2000000"
                 onChange={e => setForm(f => ({ ...f, budget: e.target.value }))} aria-label="Budget" />
             </Field>
             <Btn variant="primary" block size="lg" onClick={findDates}>Find dates</Btn>
@@ -290,7 +290,7 @@ export default function Planner() {
 
           <div className="form-row" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(160px,1fr))', gap: 14, marginBottom: 16 }}>
             <Field label="Gap between functions (days)">
-              <input type="number" min={1} max={30} value={gapDays}
+              <input className="input" type="number" min={1} max={30} value={gapDays}
                 onChange={e => setGapDays(Number(e.target.value) || 1)} aria-label="Gap days" />
             </Field>
             <Field label="Preferred slot for all functions">
@@ -323,7 +323,7 @@ export default function Planner() {
                   </select>
                 </Field>
                 <Field label="Guests">
-                  <input type="number" min={50} max={3000} value={w.guests}
+                  <input className="input" type="number" min={50} max={3000} value={w.guests}
                     onChange={e => editWish(i, { guests: Number(e.target.value) })} aria-label={`Function ${i + 1} guests`} />
                 </Field>
                 <Field label="Preferred date">

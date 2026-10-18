@@ -247,20 +247,20 @@ export default function Quote() {
               <SectionLabel>Send your inquiry</SectionLabel>
               <p className="small muted">Required fields are marked *. The venue replies on the number you give.</p>
               <Field label="Your name *" error={errors.name}>
-                <input value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))}
+                <input className="input" value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))}
                   placeholder="e.g. Ahmed Raza" aria-label="Your name" />
               </Field>
               <Field label="Phone / WhatsApp *" error={errors.phone} hint="Pakistani mobile, e.g. 03XX-XXXXXXX">
-                <input value={form.phone} onChange={e => setForm(f => ({ ...f, phone: e.target.value }))}
+                <input className="input" value={form.phone} onChange={e => setForm(f => ({ ...f, phone: e.target.value }))}
                   placeholder="03XX-XXXXXXX" inputMode="tel" aria-label="Phone" />
               </Field>
               <Field label="Email (optional)" error={errors.email}>
-                <input type="email" value={form.email} onChange={e => setForm(f => ({ ...f, email: e.target.value }))}
+                <input className="input" type="email" value={form.email} onChange={e => setForm(f => ({ ...f, email: e.target.value }))}
                   placeholder="you@example.com" aria-label="Email" />
               </Field>
               <div className="form-row" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
                 <Field label="City">
-                  <input value={BUSINESS.city} disabled aria-label="City" />
+                  <input className="input" value={BUSINESS.city} disabled aria-label="City" />
                 </Field>
                 <Field label="Event type">
                   <select value={form.eventType} onChange={e => setForm(f => ({ ...f, eventType: e.target.value as EventType }))} aria-label="Event type">
@@ -280,17 +280,17 @@ export default function Quote() {
                 </Field>
               </div>
               <Field label="Guests *" error={errors.guests}>
-                <input type="number" min={50} max={3000} value={form.guests}
+                <input className="input" type="number" min={50} max={3000} value={form.guests}
                   onChange={e => setForm(f => ({ ...f, guests: e.target.value }))} aria-label="Guests" />
               </Field>
               <Field label="Venue" hint="Carried over from the calculator.">
-                <input value={venue ? `${BUSINESS.name} — ${venue.name}` : 'Not selected'} disabled aria-label="Event space" />
+                <input className="input" value={venue ? `${BUSINESS.name} — ${venue.name}` : 'Not selected'} disabled aria-label="Event space" />
               </Field>
               <Field label="Menu" hint="Carried over from the calculator.">
-                <input value={packageName} disabled aria-label="Menu" />
+                <input className="input" value={packageName} disabled aria-label="Menu" />
               </Field>
               <Field label="Additional requirements (optional)">
-                <textarea rows={3} value={form.notes} onChange={e => setForm(f => ({ ...f, notes: e.target.value }))}
+                <textarea className="input" rows={3} value={form.notes} onChange={e => setForm(f => ({ ...f, notes: e.target.value }))}
                   placeholder="Stage theme, separate family setup, parking needs…" aria-label="Notes" />
               </Field>
               <Btn variant="primary" block size="lg" onClick={submit}>Submit inquiry</Btn>
