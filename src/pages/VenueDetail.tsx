@@ -106,10 +106,10 @@ export default function VenueDetail() {
                 <div className="relative mb-5 rounded-2xl border border-champagne-500/30 bg-gradient-to-br from-champagne-100 to-cream-50 px-5 py-4">
                   <span className="eyebrow" style={{ marginBottom: 2 }}><span className="rule" />Hall rental</span>
                   <p className="font-display text-[26px] font-bold text-pine-900" style={{ margin: 0 }}>from {pkr(Math.min(venue.hallRental.lunch, venue.hallRental.afternoon, venue.hallRental.evening))}</p>
-                  <p className="small muted" style={{ margin: 0 }}>per slot · illustrative demo rates</p>
+                  <p className="small muted" style={{ margin: 0 }}>per slot · illustrative sample rates</p>
                 </div>
                 <h3>Indicative hall rental</h3>
-                <p className="small muted">Illustrative demo rates per slot. Actual quotes depend on date, season and inclusions.</p>
+                <p className="small muted">Illustrative sample rates per slot. Actual quotes depend on date, season and inclusions.</p>
                 <div className="table-wrap"><table className="tbl">
                   <thead><tr><th>Slot</th><th>Time</th><th style={{ textAlign: 'right' }}>Rental</th></tr></thead>
                   <tbody>
@@ -136,7 +136,7 @@ export default function VenueDetail() {
                   <h3 style={{ margin: 0 }}>Availability preview</h3>
                   <Link to="/calendar" className="small" style={{ fontWeight: 600 }}>Open full calendar →</Link>
                 </div>
-                <p className="small muted">Demo availability — not a live reservation system.</p>
+                <p className="small muted">Availability shown is illustrative — not a live reservation system.</p>
                 <div className="grid avail-strip" style={{ gridTemplateColumns: 'repeat(7, 1fr)', gap: 8 }}>
                   {nextDays.map(d => {
                     const sum = daySummary(venue.id, d, SLOT_IDS, state.bookings);
@@ -159,7 +159,7 @@ export default function VenueDetail() {
                 <div className="chip-row" style={{ marginTop: 12 }}>
                   <span className="small"><span className="dot available" style={{ display: 'inline-block', marginRight: 6 }} />Available</span>
                   <span className="small"><span className="dot tentative" style={{ display: 'inline-block', marginRight: 6 }} />On hold</span>
-                  <span className="small"><span className="dot booked" style={{ display: 'inline-block', marginRight: 6 }} />Booked (demo)</span>
+                  <span className="small"><span className="dot booked" style={{ display: 'inline-block', marginRight: 6 }} />Booked</span>
                   <span className="small"><span className="dot blocked" style={{ display: 'inline-block', marginRight: 6 }} />Unavailable</span>
                 </div>
               </div>

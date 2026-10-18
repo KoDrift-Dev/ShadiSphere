@@ -79,15 +79,15 @@ export default function CalendarPage() {
       <Reveal>
         <PageHead
           eyebrow="Availability"
-          title="Demo availability calendar"
-          lead="Simulated booking schedule of ShadiSphere Grand Marquee for demonstration. This is not a live reservation system."
+          title="Availability calendar"
+          lead="Booking schedule of ShadiSphere Grand Marquee. This is not a live reservation system."
         />
       </Reveal>
 
       <Reveal>
         <div className="alert alert-info" style={{ marginBottom: 20 }}>
-          <strong>Demo availability — not a live reservation system.</strong> Slots shown as booked or
-          unavailable come from the demo data; managers can change them in the dashboard.
+          <strong>Availability shown is illustrative — not a live reservation system.</strong> Slots shown as booked or
+          unavailable come from the sample data; managers can change them in the dashboard.
         </div>
       </Reveal>
 
@@ -178,7 +178,7 @@ export default function CalendarPage() {
                     )}
                     {!isSlotBookable(status) && status === 'booked' && (
                       <div className="small" style={{ marginTop: 4 }}>
-                        This slot is held in the demo data. <Link to="/planner">Find alternatives →</Link>
+                        This slot is shown as booked. <Link to="/planner">Find alternatives →</Link>
                       </div>
                     )}
                   </div>

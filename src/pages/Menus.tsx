@@ -25,7 +25,7 @@ export default function Menus() {
             <PageHead
               eyebrow="Food & menus"
               title="Wedding menu packages"
-              lead="Five curated collections, plus a full à-la-carte catalog. Prices are illustrative demo values, configurable per venue."
+              lead="Five curated collections, plus a full à-la-carte catalog. Prices are illustrative sample values, configurable per venue."
             />
           </Reveal>
 
@@ -82,10 +82,10 @@ export default function Menus() {
                 const n = catalog.filter(i => i.category === cat).length;
                 if (n === 0) return null;
                 return (
-                  <a key={cat} href={`#${catAnchor(cat)}`} className="chip no-underline" style={{ display: 'inline-flex', alignItems: 'center' }}>
+                  <button key={cat} type="button" onClick={() => document.getElementById(catAnchor(cat))?.scrollIntoView?.({ behavior: 'smooth', block: 'start' })} className="chip" style={{ display: 'inline-flex', alignItems: 'center' }}>
                     {cat}
                     <span className="badge badge-gold ml-1" style={{ fontSize: 11, padding: '2px 8px' }}>{n}</span>
-                  </a>
+                  </button>
                 );
               })}
             </nav>
@@ -133,7 +133,7 @@ export default function Menus() {
 
           <Reveal>
             <div className="alert alert-info" style={{ marginTop: 24 }}>
-              Illustrative demo rates — not verified quotations. Actual rates depend on the venue, menu,
+              Illustrative sample rates — not verified quotations. Actual rates depend on the venue, menu,
               guest count, date and service inclusions. Venue managers can edit every price in the owner dashboard.
             </div>
           </Reveal>

@@ -32,11 +32,11 @@ export default function About() {
               <span className="eyebrow relative" style={{ marginBottom: 10 }}><span className="rule" />Our story</span>
               <p className="relative font-display text-[22px] leading-relaxed text-pine-900" style={{ marginBottom: 16 }}>
                 {BUSINESS.name} is a fictional premium marriage hall in {BUSINESS.area}, Lahore — created to
-                demonstrate the kind of customized website and booking-management solution we build for
+                showcase the kind of customized website and booking-management solution we build for
                 individual marriage hall owners.
               </p>
               <p className="relative">
-                The demo covers the full customer journey: exploring our three event spaces, customizing
+                This site covers the full customer journey: exploring our three event spaces, customizing
                 wedding menus with transparent per-guest pricing in the smart cost calculator, checking
                 simulated availability, getting smart date recommendations and sending a structured WhatsApp
                 inquiry. The owner gets a matching dashboard to manage spaces, menus, sample bookings,
@@ -44,7 +44,7 @@ export default function About() {
               </p>
               <p className="small muted relative" style={{ marginBottom: 0 }}>
                 Built for presentation to marriage hall owners and managers. Every price, booking and review
-                in this demo is fictional sample data.
+                shown here is fictional sample data.
               </p>
             </div>
             </Reveal>
@@ -62,8 +62,8 @@ export default function About() {
               <Reveal delay={0.1}>
               <div className="panel" style={{ borderLeft: '4px solid var(--color-champagne-500)' }}>
                 <span className="eyebrow" style={{ marginBottom: 10 }}><span className="rule" />Get in touch</span>
-                <h3>Demo contact</h3>
-                <p className="small muted" style={{ marginBottom: 10 }}>Sample contact — demo only. Not a real business.</p>
+                <h3>Contact</h3>
+                <p className="small muted" style={{ marginBottom: 10 }}>Sample contact — not a real business.</p>
                 <p style={{ margin: '4px 0' }}><strong>Email:</strong> {BUSINESS.email}</p>
                 <p style={{ margin: '4px 0' }}><strong>Phone / WhatsApp:</strong> {BUSINESS.phone} (sample)</p>
                 <p style={{ margin: '4px 0' }}><strong>Address:</strong> {BUSINESS.address} (sample)</p>
@@ -101,14 +101,14 @@ export default function About() {
               <div>
                 <span className="eyebrow" style={{ marginBottom: 10 }}><span className="rule" />Visit us</span>
                 <h3>Find us in DHA Phase 5</h3>
-                <p className="small muted">{BUSINESS.address} — sample address for this demo.</p>
+                <p className="small muted">{BUSINESS.address} — sample address.</p>
                 <div className="chip-row">
                   <span className="chip" style={{ cursor: 'default' }}>Main Boulevard</span>
                   <span className="chip" style={{ cursor: 'default' }}>DHA Phase 5</span>
                   <span className="chip" style={{ cursor: 'default' }}>Lahore</span>
                 </div>
               </div>
-              <div className="relative h-56 overflow-hidden rounded-2xl border border-champagne-500/25" style={{ background: 'linear-gradient(135deg, #163A30 0%, #1E4D3F 55%, #2A6353 100%)' }} role="img" aria-label="Stylized map preview of the demo venue location">
+              <div className="relative h-56 overflow-hidden rounded-2xl border border-champagne-500/25" style={{ background: 'linear-gradient(135deg, #163A30 0%, #1E4D3F 55%, #2A6353 100%)' }} role="img" aria-label="Stylized map preview of the venue location">
                 <div aria-hidden="true" className="absolute inset-0" style={{ backgroundImage: 'repeating-linear-gradient(0deg, rgba(255,255,255,.06) 0 1px, transparent 1px 34px), repeating-linear-gradient(90deg, rgba(255,255,255,.06) 0 1px, transparent 1px 34px)' }} />
                 <div aria-hidden="true" className="absolute left-[18%] top-[30%] h-px w-[64%] rotate-[-18deg] bg-champagne-400/40" />
                 <div aria-hidden="true" className="absolute left-[55%] top-[8%] h-[84%] w-px bg-champagne-400/30" />
@@ -119,15 +119,14 @@ export default function About() {
                   </span>
                   <span className="rounded-full border border-white/25 bg-white/10 px-3 py-1 text-[12px] font-semibold text-cream-50 backdrop-blur-md">ShadiSphere Grand Marquee</span>
                 </div>
-                <span className="absolute bottom-3 right-4 text-[11px] font-medium uppercase tracking-widest text-cream-50/60">Map preview · demo</span>
+                <span className="absolute bottom-3 right-4 text-[11px] font-medium uppercase tracking-widest text-cream-50/60">Map preview</span>
               </div>
             </div>
           </div>
           </Reveal>
 
           <div className="alert alert-warn">
-            <strong>Demo disclaimer.</strong> {BUSINESS.name} is a fictional business built for sales
-            demonstration. All spaces, menus, prices, bookings, inquiries, promotions and testimonials are
+            <strong>Please note.</strong> {BUSINESS.name} is a fictional business built to showcase our work. All spaces, menus, prices, bookings, inquiries, promotions and testimonials are
             fictional sample data. Availability shown is simulated — this is not a live reservation system,
             and estimates are illustrative, not confirmed quotations. No payments are processed.
           </div>

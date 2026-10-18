@@ -11,7 +11,7 @@ export default function Footer() {
             <span className="brand-name" style={{ color: '#fff' }}>Shadi<span style={{ color: 'var(--color-champagne-300)' }}>Sphere</span></span>
           </div>
           <p style={{ fontSize: 14, maxWidth: 320 }}>{BUSINESS.name} — {BUSINESS.tagline} Explore our spaces, customize menus and plan your wedding with confidence.</p>
-          <p style={{ fontSize: 12.5, color: '#A9A28C' }}>Demo contact (sample only): {BUSINESS.email} · {BUSINESS.phone} · {BUSINESS.address}</p>
+          <p style={{ fontSize: 12.5, color: '#A9A28C' }}>Contact: {BUSINESS.email} · {BUSINESS.phone} · {BUSINESS.address}</p>
         </div>
         <div>
           <h4>Explore</h4>
@@ -31,11 +31,11 @@ export default function Footer() {
         <div>
           <h4>Visit Us</h4>
           <p style={{ fontSize: 14 }}>{BUSINESS.name}<br />{BUSINESS.address}</p>
-          <p style={{ fontSize: 12.5, color: '#A9A28C' }}>Open for visits 11:00 – 21:00, all days (demo hours).</p>
+          <p style={{ fontSize: 12.5, color: '#A9A28C' }}>Open for visits 11:00 – 21:00, all days.</p>
         </div>
       </div>
       <div className="footer-bottom">
-        © 2026 {BUSINESS.name} (demo). All spaces, prices, availability and reviews are fictional sample data for demonstration only — not a real business, quotation or reservation.
+        © 2026 {BUSINESS.name}. All spaces, prices, availability and reviews are fictional sample data for illustration — not a real business, quotation or reservation.
       </div>
     </footer>
   );

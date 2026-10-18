@@ -54,7 +54,7 @@ function inquiryTone(status: InquiryStatus): 'gold' | 'green' | 'red' | 'amber' 
 }
 
 function bookingLabel(status: BookingStatus): string {
-  if (status === 'booked') return 'Booked — demo';
+  if (status === 'booked') return 'Booked — sample';
   return status.charAt(0).toUpperCase() + status.slice(1);
 }
 
@@ -104,8 +104,8 @@ function DashGate({ children }: { children: React.ReactNode }) {
           Manage your event spaces, menus, sample bookings, inquiries and promotions.
         </p>
         <div className="alert alert-warn" style={{ textAlign: 'left', marginTop: 16 }}>
-          <strong>Demo only — no real authentication.</strong> Anyone can open this panel.
-          Everything here is fictional sample data for demonstration purposes.
+          <strong>Sample data — no real authentication.</strong> Anyone can open this panel.
+          Everything here is fictional sample data for illustration purposes.
         </div>
         <Btn
           size="lg"
@@ -115,7 +115,7 @@ function DashGate({ children }: { children: React.ReactNode }) {
             setEntered(true);
           }}
         >
-          Enter Demo Dashboard
+          Enter Dashboard
         </Btn>
         <p className="muted small" style={{ marginTop: 14 }}>
           <Link to="/">Back to the customer website</Link>
@@ -172,7 +172,7 @@ function DashShell() {
         </div>
         <div style={{ padding: '14px 14px 0' }}>
           <div className="alert alert-warn" style={{ fontSize: 12.5, padding: '10px 12px', marginBottom: 12, background: 'rgba(255,255,255,.06)', borderColor: 'rgba(255,255,255,.18)', color: '#EDE7D6' }}>
-            <strong>Demo access.</strong> Sample data only — no real authentication, no production data.
+            <strong>Sample access.</strong> Sample data only — no real authentication, no production data.
           </div>
           <div className="side-title">Website</div>
           <Link to="/" style={{ display: 'block' }}>← View customer site</Link>
@@ -181,7 +181,7 @@ function DashShell() {
       <main className="dash-main">
         <div className="alert alert-warn" style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
           <span style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--color-champagne-500)', boxShadow: '0 0 0 4px rgba(198,161,91,.18)', flexShrink: 0 }} />
-          <span><strong>Demo mode</strong> — all data here is fictional sample data. Changes reflect on the customer site instantly.</span>
+          <span><strong>Sample data</strong> — all data here is fictional sample data. Changes reflect on the customer site instantly.</span>
         </div>
         <Routes>
           <Route index element={<Overview />} />
@@ -245,18 +245,18 @@ function Overview() {
 
   return (
     <div>
-      <PageHead eyebrow="Demo dashboard" title="Overview" lead="Sample business activity at ShadiSphere Grand Marquee, Lahore." />
+      <PageHead eyebrow="Owner dashboard" title="Overview" lead="Sample business activity at ShadiSphere Grand Marquee, Lahore." />
       <Stagger className="kpi-grid" gap={0.07}>
         <StaggerItem>
           <div className="kpi">
-            <div className="k-label">Total demo inquiries</div>
+            <div className="k-label">Total inquiries</div>
             <div className="k-value">{totalInq}</div>
             <div className="k-sub">sample records</div>
           </div>
         </StaggerItem>
         <StaggerItem>
           <div className="kpi">
-            <div className="k-label">Upcoming demo events</div>
+            <div className="k-label">Upcoming events</div>
             <div className="k-value">{upcoming.length}</div>
             <div className="k-sub">booked slots on or after today</div>
           </div>
@@ -303,7 +303,7 @@ function Overview() {
         <Reveal className="panel">
           <h3>Upcoming events</h3>
           {upcoming.length === 0 ? (
-            <p className="muted">No upcoming demo bookings.</p>
+            <p className="muted">No upcoming bookings.</p>
           ) : (
             <ul className="dash-list">
               {upcoming.map(b => (
@@ -356,7 +356,7 @@ function Overview() {
           Quiet days in the next 14 days — consider a targeted promotion to fill them.
         </p>
         {quiet.length === 0 ? (
-          <p className="muted">Every day in the next two weeks has healthy demo bookings.</p>
+          <p className="muted">Every day in the next two weeks has healthy sample bookings.</p>
         ) : (
           <ul className="dash-list">
             {quiet.slice(0, 8).map(q => (
@@ -405,7 +405,7 @@ function VenueMgmt() {
 
   return (
     <div>
-      <PageHead eyebrow="Demo dashboard" title="Event Spaces" lead="Edit our halls and lawn — capacity, rental prices, amenities. Changes appear on the customer site immediately." />
+      <PageHead eyebrow="Owner dashboard" title="Event Spaces" lead="Edit our halls and lawn — capacity, rental prices, amenities. Changes appear on the customer site immediately." />
       <div className="table-wrap">
         <table className="tbl">
           <thead>
@@ -524,7 +524,7 @@ function MenuMgmt() {
 
   return (
     <div>
-      <PageHead eyebrow="Demo dashboard" title="Menus & Packages" lead="Adjust package prices and item-level rates used by the customer cost calculator." />
+      <PageHead eyebrow="Owner dashboard" title="Menus & Packages" lead="Adjust package prices and item-level rates used by the customer cost calculator." />
       <div className="alert alert-info">The customer calculator uses updated values immediately — there is no publish step.</div>
 
       <h2 style={{ fontSize: 22, margin: '22px 0 12px' }}>Packages</h2>
@@ -672,8 +672,8 @@ function BookingMgmt() {
 
   return (
     <div>
-      <SectionHead eyebrow="Demo dashboard" title="Bookings" lead="Simulated bookings that drive the customer availability calendar." action={<Btn variant="gold" onClick={() => setAddOpen(true)}>Add booking</Btn>} />
-      <div className="alert alert-info">Changes update the customer calendar immediately. Demo bookings never represent real reservations.</div>
+      <SectionHead eyebrow="Owner dashboard" title="Bookings" lead="Simulated bookings that drive the customer availability calendar." action={<Btn variant="gold" onClick={() => setAddOpen(true)}>Add booking</Btn>} />
+      <div className="alert alert-info">Changes update the customer calendar immediately. Sample bookings never represent real reservations.</div>
 
       <div style={{ display: 'grid', gap: 14, marginBottom: 20 }}>
         <div>
@@ -740,7 +740,7 @@ function BookingMgmt() {
       {delId && (
         <Confirm
           title="Delete this sample booking?"
-          body="The slot will show as available on the customer calendar again. This only affects demo data."
+          body="The slot will show as available on the customer calendar again. This only affects sample data."
           confirmLabel="Delete booking"
           onConfirm={doDelete}
           onCancel={() => setDelId(null)}
@@ -839,7 +839,7 @@ function InquiryMgmt() {
 
   return (
     <div>
-      <PageHead eyebrow="Demo dashboard" title="Inquiries" lead="Customer inquiries submitted from the website appear here automatically." />
+      <PageHead eyebrow="Owner dashboard" title="Inquiries" lead="Customer inquiries submitted from the website appear here automatically." />
       <div className="table-wrap">
         <table className="tbl">
           <thead>
@@ -929,7 +929,7 @@ function InquiryDetail({ inquiry, onClose }: { inquiry: Inquiry; onClose: () => 
           </Btn>
         ) : (
           <div className="alert alert-warn">
-            No WhatsApp demo number configured. Set one in{' '}
+            No WhatsApp number configured. Set one in{' '}
             <Link to="/dashboard/settings">Settings</Link> to enable the handoff.
           </div>
         )}
@@ -1021,7 +1021,7 @@ function PromoMgmt() {
   return (
     <div>
       <SectionHead
-        eyebrow="Demo dashboard"
+        eyebrow="Owner dashboard"
         title="Promotions"
         lead="Sample discounts for weekdays, lunch slots, large bookings and date ranges."
         action={<Btn variant="gold" onClick={() => setEdit(blankPromo())}>New promotion</Btn>}
@@ -1154,7 +1154,7 @@ function Settings() {
     const digits = wa.replace(/\D/g, '');
     if (!digits) { toast('Enter a phone number with digits.'); return; }
     update(s => ({ ...s, whatsappNumber: digits }));
-    toast('WhatsApp demo number saved.');
+    toast('WhatsApp number saved.');
   };
 
   const restoreBookings = () => {
@@ -1165,14 +1165,14 @@ function Settings() {
 
   return (
     <div>
-      <PageHead eyebrow="Demo dashboard" title="Settings" lead="Demo operator controls and data management." />
+      <PageHead eyebrow="Owner dashboard" title="Settings" lead="Venue controls and data management." />
 
       <div className="panel" style={{ maxWidth: 640, marginBottom: 20 }}>
-        <h3>WhatsApp demo number</h3>
+        <h3>WhatsApp number</h3>
         <p className="muted" style={{ marginBottom: 12 }}>
-          Used for the "Open WhatsApp" handoff on inquiries. Demo only — no real number is configured by default.
+          Used for the "Open WhatsApp" handoff on inquiries. No real number is configured by default.
         </p>
-        <Field label="Demo contact number (digits only)" hint="e.g. 03001234567">
+        <Field label="Contact number (digits only)" hint="e.g. 03001234567">
           <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
             <input
               className="input"
@@ -1201,15 +1201,15 @@ function Settings() {
         </p>
         <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
           <Btn variant="outline" onClick={() => setRestoreConfirm(true)}>Restore sample bookings</Btn>
-          <Btn variant="danger" onClick={() => setResetConfirm(true)}>Reset demo data</Btn>
+          <Btn variant="danger" onClick={() => setResetConfirm(true)}>Reset sample data</Btn>
         </div>
       </div>
 
       {resetConfirm && (
         <Confirm
-          title="Reset all demo data?"
-          body="This restores spaces, menus, packages, bookings, inquiries and promotions to their original sample state. Any edits made in this dashboard will be lost. Your WhatsApp demo number is kept."
-          confirmLabel="Reset demo data"
+          title="Reset all sample data?"
+          body="This restores spaces, menus, packages, bookings, inquiries and promotions to their original sample state. Any edits made in this dashboard will be lost. Your WhatsApp number is kept."
+          confirmLabel="Reset sample data"
           onConfirm={() => { setResetConfirm(false); resetDemo(); }}
           onCancel={() => setResetConfirm(false)}
         />

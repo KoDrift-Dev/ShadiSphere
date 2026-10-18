@@ -118,7 +118,7 @@ export default function Quote() {
     update(s => ({ ...s, inquiries: [q, ...s.inquiries] }));
     setCalc(c => ({ ...c, guests, date: form.date, slot: form.slot, eventType: form.eventType, city: form.city }));
     setSaved(q);
-    toast(`Inquiry ${ref} saved to the demo dashboard.`);
+    toast(`Inquiry ${ref} saved to the owner dashboard.`);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
@@ -144,7 +144,7 @@ export default function Quote() {
           <div className="panel print-area">
             <InvoiceHeader docTitle="Inquiry received" docNo={saved.ref} />
             <div className="alert alert-ok">
-              <strong>This is a demo record, not a confirmed booking.</strong> The venue will confirm availability separately.
+              <strong>This is a sample record, not a confirmed booking.</strong> The venue will confirm availability separately.
             </div>
             <SectionLabel>Booking details</SectionLabel>
             <div className="line-item"><span>Customer</span><strong>{saved.name}</strong></div>
@@ -182,7 +182,7 @@ export default function Quote() {
             ) : (
               <div className="no-print">
                 <div className="alert alert-warn">
-                  <strong>No WhatsApp number configured.</strong> Ask the demo operator to set one in
+                  <strong>No WhatsApp number configured.</strong> Ask the venue team to set one in
                   Dashboard → Settings. Your inquiry summary is kept below — copy it manually if needed.
                 </div>
                 <pre className="wa-pre">{msg}</pre>
@@ -295,7 +295,7 @@ export default function Quote() {
               </Field>
               <Btn variant="primary" block size="lg" onClick={submit}>Submit inquiry</Btn>
               <p className="small muted" style={{ marginTop: 10 }}>
-                Demo only — submitting creates a sample record shown in the owner dashboard. No real booking is made.
+                Submitting creates a sample record shown in the owner dashboard. No real booking is made.
               </p>
               <p className="small" style={{ marginTop: 6 }}>
                 <Link to="/calculator">← Back to calculator</Link>

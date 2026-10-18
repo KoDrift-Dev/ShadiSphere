@@ -59,7 +59,7 @@ export default function Venues() {
             <PageHead
               eyebrow="Our venue"
               title="Explore our event spaces"
-              lead={`${BUSINESS.name}, ${BUSINESS.area}, Lahore — ${state.venues.length} spaces for every kind of function. All prices are illustrative demo rates.`}
+              lead={`${BUSINESS.name}, ${BUSINESS.area}, Lahore — ${state.venues.length} spaces for every kind of function. All prices are illustrative sample rates.`}
             />
           </Reveal>
 

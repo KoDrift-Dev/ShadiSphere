@@ -170,7 +170,7 @@ export default function Calculator() {
         <PageHead
           eyebrow="Smart Cost Calculator"
           title="Calculate your wedding cost"
-          lead="Pick a package, customize the menu, add extras — the estimate updates instantly. All prices are illustrative demo rates."
+          lead="Pick a package, customize the menu, add extras — the estimate updates instantly. All prices are illustrative sample rates."
         />
       </Reveal>
 
@@ -260,7 +260,7 @@ export default function Calculator() {
 
               {slotHeld && venue && (
                 <div className="alert alert-err" style={{ marginTop: 4 }}>
-                  This {calc.slot} slot at {venue.name} on {fmtDate(calc.date)} is held in the demo data.
+                  This {calc.slot} slot at {venue.name} on {fmtDate(calc.date)} is shown as booked.
                   {' '}<Link to="/planner">Find alternative dates →</Link>
                 </div>
               )}
@@ -498,7 +498,7 @@ export default function Calculator() {
                 <strong style={{ color: '#fff' }}>{pkr(Math.round(result.perGuest))}</strong>
               </div>
               <p className="small" style={{ marginTop: 10, color: 'rgba(255,255,255,.6)' }}>
-                Illustrative demo estimate. Final rates depend on venue, menu, guest count, date and service inclusions.
+                Illustrative estimate. Final rates depend on venue, menu, guest count, date and service inclusions.
               </p>
 
               <div style={{ marginTop: 14 }}>

@@ -14,7 +14,7 @@ export function buildWhatsAppMessage(
 ): string {
   const slotLabel = SLOTS.find(s => s.id === draft.slot)?.label ?? draft.slot;
   const lines = [
-    `*ShadiSphere — Wedding Inquiry (Demo)*`,
+    `*ShadiSphere — Wedding Inquiry*`,
     ``,
     `Name: ${customerName}`,
     `Event: ${draft.eventType}`,
@@ -33,7 +33,7 @@ export function buildWhatsAppMessage(
     `≈ ${pkr(Math.round(result.perGuest))} per guest`,
     ...(extraNotes ? [``, `Notes: ${extraNotes}`] : []),
     ``,
-    `_Illustrative demo estimate — final quote confirmed by the venue._`,
+    `_Illustrative estimate — final quote confirmed by the venue._`,
   ];
   return lines.join('\n');
 }
@@ -50,7 +50,7 @@ export function buildInquiryMessage(
 ): string {
   const slotLabel = SLOTS.find(s => s.id === q.slot)?.label ?? q.slot;
   return [
-    `*ShadiSphere — Wedding Inquiry (Demo)*`,
+    `*ShadiSphere — Wedding Inquiry*`,
     ``,
     `Ref: ${q.ref}`,
     `Name: ${q.name}`,

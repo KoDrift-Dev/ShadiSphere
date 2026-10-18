@@ -9,7 +9,7 @@ export const SLOT_STATUS_META: Record<SlotStatus, { label: string; cls: string }
   available: { label: 'Available', cls: 'available' },
   tentative: { label: 'Tentative hold', cls: 'tentative' },
   inquiry: { label: 'Inquiry received', cls: 'tentative' },
-  booked: { label: 'Booked (demo)', cls: 'booked' },
+  booked: { label: 'Booked', cls: 'booked' },
   blocked: { label: 'Unavailable', cls: 'blocked' },
   past: { label: 'Past date', cls: 'blocked' },
 };

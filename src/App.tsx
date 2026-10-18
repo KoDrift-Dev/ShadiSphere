@@ -35,6 +35,7 @@ function AnimatedRoutes() {
           <Route path="/calculator" element={<Calculator />} />
           <Route path="/calendar" element={<CalendarPage />} />
           <Route path="/planner" element={<Planner />} />
+          <Route path="/quote" element={<Quote />} />
           <Route path="/about" element={<About />} />
           <Route path="/dashboard/*" element={<Dashboard />} />
           <Route path="*" element={<Navigate to="/" replace />} />

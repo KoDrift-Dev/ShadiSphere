@@ -139,7 +139,7 @@ export const BUSINESS = {
   area: 'DHA Phase 5',
   address: 'Main Boulevard, DHA Phase 5, Lahore, Pakistan',
   phone: '0300-0000000', // fictional demo number
-  email: 'hello@shadisphere.demo',
+  email: 'hello@shadisphere.pk',
   tagline: 'Your Celebration. Your Venue. Your Perfect Plan.',
 };
 

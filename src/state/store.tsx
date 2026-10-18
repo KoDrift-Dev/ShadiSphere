@@ -127,7 +127,7 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
       f.whatsappNumber = state.whatsappNumber;
       setState(f);
       setCalcState(defaultCalc());
-      toast('Demo data restored to original sample state.');
+      toast('Sample data restored to original state.');
     },
     calc,
     setCalc: fn => setCalcState(c => fn(c)),

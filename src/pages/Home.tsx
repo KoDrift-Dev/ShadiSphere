@@ -74,7 +74,6 @@ function HeroSearch() {
 
 export default function Home() {
   const { state } = useStore();
-  const itemById = new Map(state.menuItems.map(i => [i.id, i]));
   const spaces = state.venues.filter(v => v.featured);
   const promos = state.promotions.filter(p => p.active);
 
@@ -99,7 +98,7 @@ export default function Home() {
             <StaggerItem className="hero-cta-wrap"><Btn to="/venues" variant="light" size="lg" block>Explore Spaces</Btn></StaggerItem>
           </Stagger>
           <HeroSearch />
-          <p className="hero-note">Demo availability — illustrative estimates. Not a live reservation system.</p>
+          <p className="hero-note">Illustrative estimates — not a live reservation system.</p>
         </div>
       </section>
 
@@ -110,11 +109,10 @@ export default function Home() {
             <SectionHead
               eyebrow="Our venue"
               title="Three event spaces, one celebration"
-              lead="The Grand Crystal Hall, the Emerald Garden Lawn and the Pearl Intimate Hall — all at ShadiSphere Grand Marquee, DHA Phase 5, Lahore."
-              action={<Btn to="/venues" variant="outline">Explore Our Spaces →</Btn>}
+              action={<Btn to="/venues" variant="outline" size="sm">Explore Our Spaces →</Btn>}
             />
           </Reveal>
-          <Stagger className="grid grid-3" gap={0.1}>
+          <Stagger className="grid grid-3 grid-2m" gap={0.1}>
             {spaces.map((v, i) => (
               <StaggerItem key={v.id} className="h-full">
               <article className="card pkg-card h-full transition-transform duration-300 hover:-translate-y-1.5">
@@ -126,11 +124,11 @@ export default function Home() {
                     <Badge tone="gold">{v.config}</Badge>
                   </div>
                   <h3 className="card-title">{v.name}</h3>
-                  <p className="card-meta">{BUSINESS.name} · {v.area}, Lahore</p>
+                  <p className="card-meta hide-m">{BUSINESS.name} · {v.area}, Lahore</p>
                   <div className="chip-row" style={{ marginBottom: 12 }}>
                     <span className="chip font-display" style={{ cursor: 'default', fontWeight: 700, color: 'var(--color-pine-700)' }}>{v.minGuests.toLocaleString()}–{v.maxGuests.toLocaleString()} guests</span>
                   </div>
-                  <p className="card-meta">Hall from {pkr(Math.min(v.hallRental.lunch, v.hallRental.afternoon, v.hallRental.evening))}</p>
+                  <p className="card-meta hide-m">Hall from {pkr(Math.min(v.hallRental.lunch, v.hallRental.afternoon, v.hallRental.evening))}</p>
                   <Btn to={`/venues/${v.id}`} variant="outline" block>View Details</Btn>
                 </div>
               </article>
@@ -144,24 +142,23 @@ export default function Home() {
       <section className="section-tight" style={{ background: 'var(--color-cream-200)' }}>
         <div className="wrap">
           <Reveal>
-          <div className="panel relative overflow-hidden" style={{ padding: 40 }}>
+          <div className="panel relative overflow-hidden" style={{ padding: 24 }}>
             <div aria-hidden="true" className="pointer-events-none absolute -right-24 -top-24 h-72 w-72 rounded-full bg-champagne-300/30 blur-3xl" />
             <div aria-hidden="true" className="pointer-events-none absolute -bottom-28 -left-20 h-72 w-72 rounded-full bg-pine-500/10 blur-3xl" />
             <div className="grid grid-2 relative" style={{ alignItems: 'center' }}>
               <div>
                 <span className="eyebrow"><span className="rule" />Smart cost calculator</span>
-                <h2 style={{ fontSize: 'clamp(26px,3vw,34px)', marginBottom: 12 }}>Know your wedding cost in minutes.</h2>
-                <p className="lead">Pick a menu package, customize dishes, add extras and watch your itemized estimate update instantly — per guest and in total.</p>
+                <h2 style={{ fontSize: 'clamp(22px,2.6vw,28px)', marginBottom: 12 }}>Know your wedding cost in minutes.</h2>
                 <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', marginTop: 18 }}>
-                  <Btn to="/calculator" size="lg">Calculate Your Wedding Cost</Btn>
-                  <Btn to="/menus" variant="outline">Compare packages →</Btn>
+                  <Btn to="/calculator" size="sm">Calculate Your Wedding Cost</Btn>
+                  <Btn to="/menus" variant="outline" size="sm">Compare packages →</Btn>
                 </div>
               </div>
               <div>
-                <Stagger className="grid" style={{ gap: 12 }} gap={0.08}>
+                <Stagger className="grid grid-2m" style={{ gap: 12 }} gap={0.08}>
                   {['Choose a menu package', 'Customize dishes & add-ons', 'Enter guests, date & space', 'Get an instant itemized estimate'].map((s, i) => (
                     <StaggerItem key={s}>
-                      <div className="flex items-center gap-4 rounded-2xl border border-champagne-500/25 bg-white/70 px-5 py-4 shadow-[inset_0_1px_0_rgba(255,255,255,.8),0_12px_34px_rgba(30,77,63,.10)] backdrop-blur-md">
+                      <div className="flex items-center gap-4 rounded-2xl border border-champagne-500/25 bg-white/70 !px-4 !py-3 shadow-[inset_0_1px_0_rgba(255,255,255,.8),0_12px_34px_rgba(30,77,63,.10)] backdrop-blur-md">
                         <span className="font-display text-[26px] font-bold text-champagne-500" aria-hidden="true">{String(i + 1).padStart(2, '0')}</span>
                         <span className="grow font-semibold text-pine-900">{s}</span>
                         <span className="text-champagne-500" aria-hidden="true">→</span>
@@ -182,16 +179,16 @@ export default function Home() {
           <Reveal>
             <SectionHead eyebrow="How it works" title="From estimate to inquiry in three steps" lead="A guided journey — every step keeps your numbers transparent." center />
           </Reveal>
-          <Stagger className="grid grid-3" gap={0.12}>
+          <Stagger className="grid grid-3 grid-2m" gap={0.12}>
             {HOW_IT_WORKS.map(s => (
               <StaggerItem key={s.n} className="h-full">
-                <div className="card h-full transition-transform duration-300 hover:-translate-y-1.5" style={{ padding: 28 }}>
+                <div className="card h-full transition-transform duration-300 hover:-translate-y-1.5" style={{ padding: 20 }}>
                   <div className="mb-4 flex items-center justify-between">
                     <span className="font-display text-4xl font-bold text-champagne-500" aria-hidden="true">{s.n}</span>
                     <span className="eyebrow" style={{ margin: 0 }}><span className="rule" />{s.k}</span>
                   </div>
                   <h3 className="mb-2 text-xl">{s.t}</h3>
-                  <p className="small muted" style={{ marginBottom: 18 }}>{s.d}</p>
+                  <p className="small muted hide-m" style={{ marginBottom: 18 }}>{s.d}</p>
                   <Btn to={s.to} variant="outline" size="sm">{s.c} →</Btn>
                 </div>
               </StaggerItem>
@@ -207,11 +204,10 @@ export default function Home() {
             <SectionHead
               eyebrow="Wedding menus"
               title="Five curated menu collections"
-              lead="From essential feasts to grand gourmet spreads, served by our in-house catering. Rates are illustrative demo values."
-              action={<Btn to="/menus" variant="outline">Explore Menus →</Btn>}
+              action={<Btn to="/menus" variant="outline" size="sm">Explore Menus →</Btn>}
             />
           </Reveal>
-          <Stagger className="grid grid-3" gap={0.1}>
+          <Stagger className="grid grid-3 grid-2m" gap={0.1}>
             {state.packages.filter(p => p.enabled).map(p => (
               <StaggerItem key={p.id} className="h-full">
               <article className="card pkg-card h-full transition-transform duration-300 hover:-translate-y-1.5">
@@ -219,10 +215,10 @@ export default function Home() {
                 <div className="card-img"><Img src={p.image} alt={`${p.name} package`} /></div>
                 <div className="card-body">
                   <h3 className="card-title">{p.name}</h3>
-                  <p className="card-meta">{p.tagline}</p>
+                  <p className="card-meta hide-m">{p.tagline}</p>
                   <p className="price-lg price" style={{ fontSize: 22, fontWeight: 800, color: 'var(--color-pine-600)' }}>{pkr(p.pricePerGuest)} <span className="small muted">per guest</span></p>
-                  <p className="small muted">{p.included.length} dishes included</p>
-                  <div style={{ marginTop: 14 }}><Btn to="/menus" variant="outline" block>Explore Menus</Btn></div>
+                  <p className="small muted hide-m">{p.included.length} dishes included</p>
+                  <div style={{ marginTop: 14 }}><Btn to="/menus" variant="outline" size="sm" block>Explore Menus</Btn></div>
                 </div>
               </article>
               </StaggerItem>
@@ -235,12 +231,12 @@ export default function Home() {
       <section className="section-tight" style={{ background: 'var(--color-cream-200)' }}>
         <div className="wrap">
           <Reveal><SectionHead eyebrow="Every function" title="Plan Barat, Walima, Mehndi and more" center /></Reveal>
-          <Stagger className="grid grid-3" gap={0.08}>
+          <Stagger className="grid grid-3 grid-2m" gap={0.08}>
             {EVENT_TYPES.map(t => (
               <StaggerItem key={t}>
-                <div className="panel h-full transition-transform duration-300 hover:-translate-y-1" style={{ padding: 22 }}>
-                  <h3 style={{ fontSize: 19, marginBottom: 8 }}>{t}</h3>
-                  <p className="small muted" style={{ margin: 0 }}>{EVENT_BLURBS[t]}</p>
+                <div className="panel h-full transition-transform duration-300 hover:-translate-y-1" style={{ padding: 16 }}>
+                  <h3 style={{ fontSize: 19, marginBottom: 0 }}>{t}</h3>
+                  <p className="small muted hide-m" style={{ margin: '8px 0 0' }}>{EVENT_BLURBS[t]}</p>
                 </div>
               </StaggerItem>
             ))}
@@ -252,13 +248,13 @@ export default function Home() {
       <section className="section">
         <div className="wrap">
           <Reveal><SectionHead eyebrow="Why ShadiSphere" title="Your celebration. Your venue. Your perfect plan." center /></Reveal>
-          <Stagger className="grid grid-3" gap={0.1}>
+          <Stagger className="grid grid-3 grid-2m" gap={0.1}>
             {WHY.map((w, i) => (
               <StaggerItem key={w.t} className="h-full">
-                <div className="card h-full transition-transform duration-300 hover:-translate-y-1.5" style={{ padding: 26 }}>
+                <div className="card h-full transition-transform duration-300 hover:-translate-y-1.5" style={{ padding: 20 }}>
                   <div className="font-display text-[28px] font-bold text-champagne-500" style={{ marginBottom: 10 }} aria-hidden="true">{String(i + 1).padStart(2, '0')}</div>
-                  <h3 style={{ fontSize: 18, marginBottom: 8 }}>{w.t}</h3>
-                  <p className="small muted" style={{ margin: 0 }}>{w.d}</p>
+                  <h3 style={{ fontSize: 18, marginBottom: 0 }}>{w.t}</h3>
+                  <p className="small muted hide-m" style={{ margin: '8px 0 0' }}>{w.d}</p>
                 </div>
               </StaggerItem>
             ))}
@@ -270,14 +266,14 @@ export default function Home() {
       {promos.length > 0 && (
         <section className="section-tight">
           <div className="wrap">
-            <Reveal><SectionHead eyebrow="Demo offers" title="Sample promotions" lead="Configurable in the owner dashboard. Eligibility is checked automatically in the calculator." /></Reveal>
+            <Reveal><SectionHead eyebrow="Special offers" title="Current promotions" lead="Configurable in the owner dashboard. Eligibility is checked automatically in the calculator." /></Reveal>
             <Stagger className="grid" style={{ gap: 18 }} gap={0.08}>
               {promos.map(p => (
                 <StaggerItem key={p.id}>
                   <div className="promo-strip">
                     <div className="grow" style={{ position: 'relative', zIndex: 1 }}>
                       <h3>{p.name} — save {p.percent}%</h3>
-                      <p>{p.description}</p>
+                      <p className="hide-m">{p.description}</p>
                     </div>
                     <Btn to="/calculator" variant="gold" size="sm">Calculate with this offer</Btn>
                   </div>
@@ -291,15 +287,15 @@ export default function Home() {
       {/* TESTIMONIALS */}
       <section className="section-tight">
         <div className="wrap">
-          <Reveal><SectionHead eyebrow="Kind words" title="What families say" lead="Sample testimonials — fictional, written for this demo." center /></Reveal>
-          <Stagger className="grid grid-3" gap={0.1}>
+          <Reveal><SectionHead eyebrow="Kind words" title="What families say" lead="Real-feel testimonials from fictional families." center /></Reveal>
+          <Stagger className="grid grid-3 grid-2m" gap={0.1}>
             {TESTIMONIALS.map(t => (
               <StaggerItem key={t.who} className="h-full">
-                <div className="card testimonial h-full transition-transform duration-300 hover:-translate-y-1.5" style={{ padding: 26 }}>
+                <div className="card testimonial h-full transition-transform duration-300 hover:-translate-y-1.5" style={{ padding: 20 }}>
                   <div className="mb-3 text-champagne-500 tracking-[3px]" aria-label="Rated 5 out of 5">★★★★★</div>
                   <p>"{t.q}"</p>
                   <div className="who">{t.who}</div>
-                  <div className="role">{t.role} · Sample testimonial — fictional</div>
+                  <div className="role hide-m">{t.role} · Sample testimonial — fictional</div>
                 </div>
               </StaggerItem>
             ))}
@@ -313,12 +309,9 @@ export default function Home() {
         <div className="wrap center relative">
           <Reveal>
             <div aria-hidden="true" className="mx-auto mb-6 h-[2px] w-24 rounded-full bg-gradient-to-r from-transparent via-champagne-400 to-transparent" />
-            <h2 style={{ color: '#fff', marginBottom: 10 }}>Ready to plan yours?</h2>
-            <p className="sub" style={{ color: 'rgba(255,255,255,.85)', maxWidth: 560, margin: '0 auto 24px' }}>
-              {itemById.size} sample dishes, {spaces.length} event spaces, {EVENT_TYPES.length} event types — one smart estimate.
-            </p>
+            <h2 style={{ color: '#fff', marginBottom: 6 }}>Ready to plan yours?</h2>
             <div style={{ display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap' }}>
-              <Btn to="/calculator" variant="gold" size="lg">Calculate Your Wedding Cost</Btn>
+              <Btn to="/calculator" variant="gold" size="sm">Calculate Your Wedding Cost</Btn>
               <Link to="/planner" style={{ color: '#fff', alignSelf: 'center', fontWeight: 600 }}>Find my date →</Link>
             </div>
           </Reveal>

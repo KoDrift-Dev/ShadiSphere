@@ -127,7 +127,7 @@ export default function Planner() {
         <PageHead
           eyebrow="Find My Date"
           title="Smart date & space finder"
-          lead="Tell us your event, guests and flexibility — we scan our demo calendar and rank the best date, slot and event-space matches."
+          lead="Tell us your event, guests and flexibility — we scan our calendar and rank the best date, slot and event-space matches."
         />
       </Reveal>
 
@@ -197,7 +197,7 @@ export default function Planner() {
           {!result && (
             <Empty
               title="No search yet"
-              body="Set your event details and press “Find dates” to see ranked date, slot and space recommendations from our demo calendar."
+              body="Set your event details and press “Find dates” to see ranked date, slot and space recommendations from our calendar."
             />
           )}
           {result && result.recs.length === 0 && (
@@ -332,7 +332,7 @@ export default function Planner() {
             <div style={{ marginTop: 16 }}>
               <Empty
                 title="No open combination found"
-                body="No single venue in the demo data is free on every suggested date with your gap. Try a different gap or slot."
+                body="No single venue is free on every suggested date with your gap. Try a different gap or slot."
               />
             </div>
           )}
