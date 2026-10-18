@@ -51,8 +51,6 @@ export default function Venues() {
 
   return (
     <div>
-      <style>{`@media (max-width: 900px){ .grid-3{grid-template-columns:1fr 1fr;} .filter-bar{grid-template-columns:1fr 1fr;} }
-@media (max-width: 600px){ .grid-3{grid-template-columns:1fr;} .filter-bar{grid-template-columns:1fr;} }`}</style>
       <div className="wrap">
         <div className="section-tight">
           <Reveal>
@@ -67,7 +65,7 @@ export default function Venues() {
           <div className="panel relative overflow-hidden" style={{ marginBottom: 26 }}>
             <div aria-hidden="true" className="pointer-events-none absolute -right-20 -top-20 h-56 w-56 rounded-full bg-champagne-300/25 blur-3xl" />
             <span className="eyebrow relative" style={{ marginBottom: 14 }}><span className="rule" />Refine your search</span>
-            <div className="grid filter-bar relative" style={{ gridTemplateColumns: 'repeat(4, 1fr)', gap: 14 }}>
+            <div className="filter-bar">
               <Field label="Space type">
                 <select className="input" value={type} onChange={e => setType(e.target.value)}>
                   <option>All</option>{TYPES.map(t => <option key={t} value={t}>{t}</option>)}
