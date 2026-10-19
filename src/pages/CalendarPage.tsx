@@ -74,6 +74,11 @@ export default function CalendarPage() {
         .cal-wrap { display: grid; grid-template-columns: 1fr; gap: 24px; align-items: start; }
         @media (min-width: 1024px) { .cal-wrap { grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); } }
         .cal-day.other { visibility: hidden; }
+        .slot-row.selected {
+          border-color: rgba(30, 77, 63, 0.45);
+          background: rgba(234, 244, 236, 0.88);
+          box-shadow: 0 0 0 2px rgba(30, 77, 63, 0.16), 0 8px 20px rgba(30, 77, 63, 0.08);
+        }
       `}</style>
 
       <Reveal>
@@ -153,8 +158,9 @@ export default function CalendarPage() {
             {venue && SLOTS.map(s => {
               const { status, booking } = slotStatus(venue.id, selected, s.id as SlotId, state.bookings);
               const meta = SLOT_STATUS_META[status];
+              const isSelected = calc.venueId === venue.id && calc.date === selected && calc.slot === s.id;
               return (
-                <div key={s.id} className="slot-row">
+                <div key={s.id} className={`slot-row${isSelected ? ' selected' : ''}`}>
                   <div className="grow">
                     <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
                       <strong className="font-display text-[16px]">{s.label}</strong>
@@ -162,6 +168,9 @@ export default function CalendarPage() {
                       <Badge tone={status === 'available' ? 'green' : status === 'booked' ? 'red' : status === 'blocked' || status === 'past' ? 'grey' : 'amber'}>
                         {meta.label}
                       </Badge>
+                      {isSelected && (
+                        <Badge tone="green">Selected</Badge>
+                      )}
                     </div>
                     {booking && (
                       <div className="small muted" style={{ marginTop: 4 }}>
@@ -176,8 +185,12 @@ export default function CalendarPage() {
                     )}
                   </div>
                   {isSlotBookable(status) && (
-                    <Btn variant="primary" size="sm" onClick={() => selectSlot(selected, s.id as SlotId)}>
-                      Select
+                    <Btn
+                      variant={isSelected ? 'gold' : 'primary'}
+                      size="sm"
+                      onClick={() => selectSlot(selected, s.id as SlotId)}
+                    >
+                      {isSelected ? 'Selected ✓' : 'Select'}
                     </Btn>
                   )}
                 </div>

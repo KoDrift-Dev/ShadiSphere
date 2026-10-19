@@ -847,8 +847,8 @@ table.tbl { @apply w-full text-[14.5px] min-w-[640px]; border-collapse: collapse
   .space-card .card-body { padding: 14px 16px; }
   .card-title { font-size: 19px; line-height: 1.25; overflow-wrap: break-word; }
   .eyebrow { letter-spacing: .16em; }
-  .est-line > div { min-width: 0; }
-  .est-line .lbl { overflow-wrap: break-word; }
+  .est-line > div, .est-line-body { min-width: 0; }
+  .est-line .lbl, .est-line-title { overflow-wrap: break-word; }
   .hero h1 { font-size: clamp(28px, 8vw, 34px); @apply mb-3; }
   .hero p.sub { @apply text-[15px] mb-4; }
   .hero-ctas { @apply mb-4 gap-2.5; flex-wrap: wrap; }
@@ -1007,10 +1007,6 @@ table.tbl { @apply w-full text-[14.5px] min-w-[640px]; border-collapse: collapse
   .dash-list li { flex-direction: column; align-items: flex-start; gap: 6px; }
   .dash-list li > *:last-child { text-align: left !important; }
 
-  /* Venue detail hero card */
-  .venue-hero-img { min-height: 420px; height: auto !important; aspect-ratio: 16/11; }
-  .venue-hero-content { left: 16px !important; bottom: 16px !important; right: 16px !important; }
-  .venue-hero-content h1 { font-size: clamp(24px, 6.5vw, 34px) !important; }
 
   /* Slot chips */
   .slot-chips { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
@@ -1057,8 +1053,6 @@ table.tbl { @apply w-full text-[14.5px] min-w-[640px]; border-collapse: collapse
   .modal-foot { padding: 8px 14px; }
   .kpi .k-value { font-size: 22px; }
   .price-lg { font-size: 20px; }
-  .venue-hero-content { left: 12px !important; bottom: 12px !important; right: 12px !important; }
-  .venue-hero-img { min-height: 440px; }
   .calc-sticky-bar { padding: 8px 10px; }
   .csb-total { font-size: 14.5px; }
   .csb-sub { display: none; }
@@ -1070,7 +1064,6 @@ table.tbl { @apply w-full text-[14.5px] min-w-[640px]; border-collapse: collapse
   .hero h1 { font-size: 24px; }
   .btn-lg { font-size: 14px; min-height: 46px; padding: 10px 14px; }
   .t-slide { width: 220px; max-width: calc(100vw - 32px); }
-  .venue-hero-content h1 { font-size: 22px !important; }
   .cal-day { min-height: 42px; }
   .cal-day .dnum { font-size: 9.5px; }
   .cal-day .dot { width: 5px; height: 5px; }

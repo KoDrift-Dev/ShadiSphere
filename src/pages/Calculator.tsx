@@ -226,46 +226,64 @@ export default function Calculator() {
           .calc-sticky-bar .btn { padding: 8px 12px; font-size: 13px; }
         }
 
-        /* estimate box: refined, compact, clear breakdown */
+        /* estimate box: clean modern styling, clear hierarchy */
         .estimate-box {
-          border: 1px solid rgba(198, 161, 91, 0.45);
-          background: linear-gradient(168deg, #FFFFFF 0%, #FAF8F2 60%, #F5EDE2 100%);
-          color: var(--color-ink-900);
-          border-radius: 20px;
-          padding: clamp(16px, 3.5vw, 24px);
-          box-shadow: 0 16px 40px rgba(30, 77, 63, 0.08), inset 0 1px 0 #fff;
+          font-family: var(--font-sans), system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+          border: 1px solid #E2E8F0;
+          background: #FFFFFF;
+          color: #0F172A;
+          border-radius: 18px;
+          padding: clamp(16px, 3vw, 22px);
+          box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.06), 0 2px 6px -1px rgba(15, 23, 42, 0.04);
         }
         .est-head { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; margin-bottom: 4px; }
+        .est-head-badge {
+          display: inline-flex; align-items: center;
+          padding: 4px 10px; border-radius: 999px;
+          font-size: 11.5px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase;
+          background: #ECFDF5; color: #047857; border: 1px solid #A7F3D0;
+        }
+        .est-head-meta { font-size: 12.5px; color: #64748B; font-weight: 400; }
+        .est-subhead { font-size: 12.5px; color: #64748B; font-weight: 400; margin: 4px 0 12px; }
         .est-breakdown { display: grid; gap: 8px; margin: 12px 0; }
         .est-group {
-          border: 1px solid rgba(198, 161, 91, 0.22);
-          border-radius: 14px;
+          border: 1px solid #E2E8F0;
+          border-radius: 12px;
           padding: 10px 14px;
-          background: rgba(255, 255, 255, 0.85);
-          backdrop-filter: blur(8px);
-          box-shadow: 0 2px 8px rgba(11, 31, 25, 0.03);
+          background: #F8FAFC;
         }
-        .est-group-head { display: flex; align-items: center; justify-content: space-between; }
-        .est-group-head > span:first-child { font-size: 13.5px; font-weight: 700; color: var(--color-pine-900); display: flex; align-items: center; gap: 6px; }
-        .est-group-head strong { font-family: var(--font-display); font-size: 15.5px; color: var(--color-pine-800); }
-        .est-line { display: flex; justify-content: space-between; gap: 10px; padding: 5px 0; border-top: 1px dashed rgba(198, 161, 91, 0.2); }
-        .est-line .lbl { font-weight: 500; font-size: 12.5px; color: var(--color-ink-800); }
-        .est-line .det { font-size: 11px; color: var(--color-ink-500); margin-top: 1px; }
-        .est-line strong { white-space: nowrap; color: var(--color-ink-900); font-size: 12.5px; }
-        .est-line strong.neg { color: #166534; }
-        .est-line .badge { margin-left: 6px; vertical-align: 1px; }
+        .est-group-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+        .est-group-title { font-size: 14.5px; font-weight: 700; color: #0F172A; display: flex; align-items: center; gap: 6px; }
+        .est-group-sub { font-size: 12px; font-weight: 400; color: #64748B; margin-left: 4px; }
+        .est-group-total { font-size: 14.5px; font-weight: 700; color: #0F172A; font-family: var(--font-sans), system-ui, sans-serif; white-space: nowrap; }
+        .est-group-total.neg { color: #16A34A; }
+        .est-line {
+          display: flex; justify-content: space-between; align-items: flex-start; gap: 12px;
+          padding: 6px 0; border-top: 1px solid #E2E8F0;
+        }
+        .est-line-body { min-width: 0; flex: 1; }
+        .est-line-title {
+          font-weight: 400; font-size: 13px; color: #334155; line-height: 1.4;
+          text-transform: none; letter-spacing: normal;
+        }
+        .est-line-detail {
+          font-weight: 400; font-size: 11.5px; color: #64748B; margin-top: 1px;
+          line-height: 1.3; text-transform: none; letter-spacing: normal;
+        }
+        .est-line-amount {
+          font-weight: 400; font-size: 13px; color: #334155; white-space: nowrap;
+          font-family: var(--font-sans), system-ui, sans-serif; padding-top: 1px;
+        }
+        .est-line-amount.neg { color: #16A34A; font-weight: 500; }
         .est-total-card {
-          margin-top: 12px;
-          padding: 14px 18px;
-          border-radius: 14px;
-          background: linear-gradient(135deg, rgba(30, 77, 63, 0.06) 0%, rgba(198, 161, 91, 0.16) 100%);
-          border: 1px solid rgba(198, 161, 91, 0.35);
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          flex-wrap: wrap;
-          gap: 10px;
+          margin-top: 12px; padding: 14px 16px; border-radius: 12px;
+          background: #F0FDF4; border: 1px solid #BBF7D0;
+          display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px;
         }
+        .est-total-label { font-size: 12px; font-weight: 700; color: #065F46; text-transform: uppercase; letter-spacing: 0.06em; }
+        .est-total-effective { font-size: 12.5px; color: #047857; font-weight: 400; margin-top: 2px; }
+        .est-total-effective strong { color: #065F46; font-weight: 700; }
+        .est-total-amount { font-size: clamp(24px, 4vw, 30px); font-weight: 800; color: #047857; font-family: var(--font-sans), system-ui, sans-serif; }
         .est-actions { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 14px; }
         @media (max-width: 640px) { .est-actions { grid-template-columns: 1fr; } }
       `}</style>
@@ -615,21 +633,15 @@ export default function Calculator() {
               <section id="estimate-box" className="panel estimate-box" style={{ marginTop: 16 }}>
                 <div className="est-head">
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                    <span style={{
-                      display: 'inline-flex', alignItems: 'center', gap: 6,
-                      padding: '4px 12px', borderRadius: 999,
-                      fontSize: 11.5, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '.12em',
-                      background: 'rgba(198,161,91,.18)', color: 'var(--color-champagne-800)',
-                      border: '1px solid rgba(198,161,91,.4)'
-                    }}>
+                    <span className="est-head-badge">
                       Estimate Summary
                     </span>
                   </div>
-                  <span style={{ fontSize: 12.5, color: 'var(--color-ink-500)', fontWeight: 500 }}>
+                  <span className="est-head-meta">
                     {guests.toLocaleString()} guests · {calc.eventType}
                   </span>
                 </div>
-                <div style={{ fontSize: 12.5, color: 'var(--color-ink-500)', margin: '4px 0 12px' }}>
+                <div className="est-subhead">
                   {venue ? `${venue.name} (${venue.area})` : 'No venue selected'}
                   {calc.date ? ` · ${fmtDate(calc.date)}` : ''} · {SLOTS.find(s => s.id === calc.slot)?.label}
                 </div>
@@ -638,24 +650,24 @@ export default function Calculator() {
                   {breakdown.map(g => g.lines.length > 0 && (
                     <div key={g.key} className="est-group">
                       <div className="est-group-head">
-                        <span>
+                        <span className="est-group-title">
                           <span aria-hidden="true">{g.icon}</span> {g.label}
-                          {g.key === 'food' && pkg && <span style={{ fontSize: 12, fontWeight: 500, color: 'var(--color-ink-400)', marginLeft: 4 }}>({pkg.name})</span>}
+                          {g.key === 'food' && pkg && <span className="est-group-sub">({pkg.name})</span>}
                         </span>
-                        <strong style={{ color: g.total < 0 ? '#15803d' : 'var(--color-pine-900)' }}>
+                        <span className={`est-group-total ${g.total < 0 ? 'neg' : ''}`}>
                           {g.total < 0 ? '−' : ''}{pkr(Math.abs(Math.round(g.total)))}
-                        </strong>
+                        </span>
                       </div>
-                      <div style={{ marginTop: 4 }}>
+                      <div style={{ marginTop: 6 }}>
                         {g.lines.map((l, i) => (
                           <div key={i} className="est-line">
-                            <div className="lbl">
-                              {l.label}
-                              {l.detail && <span className="det"> · {l.detail}</span>}
+                            <div className="est-line-body">
+                              <div className="est-line-title">{l.label}</div>
+                              {l.detail && <div className="est-line-detail">{l.detail}</div>}
                             </div>
-                            <strong className={l.amount < 0 ? 'neg' : ''}>
+                            <span className={`est-line-amount ${l.amount < 0 ? 'neg' : ''}`}>
                               {l.amount < 0 ? '−' : ''}{pkr(Math.abs(Math.round(l.amount)))}
-                            </strong>
+                            </span>
                           </div>
                         ))}
                       </div>
@@ -665,8 +677,8 @@ export default function Calculator() {
 
                 {result.appliedPromos.length > 0 && (
                   <div className="alert alert-ok" style={{ margin: '8px 0', padding: '10px 14px', fontSize: 13 }}>
-                    <strong>Promotions applied:</strong>
-                    <ul className="why-list" style={{ marginTop: 4, marginBottom: 0 }}>
+                    <strong style={{ fontWeight: 700 }}>Promotions applied:</strong>
+                    <ul className="why-list" style={{ marginTop: 4, marginBottom: 0, fontWeight: 400 }}>
                       {result.appliedPromos.map(a => (
                         <li key={a.promo.id}>{a.promo.name} — saved {pkr(a.amount)}</li>
                       ))}
@@ -676,11 +688,11 @@ export default function Calculator() {
 
                 <div className="est-total-card">
                   <div>
-                    <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--color-pine-900)', textTransform: 'uppercase', letterSpacing: '.09em' }}>
+                    <div className="est-total-label">
                       Estimated Total
                     </div>
-                    <div style={{ fontSize: 13, color: 'var(--color-ink-600)', marginTop: 2 }}>
-                      Effective: <strong style={{ color: 'var(--color-pine-800)' }}>{pkr(Math.round(result.perGuest))}</strong> / guest
+                    <div className="est-total-effective">
+                      Effective: <strong>{pkr(Math.round(result.perGuest))}</strong> / guest
                     </div>
                   </div>
                   <motion.span
@@ -688,8 +700,7 @@ export default function Calculator() {
                     initial={{ scale: 1.05, opacity: 0.7 }}
                     animate={{ scale: 1, opacity: 1 }}
                     transition={{ type: 'spring', stiffness: 320, damping: 22 }}
-                    className="font-display font-bold text-pine-900"
-                    style={{ fontSize: 'clamp(24px, 4vw, 30px)' }}
+                    className="est-total-amount"
                   >
                     {pkr(result.grandTotal)}
                   </motion.span>

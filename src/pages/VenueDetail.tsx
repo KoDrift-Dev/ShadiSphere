@@ -29,42 +29,237 @@ export default function VenueDetail() {
   const nextDays = Array.from({ length: 14 }, (_, i) => isoPlus(i));
 
   return (
-    <div>
-      <style>{`@media (max-width: 900px){ .grid-3,.grid-2{grid-template-columns:1fr;} .gallery{grid-template-columns:1fr 1fr;} .gallery .main{grid-row:auto;min-height:220px;} }
-@media (max-width: 600px){ .avail-strip{grid-template-columns:repeat(4,1fr)!important;} }
-@media (max-width: 380px){ .avail-strip{grid-template-columns:repeat(2,1fr)!important;} }`}</style>
+    <div className="venue-detail-page">
+      <style>{`
+        /* Hero banner */
+        .venue-hero-card {
+          position: relative;
+          border-radius: 20px;
+          overflow: hidden;
+          background: #0B1F19;
+          border: 1px solid rgba(198, 161, 91, 0.3);
+          box-shadow: 0 12px 36px rgba(11, 31, 25, 0.14);
+        }
+        .venue-hero-media {
+          position: relative;
+          width: 100%;
+          height: 440px;
+          overflow: hidden;
+        }
+        .venue-hero-img {
+          width: 100% !important;
+          height: 100% !important;
+          object-fit: cover !important;
+          display: block;
+        }
+        .venue-hero-overlay {
+          position: absolute;
+          inset: 0;
+          background: linear-gradient(180deg, rgba(11, 31, 25, 0.1) 0%, rgba(11, 31, 25, 0.35) 45%, rgba(11, 31, 25, 0.92) 100%);
+          pointer-events: none;
+        }
+        .venue-hero-content {
+          position: absolute;
+          bottom: 0;
+          left: 0;
+          right: 0;
+          padding: 24px 28px;
+          z-index: 10;
+          display: flex;
+          flex-direction: column;
+          justify-content: flex-end;
+        }
+        .venue-hero-title {
+          color: #FFFFFF !important;
+          text-shadow: 0 2px 14px rgba(0, 0, 0, 0.7);
+          font-family: var(--font-display);
+          font-weight: 700;
+          font-size: clamp(24px, 4.5vw, 42px);
+          line-height: 1.15;
+          margin: 6px 0 4px;
+        }
+        .venue-hero-location {
+          color: rgba(255, 255, 255, 0.92) !important;
+          font-weight: 500;
+          font-size: 14.5px;
+          text-shadow: 0 1px 8px rgba(0, 0, 0, 0.6);
+          margin: 0 0 12px;
+        }
+        .venue-hero-stats {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 8px;
+        }
+        .venue-stat-pill {
+          display: inline-flex;
+          align-items: center;
+          gap: 8px;
+          border-radius: 999px;
+          padding: 6px 14px;
+          font-size: 13px;
+          font-weight: 600;
+          backdrop-filter: blur(12px);
+          -webkit-backdrop-filter: blur(12px);
+        }
+        .venue-stat-pill.white {
+          background: rgba(255, 255, 255, 0.18);
+          border: 1px solid rgba(255, 255, 255, 0.35);
+          color: #FFFFFF;
+          text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
+        }
+        .venue-stat-pill.gold {
+          background: rgba(198, 161, 91, 0.28);
+          border: 1px solid rgba(232, 200, 115, 0.6);
+          color: #FBF3DF;
+          text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        /* 2-column layout */
+        .venue-grid {
+          display: grid;
+          grid-template-columns: 1.25fr 1fr;
+          gap: 24px;
+          margin-top: 24px;
+          align-items: start;
+        }
+
+        /* Rental Table: fully responsive on all screens */
+        .rental-tbl {
+          width: 100% !important;
+          min-width: 0 !important;
+          border-collapse: collapse;
+        }
+        .rental-tbl th, .rental-tbl td {
+          padding: 10px 10px;
+        }
+
+        /* Gallery */
+        .venue-gallery {
+          display: grid;
+          grid-template-columns: 2fr 1fr 1fr;
+          gap: 10px;
+        }
+        .venue-gallery img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          border-radius: 14px;
+          min-height: 160px;
+        }
+        .venue-gallery .main {
+          grid-row: span 2;
+          min-height: 330px;
+        }
+
+        /* Availability grid */
+        .venue-avail-grid {
+          display: grid;
+          grid-template-columns: repeat(7, 1fr);
+          gap: 8px;
+        }
+
+        /* Similar spaces grid */
+        .similar-grid {
+          display: grid;
+          grid-template-columns: repeat(3, 1fr);
+          gap: 20px;
+        }
+
+        @media (max-width: 900px) {
+          .venue-grid {
+            grid-template-columns: 1fr;
+            gap: 20px;
+          }
+          .similar-grid {
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+          }
+        }
+
+        @media (max-width: 768px) {
+          .venue-hero-media { height: 360px; }
+          .venue-hero-content { padding: 18px 20px; }
+          .venue-gallery {
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+          }
+          .venue-gallery .main {
+            grid-column: span 2;
+            grid-row: auto;
+            min-height: 190px;
+            height: 200px;
+          }
+          .venue-gallery img {
+            height: 110px;
+            min-height: unset;
+          }
+          .venue-avail-grid {
+            grid-template-columns: repeat(4, 1fr);
+            gap: 6px;
+          }
+        }
+
+        @media (max-width: 580px) {
+          .similar-grid {
+            grid-template-columns: 1fr;
+          }
+        }
+
+        @media (max-width: 480px) {
+          .venue-hero-media { height: 310px; }
+          .venue-hero-content { padding: 14px 14px; }
+          .venue-hero-title { font-size: 22px; margin: 4px 0 2px; }
+          .venue-hero-location { font-size: 13px; margin-bottom: 8px; }
+          .venue-stat-pill { font-size: 11.5px; padding: 4px 10px; gap: 5px; }
+          .rental-tbl th, .rental-tbl td {
+            padding: 8px 6px;
+            font-size: 12.5px;
+          }
+        }
+
+        @media (max-width: 380px) {
+          .venue-hero-media { height: 280px; }
+          .venue-hero-title { font-size: 20px; }
+          .venue-avail-grid {
+            grid-template-columns: repeat(3, 1fr);
+            gap: 5px;
+          }
+        }
+      `}</style>
       <div className="wrap">
-        <div className="section-tight">
-          <Link to="/venues" className="small" style={{ fontWeight: 600 }}>← All our spaces</Link>
+        <div className="section-tight" style={{ paddingTop: 16 }}>
+          <Link to="/venues" className="inline-flex items-center gap-1.5 text-[13.5px] font-semibold text-pine-700 hover:text-pine-800 transition-colors py-1">
+            ← All our spaces
+          </Link>
 
           <Reveal>
-          <div className="card overflow-hidden" style={{ marginTop: 14 }}>
-            <div style={{ position: 'relative' }}>
-              <Img src={venue.image} alt={venue.name} className="venue-hero-img" />
-              <div aria-hidden="true" style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(11,31,25,.85) 0%, rgba(11,31,25,.28) 48%, transparent 72%)' }} />
-              <div className="venue-hero-content">
-                <div className="chip-row" style={{ marginBottom: 10 }}>
-                  <Badge tone="green">{venue.type}</Badge>
-                  <Badge tone="gold">{venue.config}</Badge>
-                  {venue.featured && <Badge tone="gold">Featured</Badge>}
-                </div>
-                <h1 style={{ color: '#fff', textShadow: '0 2px 12px rgba(0,0,0,.5)', margin: 0, fontSize: 'clamp(30px,4vw,46px)' }}>{venue.name}</h1>
-                <p style={{ color: 'rgba(255,255,255,.9)', margin: '6px 0 14px', fontWeight: 500 }}>{venue.area}, Lahore</p>
-                <div className="flex flex-wrap gap-2.5">
-                  <span className="inline-flex items-center gap-2 rounded-full border border-white/25 bg-white/10 px-4 py-2 text-[13px] font-semibold text-white shadow-lg backdrop-blur-md">
-                    <span className="h-1.5 w-1.5 rounded-full bg-champagne-400" aria-hidden="true" />
-                    {venue.minGuests.toLocaleString()} – {venue.maxGuests.toLocaleString()} guests
-                  </span>
-                  <span className="inline-flex items-center gap-2 rounded-full border border-champagne-400/50 bg-champagne-400/20 px-4 py-2 text-[13px] font-semibold text-champagne-100 shadow-lg backdrop-blur-md">
-                    Hall from {pkr(Math.min(venue.hallRental.lunch, venue.hallRental.afternoon, venue.hallRental.evening))}
-                  </span>
+            <div className="venue-hero-card" style={{ marginTop: 12 }}>
+              <div className="venue-hero-media">
+                <Img src={venue.image} alt={venue.name} className="venue-hero-img" />
+                <div aria-hidden="true" className="venue-hero-overlay" />
+                <div className="venue-hero-content">
+                  <div className="chip-row" style={{ marginBottom: 8, gap: 6 }}>
+                    <Badge tone="green">{venue.type}</Badge>
+                    <Badge tone="gold">{venue.config}</Badge>
+                    {venue.featured && <Badge tone="gold">Featured</Badge>}
+                  </div>
+                  <h1 className="venue-hero-title">{venue.name}</h1>
+                  <p className="venue-hero-location">{venue.area}, Lahore</p>
+                  <div className="venue-hero-stats">
+                    <span className="venue-stat-pill white">
+                      <span className="h-2 w-2 rounded-full bg-champagne-400" aria-hidden="true" />
+                      {venue.minGuests.toLocaleString()} – {venue.maxGuests.toLocaleString()} guests
+                    </span>
+                    <span className="venue-stat-pill gold">
+                      Hall from {pkr(Math.min(venue.hallRental.lunch, venue.hallRental.afternoon, venue.hallRental.evening))}
+                    </span>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
           </Reveal>
 
-          <div className="grid grid-2" style={{ marginTop: 26, alignItems: 'start' }}>
+          <div className="venue-grid">
             <div>
               <Reveal>
               <div className="panel">
@@ -92,7 +287,7 @@ export default function VenueDetail() {
               <div className="panel" style={{ marginTop: 20 }}>
                 <span className="eyebrow" style={{ marginBottom: 10 }}><span className="rule" />Gallery</span>
                 <h3 style={{ marginTop: 0 }}>A look inside</h3>
-                <div className="gallery">
+                <div className="venue-gallery">
                   {venue.gallery.map((g, i) => (
                     <Img key={g + i} src={g} alt={`${venue.name} — photo ${i + 1}`} className={i === 0 ? 'main' : ''} style={{ width: '100%' }} />
                   ))}
@@ -111,18 +306,26 @@ export default function VenueDetail() {
                 </div>
                 <h3>Indicative hall rental</h3>
                 <p className="small muted">Illustrative sample rates per slot. Actual quotes depend on date, season and inclusions.</p>
-                <div className="table-wrap"><table className="tbl">
-                  <thead><tr><th>Slot</th><th>Time</th><th style={{ textAlign: 'right' }}>Rental</th></tr></thead>
-                  <tbody>
-                    {SLOTS.map(s => (
-                      <tr key={s.id}>
-                        <td style={{ fontWeight: 600 }}>{s.label}</td>
-                        <td className="small muted">{s.time}</td>
-                        <td style={{ textAlign: 'right', fontWeight: 700, color: 'var(--color-pine-600)' }}>{pkr(venue.hallRental[s.id])}</td>
+                <div className="table-wrap" style={{ minWidth: 0, overflowX: 'auto' }}>
+                  <table className="tbl rental-tbl" style={{ minWidth: 0, width: '100%' }}>
+                    <thead>
+                      <tr>
+                        <th style={{ padding: '8px 10px' }}>Slot</th>
+                        <th style={{ padding: '8px 10px' }}>Time</th>
+                        <th style={{ textAlign: 'right', padding: '8px 10px' }}>Rental</th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table></div>
+                    </thead>
+                    <tbody>
+                      {SLOTS.map(s => (
+                        <tr key={s.id}>
+                          <td style={{ fontWeight: 600, padding: '8px 10px' }}>{s.label}</td>
+                          <td className="small muted" style={{ padding: '8px 10px' }}>{s.time}</td>
+                          <td style={{ textAlign: 'right', fontWeight: 700, color: 'var(--color-pine-600)', padding: '8px 10px', whiteSpace: 'nowrap' }}>{pkr(venue.hallRental[s.id])}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginTop: 20 }}>
                   <Btn onClick={() => { setCalc(c => ({ ...c, venueId: venue.id, city: 'Lahore' })); nav('/calculator'); }} block>Calculate Cost for This Hall</Btn>
                   <Btn to="/calendar" variant="outline" block>Check Availability</Btn>
@@ -138,7 +341,7 @@ export default function VenueDetail() {
                   <Link to="/calendar" className="small" style={{ fontWeight: 600 }}>Open full calendar →</Link>
                 </div>
                 <p className="small muted">Availability shown is illustrative — not a live reservation system.</p>
-                <div className="grid avail-strip" style={{ gridTemplateColumns: 'repeat(7, 1fr)', gap: 8 }}>
+                <div className="venue-avail-grid">
                   {nextDays.map(d => {
                     const sum = daySummary(venue.id, d, SLOT_IDS, state.bookings);
                     return (
@@ -176,7 +379,7 @@ export default function VenueDetail() {
                   <div aria-hidden="true" className="h-[2px] w-16 rounded-full bg-gradient-to-r from-champagne-400 to-transparent" />
                 </div>
               </Reveal>
-              <Stagger className="grid grid-3" gap={0.1}>
+              <Stagger className="similar-grid" gap={0.1}>
                 {similar.map(v => (
                   <StaggerItem key={v.id} className="h-full">
                   <article className="card h-full transition-transform duration-300 hover:-translate-y-1.5">
