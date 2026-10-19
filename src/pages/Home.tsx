@@ -74,7 +74,7 @@ function HeroSearch() {
       </Field>
       <div className="field">
         <label className="hide-m" aria-hidden="true">&nbsp;</label>
-        <Btn type="submit" variant="gold" block>Find My Date →</Btn>
+        <Btn type="submit" variant="primary" block>Find My Date →</Btn>
       </div>
     </form>
   );
