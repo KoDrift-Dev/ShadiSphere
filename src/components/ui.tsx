@@ -14,7 +14,7 @@ export function Reveal({ children, delay = 0, y = 22, className, style }: {
       className={className} style={style}
       initial={{ opacity: 0, y }}
       whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: '-60px' }}
+      viewport={{ once: true }}
       transition={{ duration: 0.55, delay, ease: [0.22, 1, 0.36, 1] }}
     >
       {children}
@@ -29,7 +29,8 @@ export function Stagger({ children, className, style, gap = 0.08 }: {
   return (
     <motion.div
       className={className} style={style}
-      initial="hidden" whileInView="show" viewport={{ once: true, margin: '-40px' }}
+      initial="hidden"
+      animate="show"
       variants={{ hidden: {}, show: { transition: { staggerChildren: gap } } }}
     >
       {children}
