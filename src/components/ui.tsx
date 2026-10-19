@@ -244,17 +244,23 @@ export function MiniCalendar({ value, onChange, minDate, ariaLabel }: {
     });
   }, [open]);
 
-  // Close on scroll/resize so the fixed popup never detaches from its field.
+  // Close on page scroll/resize so the fixed popup never detaches from its field,
+  // but allow scrolling inside the calendar popup.
   React.useEffect(() => {
     if (!open) return;
-    const close = () => setOpen(false);
-    window.addEventListener('scroll', close, true);
-    window.addEventListener('resize', close);
-    return () => {
-      window.removeEventListener('scroll', close, true);
-      window.removeEventListener('resize', close);
+    const onScroll = (e: Event) => {
+      if (popRef.current && (popRef.current === e.target || popRef.current.contains(e.target as Node))) {
+        return;
+      }
+      setOpen(false);
     };
-  }, [open ]);
+    window.addEventListener('scroll', onScroll, true);
+    window.addEventListener('resize', () => setOpen(false));
+    return () => {
+      window.removeEventListener('scroll', onScroll, true);
+      window.removeEventListener('resize', () => setOpen(false));
+    };
+  }, [open]);
 
   return (
     <div className="mini-cal-wrap">
@@ -360,20 +366,25 @@ export function Select({ value, onChange, children, ariaLabel, className }: {
     });
   }, [open]);
 
-  // Close on scroll / resize / Escape.
+  // Close on page scroll / resize / Escape, but allow scrolling inside the dropdown popup.
   React.useEffect(() => {
     if (!open) return;
-    const close = () => setOpen(false);
+    const onScroll = (e: Event) => {
+      if (popRef.current && (popRef.current === e.target || popRef.current.contains(e.target as Node))) {
+        return;
+      }
+      setOpen(false);
+    };
     const esc = (e: KeyboardEvent) => { if (e.key === 'Escape') setOpen(false); };
-    window.addEventListener('scroll', close, true);
-    window.addEventListener('resize', close);
+    window.addEventListener('scroll', onScroll, true);
+    window.addEventListener('resize', () => setOpen(false));
     window.addEventListener('keydown', esc);
     return () => {
-      window.removeEventListener('scroll', close, true);
-      window.removeEventListener('resize', close);
+      window.removeEventListener('scroll', onScroll, true);
+      window.removeEventListener('resize', () => setOpen(false));
       window.removeEventListener('keydown', esc);
     };
-  }, [open ]);
+  }, [open]);
 
   return (
     <>

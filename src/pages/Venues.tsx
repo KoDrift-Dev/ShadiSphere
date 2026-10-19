@@ -62,9 +62,12 @@ export default function Venues() {
           </Reveal>
 
           <Reveal delay={0.05}>
-          <div className="panel relative overflow-hidden" style={{ marginBottom: 26 }}>
+          <div className="panel relative" style={{ marginBottom: 26 }}>
             <div aria-hidden="true" className="pointer-events-none absolute -right-20 -top-20 h-56 w-56 rounded-full bg-champagne-300/25 blur-3xl" />
-            <span className="eyebrow relative" style={{ marginBottom: 14 }}><span className="rule" />Refine your search</span>
+            <div className="flex items-center justify-between flex-wrap gap-2.5" style={{ marginBottom: 16 }}>
+              <span className="eyebrow relative" style={{ margin: 0 }}><span className="rule" />Refine your search</span>
+              <Btn variant="outline" size="sm" onClick={clear} disabled={!hasFilters}>Clear filters</Btn>
+            </div>
             <div className="filter-bar">
               <Field label="Space type">
                 <Select value={type} onChange={v => setType(v)}>
@@ -81,7 +84,7 @@ export default function Venues() {
                   <option>All</option>{amenities.map(a => <option key={a} value={a}>{a}</option>)}
                 </Select>
               </Field>
-              <Field label="Guest count" hint="Venue must fit this many guests">
+              <Field label="Guest count" hint="Must fit this many guests">
                 <input type="number" className="input" placeholder="e.g. 500" value={guests} min={50} max={3000} onChange={e => setGuests(e.target.value)} />
               </Field>
               <Field label="Max hall rental (Rs)" hint="Evening slot rental ≤ budget">
@@ -94,10 +97,6 @@ export default function Venues() {
                   <option value="price">Hall rental (low to high)</option>
                 </Select>
               </Field>
-              <div className="field">
-                <label>&nbsp;</label>
-                <Btn variant="outline" onClick={clear} disabled={!hasFilters}>Clear filters</Btn>
-              </div>
             </div>
           </div>
           </Reveal>
