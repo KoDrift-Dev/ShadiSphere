@@ -154,9 +154,6 @@ export default function Calculator() {
       return;
     }
     setShowEstimate(true);
-    requestAnimationFrame(() => {
-      document.getElementById('estimate-box')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    });
   };
 
   return (
@@ -222,24 +219,55 @@ export default function Calculator() {
           .calc-sticky-bar { bottom: 8px; padding: 10px 10px 10px 14px; border-radius: 16px; }
           .csb-total { font-size: 16px; }
         }
+        @media (max-width: 380px) {
+          .calc-sticky-bar { padding: 8px 10px; gap: 6px; }
+          .csb-total { font-size: 14.5px; }
+          .csb-sub { display: none; }
+          .calc-sticky-bar .btn { padding: 8px 12px; font-size: 13px; }
+        }
 
-        /* estimate box: full itemized breakdown */
-        .estimate-box { border-color: rgba(198,161,91,.45); background: linear-gradient(165deg, rgba(30,77,63,.97), rgba(16,42,35,.96)); color: #F2EEDF; }
-        .est-head { margin-bottom: 6px; }
-        .est-head h2 { margin: 0; }
-        .est-breakdown { display: grid; gap: 8px; margin: 12px 0 4px; }
-        .est-group { border: 1px solid rgba(198,161,91,.28); border-radius: 12px; padding: 10px 12px; background: rgba(255,255,255,.05); }
-        .est-group-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
-        .est-group-head > span:first-child { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .1em; color: var(--color-champagne-300); }
-        .est-group-head strong { font-family: var(--font-display); font-size: 15px; color: #E8C873; }
-        .est-line { display: flex; justify-content: space-between; gap: 10px; padding: 6px 0; border-top: 1px solid rgba(198,161,91,.16); }
-        .est-line .lbl { font-weight: 600; font-size: 12px; color: #F2EEDF; }
-        .est-line .det { font-size: 11px; color: rgba(255,255,255,.55); margin-top: 1px; }
-        .est-line strong { white-space: nowrap; color: #fff; font-size: 12px; }
-        .est-line strong.neg { color: #7BD8A4; }
+        /* estimate box: refined, compact, clear breakdown */
+        .estimate-box {
+          border: 1px solid rgba(198, 161, 91, 0.45);
+          background: linear-gradient(168deg, #FFFFFF 0%, #FAF8F2 60%, #F5EDE2 100%);
+          color: var(--color-ink-900);
+          border-radius: 20px;
+          padding: clamp(16px, 3.5vw, 24px);
+          box-shadow: 0 16px 40px rgba(30, 77, 63, 0.08), inset 0 1px 0 #fff;
+        }
+        .est-head { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; margin-bottom: 4px; }
+        .est-breakdown { display: grid; gap: 8px; margin: 12px 0; }
+        .est-group {
+          border: 1px solid rgba(198, 161, 91, 0.22);
+          border-radius: 14px;
+          padding: 10px 14px;
+          background: rgba(255, 255, 255, 0.85);
+          backdrop-filter: blur(8px);
+          box-shadow: 0 2px 8px rgba(11, 31, 25, 0.03);
+        }
+        .est-group-head { display: flex; align-items: center; justify-content: space-between; }
+        .est-group-head > span:first-child { font-size: 13.5px; font-weight: 700; color: var(--color-pine-900); display: flex; align-items: center; gap: 6px; }
+        .est-group-head strong { font-family: var(--font-display); font-size: 15.5px; color: var(--color-pine-800); }
+        .est-line { display: flex; justify-content: space-between; gap: 10px; padding: 5px 0; border-top: 1px dashed rgba(198, 161, 91, 0.2); }
+        .est-line .lbl { font-weight: 500; font-size: 12.5px; color: var(--color-ink-800); }
+        .est-line .det { font-size: 11px; color: var(--color-ink-500); margin-top: 1px; }
+        .est-line strong { white-space: nowrap; color: var(--color-ink-900); font-size: 12.5px; }
+        .est-line strong.neg { color: #166534; }
         .est-line .badge { margin-left: 6px; vertical-align: 1px; }
-        .est-actions { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 14px; }
-        @media (max-width: 700px) { .est-actions { grid-template-columns: 1fr 1fr; } }
+        .est-total-card {
+          margin-top: 12px;
+          padding: 14px 18px;
+          border-radius: 14px;
+          background: linear-gradient(135deg, rgba(30, 77, 63, 0.06) 0%, rgba(198, 161, 91, 0.16) 100%);
+          border: 1px solid rgba(198, 161, 91, 0.35);
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          flex-wrap: wrap;
+          gap: 10px;
+        }
+        .est-actions { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 14px; }
+        @media (max-width: 640px) { .est-actions { grid-template-columns: 1fr; } }
       `}</style>
 
       <Reveal>
@@ -437,9 +465,24 @@ export default function Calculator() {
             </section>
           </Reveal>
           )}
-          {/* ---------- Add Custom browser popup (toggle only — no steppers) ---------- */}
           {menuCard === 'custom' && (
-            <Modal title="＋ Add custom" onClose={() => setMenuCard(null)}>
+            <Modal
+              title="＋ Add custom"
+              onClose={() => setMenuCard(null)}
+              footer={
+                <Btn
+                  variant="gold"
+                  block
+                  onClick={() => {
+                    setMenuCard(null);
+                    setShowEstimate(true);
+                    toast('Estimate updated');
+                  }}
+                >
+                  Update Estimate ✓
+                </Btn>
+              }
+            >
               {pkg && (
                 <button type="button" className="opt-row" onClick={() => setShowPkgItems(true)} aria-haspopup="dialog">
                   <span className="opt-icon" aria-hidden="true">🍽️</span>
@@ -509,7 +552,15 @@ export default function Calculator() {
 
           {/* ---------- package dishes popup (stacked above the browser) ---------- */}
           {showPkgItems && pkg && (
-            <Modal title={`🍽️ ${pkg.name} — dishes`} onClose={() => setShowPkgItems(false)}>
+            <Modal
+              title={`🍽️ ${pkg.name} — dishes`}
+              onClose={() => setShowPkgItems(false)}
+              footer={
+                <Btn variant="primary" block onClick={() => setShowPkgItems(false)}>
+                  Done
+                </Btn>
+              }
+            >
               <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 8 }}>
                 <button type="button" className="btn btn-outline btn-sm" onClick={resetMenu}>Reset menu</button>
               </div>
@@ -563,82 +614,91 @@ export default function Calculator() {
             <Reveal>
               <section id="estimate-box" className="panel estimate-box" style={{ marginTop: 16 }}>
                 <div className="est-head">
-                  <h2 className="font-sans text-[13px] font-bold uppercase tracking-[0.18em] text-champagne-300">Your estimate</h2>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                    <span style={{
+                      display: 'inline-flex', alignItems: 'center', gap: 6,
+                      padding: '4px 12px', borderRadius: 999,
+                      fontSize: 11.5, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '.12em',
+                      background: 'rgba(198,161,91,.18)', color: 'var(--color-champagne-800)',
+                      border: '1px solid rgba(198,161,91,.4)'
+                    }}>
+                      Estimate Summary
+                    </span>
+                  </div>
+                  <span style={{ fontSize: 12.5, color: 'var(--color-ink-500)', fontWeight: 500 }}>
+                    {guests.toLocaleString()} guests · {calc.eventType}
+                  </span>
                 </div>
-                <div className="small" style={{ marginBottom: 4, color: 'rgba(255,255,255,.72)' }}>
-                  {guests.toLocaleString()} guests · {calc.eventType} · {SLOTS.find(s => s.id === calc.slot)?.label}
-                  {venue ? ` · ${venue.name}` : ' · No venue yet'}
-                  {calc.date && ` · ${fmtDate(calc.date)}`}
+                <div style={{ fontSize: 12.5, color: 'var(--color-ink-500)', margin: '4px 0 12px' }}>
+                  {venue ? `${venue.name} (${venue.area})` : 'No venue selected'}
+                  {calc.date ? ` · ${fmtDate(calc.date)}` : ''} · {SLOTS.find(s => s.id === calc.slot)?.label}
                 </div>
 
                 <div className="est-breakdown">
                   {breakdown.map(g => g.lines.length > 0 && (
                     <div key={g.key} className="est-group">
                       <div className="est-group-head">
-                        <span><span aria-hidden="true">{g.icon}</span> {g.label}</span>
-                        <strong>{g.total < 0 ? '−' : ''}{pkr(Math.abs(Math.round(g.total)))}</strong>
+                        <span>
+                          <span aria-hidden="true">{g.icon}</span> {g.label}
+                          {g.key === 'food' && pkg && <span style={{ fontSize: 12, fontWeight: 500, color: 'var(--color-ink-400)', marginLeft: 4 }}>({pkg.name})</span>}
+                        </span>
+                        <strong style={{ color: g.total < 0 ? '#15803d' : 'var(--color-pine-900)' }}>
+                          {g.total < 0 ? '−' : ''}{pkr(Math.abs(Math.round(g.total)))}
+                        </strong>
                       </div>
-                      {g.lines.map((l, i) => (
-                        <div key={i} className="est-line">
-                          <div>
-                            <div className="lbl">{l.label} {kindBadge(l.kind)}</div>
-                            {l.detail && <div className="det">{l.detail}</div>}
+                      <div style={{ marginTop: 4 }}>
+                        {g.lines.map((l, i) => (
+                          <div key={i} className="est-line">
+                            <div className="lbl">
+                              {l.label}
+                              {l.detail && <span className="det"> · {l.detail}</span>}
+                            </div>
+                            <strong className={l.amount < 0 ? 'neg' : ''}>
+                              {l.amount < 0 ? '−' : ''}{pkr(Math.abs(Math.round(l.amount)))}
+                            </strong>
                           </div>
-                          <strong className={l.amount < 0 ? 'neg' : ''}>
-                            {l.amount < 0 ? '−' : ''}{pkr(Math.abs(Math.round(l.amount)))}
-                          </strong>
-                        </div>
-                      ))}
+                        ))}
+                      </div>
                     </div>
                   ))}
                 </div>
 
                 {result.appliedPromos.length > 0 && (
-                  <div className="alert alert-ok" style={{ marginTop: 6 }}>
+                  <div className="alert alert-ok" style={{ margin: '8px 0', padding: '10px 14px', fontSize: 13 }}>
                     <strong>Promotions applied:</strong>
-                    <ul className="why-list" style={{ marginTop: 8 }}>
+                    <ul className="why-list" style={{ marginTop: 4, marginBottom: 0 }}>
                       {result.appliedPromos.map(a => (
-                        <li key={a.promo.id}>{a.promo.name} — {a.reason} · saved {pkr(a.amount)}</li>
+                        <li key={a.promo.id}>{a.promo.name} — saved {pkr(a.amount)}</li>
                       ))}
                     </ul>
-                    {result.discountCapped && (
-                      <div className="small" style={{ marginTop: 6 }}>
-                        Total discounts capped at {MAX_DISCOUNT_PCT}% of subtotal.
-                      </div>
-                    )}
                   </div>
                 )}
 
-                <div className="divider" style={{ background: 'linear-gradient(90deg, transparent, rgba(198,161,91,.5), transparent)' }} />
-                <div className="total-row">
-                  <span style={{ color: 'rgba(255,255,255,.85)', fontWeight: 600 }}>Estimated grand total</span>
+                <div className="est-total-card">
+                  <div>
+                    <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--color-pine-900)', textTransform: 'uppercase', letterSpacing: '.09em' }}>
+                      Estimated Total
+                    </div>
+                    <div style={{ fontSize: 13, color: 'var(--color-ink-600)', marginTop: 2 }}>
+                      Effective: <strong style={{ color: 'var(--color-pine-800)' }}>{pkr(Math.round(result.perGuest))}</strong> / guest
+                    </div>
+                  </div>
                   <motion.span
                     key={result.grandTotal}
-                    initial={{ scale: 1.08, opacity: 0.5 }}
+                    initial={{ scale: 1.05, opacity: 0.7 }}
                     animate={{ scale: 1, opacity: 1 }}
                     transition={{ type: 'spring', stiffness: 320, damping: 22 }}
-                    className="price-lg"
-                    style={{ color: '#E8C873' }}
+                    className="font-display font-bold text-pine-900"
+                    style={{ fontSize: 'clamp(24px, 4vw, 30px)' }}
                   >
                     {pkr(result.grandTotal)}
                   </motion.span>
                 </div>
-                <div className="line-item" style={{ borderBottomColor: 'rgba(198,161,91,.25)', color: '#F2EEDF' }}>
-                  <span style={{ color: 'rgba(255,255,255,.7)' }}>Effective cost per guest</span>
-                  <strong style={{ color: '#fff' }}>{pkr(Math.round(result.perGuest))}</strong>
-                </div>
-                <p className="small" style={{ marginTop: 10, color: 'rgba(255,255,255,.6)' }}>
-                  Illustrative estimate. Final rates depend on venue, menu, guest count, date and service inclusions.
-                </p>
-
 
                 <div className="est-actions">
-                  <Btn variant="light" size="sm" to="/compare" block>Compare packages →</Btn>
-                  <Btn variant="outline" size="sm" to="/calendar" block>Find Available Dates</Btn>
-                  <Btn variant="gold" size="sm" to="/quote" block>Get My Quotation</Btn>
-                  <Btn variant="primary" size="sm" block onClick={() => { toast('Your estimate is saved — complete the inquiry when ready.'); nav('/quote'); }}>
-                    Continue to Inquiry
-                  </Btn>
+                  <Btn variant="primary" size="sm" to="/quote" block>Get Quotation / Send Inquiry →</Btn>
+                  <Btn variant="outline" size="sm" to="/calendar" block>Check Dates</Btn>
+                  <Btn variant="outline" size="sm" to="/compare" block>Compare Packages</Btn>
                 </div>
               </section>
             </Reveal>

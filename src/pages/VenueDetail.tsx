@@ -31,7 +31,8 @@ export default function VenueDetail() {
   return (
     <div>
       <style>{`@media (max-width: 900px){ .grid-3,.grid-2{grid-template-columns:1fr;} .gallery{grid-template-columns:1fr 1fr;} .gallery .main{grid-row:auto;min-height:220px;} }
-@media (max-width: 600px){ .avail-strip{grid-template-columns:repeat(4,1fr)!important;} }`}</style>
+@media (max-width: 600px){ .avail-strip{grid-template-columns:repeat(4,1fr)!important;} }
+@media (max-width: 380px){ .avail-strip{grid-template-columns:repeat(2,1fr)!important;} }`}</style>
       <div className="wrap">
         <div className="section-tight">
           <Link to="/venues" className="small" style={{ fontWeight: 600 }}>← All our spaces</Link>
@@ -39,9 +40,9 @@ export default function VenueDetail() {
           <Reveal>
           <div className="card overflow-hidden" style={{ marginTop: 14 }}>
             <div style={{ position: 'relative' }}>
-              <Img src={venue.image} alt={venue.name} style={{ width: '100%', height: 380, objectFit: 'cover', display: 'block' }} />
+              <Img src={venue.image} alt={venue.name} className="venue-hero-img" />
               <div aria-hidden="true" style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(11,31,25,.85) 0%, rgba(11,31,25,.28) 48%, transparent 72%)' }} />
-              <div style={{ position: 'absolute', left: 24, bottom: 20, right: 24 }}>
+              <div className="venue-hero-content">
                 <div className="chip-row" style={{ marginBottom: 10 }}>
                   <Badge tone="green">{venue.type}</Badge>
                   <Badge tone="gold">{venue.config}</Badge>
@@ -132,7 +133,7 @@ export default function VenueDetail() {
               <Reveal>
               <div className="panel" style={{ marginTop: 20 }}>
                 <span className="eyebrow" style={{ marginBottom: 10 }}><span className="rule" />Live preview</span>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 8, marginBottom: 12 }}>
                   <h3 style={{ margin: 0 }}>Availability preview</h3>
                   <Link to="/calendar" className="small" style={{ fontWeight: 600 }}>Open full calendar →</Link>
                 </div>

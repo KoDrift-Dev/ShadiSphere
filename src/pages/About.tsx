@@ -117,7 +117,7 @@ export default function About() {
                     <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-champagne-400 opacity-60" aria-hidden="true" />
                     <span className="relative inline-flex h-4 w-4 rounded-full border-2 border-cream-50 bg-champagne-500" aria-hidden="true" />
                   </span>
-                  <span className="rounded-full border border-white/25 bg-white/10 px-3 py-1 text-[12px] font-semibold text-cream-50 backdrop-blur-md">ShadiSphere Grand Marquee</span>
+                  <span className="inline-block max-w-[90%] truncate rounded-full border border-white/25 bg-white/10 px-3 py-1 text-[12px] font-semibold text-cream-50 backdrop-blur-md">ShadiSphere Grand Marquee</span>
                 </div>
                 <span className="absolute bottom-3 right-4 text-[11px] font-medium uppercase tracking-widest text-cream-50/60">Map preview</span>
               </div>
@@ -132,7 +132,7 @@ export default function About() {
           </div>
 
           <Reveal>
-          <div className="panel center relative overflow-hidden" style={{ marginTop: 24, padding: 40 }}>
+          <div className="panel center relative overflow-hidden" style={{ marginTop: 24, padding: 'clamp(24px, 5vw, 40px)' }}>
             <div aria-hidden="true" className="pointer-events-none absolute -top-24 left-1/2 h-48 w-[28rem] -translate-x-1/2 rounded-full bg-champagne-300/25 blur-3xl" />
             <div aria-hidden="true" className="mx-auto mb-6 h-[2px] w-24 rounded-full bg-gradient-to-r from-transparent via-champagne-400 to-transparent" />
             <h2 className="relative" style={{ marginBottom: 10 }}>Start planning your celebration</h2>

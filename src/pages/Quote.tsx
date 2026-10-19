@@ -258,7 +258,7 @@ export default function Quote() {
                 <input className="input" type="email" value={form.email} onChange={e => setForm(f => ({ ...f, email: e.target.value }))}
                   placeholder="you@example.com" aria-label="Email" />
               </Field>
-              <div className="form-row" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
+              <div className="form-row c2">
                 <Field label="City">
                   <input className="input" value={BUSINESS.city} disabled aria-label="City" />
                 </Field>
@@ -268,7 +268,7 @@ export default function Quote() {
                   </Select>
                 </Field>
               </div>
-              <div className="form-row" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
+              <div className="form-row c2">
                 <Field label="Preferred date *" error={errors.date}>
                   <MiniCalendar value={form.date}
                     onChange={iso => setForm(f => ({ ...f, date: iso }))} ariaLabel="Preferred date" />

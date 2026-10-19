@@ -10,7 +10,7 @@ export default function Footer() {
             <span className="brand-mark">S</span>
             <span className="brand-name" style={{ color: '#fff' }}>Shadi<span style={{ color: 'var(--color-champagne-300)' }}>Sphere</span></span>
           </div>
-          <p style={{ fontSize: 14, maxWidth: 320 }}>{BUSINESS.name} — {BUSINESS.tagline} Explore our spaces, customize menus and plan your wedding with confidence.</p>
+          <p style={{ fontSize: 14, maxWidth: 'min(320px, 100%)' }}>{BUSINESS.name} — {BUSINESS.tagline} Explore our spaces, customize menus and plan your wedding with confidence.</p>
           <p style={{ fontSize: 12.5, color: '#A9A28C' }}>Contact: {BUSINESS.email} · {BUSINESS.phone} · {BUSINESS.address}</p>
         </div>
         <div>

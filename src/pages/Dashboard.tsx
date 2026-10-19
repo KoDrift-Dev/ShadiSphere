@@ -97,7 +97,7 @@ function DashGate({ children }: { children: React.ReactNode }) {
   if (entered) return <>{children}</>;
   return (
     <div className="wrap" style={{ minHeight: '70vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-      <Reveal className="panel" style={{ maxWidth: 560, textAlign: 'center', padding: '46px 40px' }}>
+      <Reveal className="panel" style={{ maxWidth: 560, textAlign: 'center', padding: 'clamp(28px, 6vw, 46px) clamp(16px, 5vw, 40px)' }}>
         <div className="eyebrow" style={{ justifyContent: 'center' }}><span className="rule" />ShadiSphere<span className="rule" /></div>
         <h1 className="font-display" style={{ fontSize: 34 }}>Owner Dashboard</h1>
         <p className="lead" style={{ marginTop: 8 }}>
@@ -157,7 +157,7 @@ function DashShell() {
         @media (max-width: 560px) { .kpi-grid { grid-template-columns: 1fr; } }
       `}</style>
       <aside className="dash-side">
-        <div style={{ padding: '2px 14px 14px' }}>
+        <div className="dash-side-top" style={{ padding: '2px 14px 14px' }}>
           <div className="brandline">ShadiSphere<span className="gdot">.</span></div>
           <div style={{ fontSize: 12.5, color: 'var(--color-champagne-300)', letterSpacing: '.08em', textTransform: 'uppercase', marginTop: 4 }}>
             Owner Dashboard
@@ -170,7 +170,7 @@ function DashShell() {
             </Link>
           ))}
         </div>
-        <div style={{ padding: '14px 14px 0' }}>
+        <div className="dash-footer-note" style={{ padding: '14px 14px 0' }}>
           <div className="alert alert-warn" style={{ fontSize: 12.5, padding: '10px 12px', marginBottom: 12, background: 'rgba(255,255,255,.06)', borderColor: 'rgba(255,255,255,.18)', color: '#EDE7D6' }}>
             <strong>Sample access.</strong> Sample data only — no real authentication, no production data.
           </div>

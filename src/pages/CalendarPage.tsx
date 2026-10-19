@@ -84,13 +84,6 @@ export default function CalendarPage() {
         />
       </Reveal>
 
-      <Reveal>
-        <div className="alert alert-info" style={{ marginBottom: 20 }}>
-          <strong>Availability shown is illustrative — not a live reservation system.</strong> Slots shown as booked or
-          unavailable come from the sample data; managers can change them in the dashboard.
-        </div>
-      </Reveal>
-
       <div className="cal-wrap">
         <Reveal>
           <div className="cal">

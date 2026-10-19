@@ -90,22 +90,28 @@ export function Empty({ title, body, action }: { title: string; body?: string; a
   );
 }
 
-export function Modal({ title, onClose, children, wide }: {
-  title: string; onClose: () => void; children: React.ReactNode; wide?: boolean;
+export function Modal({ title, onClose, children, wide, footer }: {
+  title: string; onClose: () => void; children: React.ReactNode; wide?: boolean; footer?: React.ReactNode;
 }) {
   React.useEffect(() => {
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
     const h = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose(); };
     window.addEventListener('keydown', h);
-    return () => window.removeEventListener('keydown', h);
+    return () => {
+      document.body.style.overflow = prevOverflow;
+      window.removeEventListener('keydown', h);
+    };
   }, [onClose]);
   return (
     <div className="modal-veil" onClick={onClose} role="dialog" aria-modal="true" aria-label={title}>
-      <div className="modal" style={wide ? { maxWidth: 860 } : undefined} onClick={e => e.stopPropagation()}>
+      <div className="modal" style={wide ? { maxWidth: 680 } : undefined} onClick={e => e.stopPropagation()}>
         <div className="modal-head">
           <h3 style={{ margin: 0 }}>{title}</h3>
           <button className="modal-x" onClick={onClose} aria-label="Close">×</button>
         </div>
         <div className="modal-body">{children}</div>
+        {footer && <div className="modal-foot">{footer}</div>}
       </div>
     </div>
   );
@@ -212,8 +218,9 @@ export function MiniCalendar({ value, onChange, minDate, ariaLabel }: {
       const estH = 350;
       const below = window.innerHeight - r.bottom;
       const up = below < estH + 12 && r.top > estH + 12;
+      const popW = Math.min(290, window.innerWidth - 16);
       setPos({
-        left: Math.max(8, Math.min(r.left, window.innerWidth - 298)),
+        left: Math.max(8, Math.min(r.left, window.innerWidth - popW - 8)),
         top: up ? Math.max(8, r.top - estH - 8) : r.bottom + 8,
       });
     }
@@ -234,7 +241,7 @@ export function MiniCalendar({ value, onChange, minDate, ariaLabel }: {
       if (r.right > window.innerWidth - 8) left = Math.max(8, window.innerWidth - r.width - 8);
       return { top, left };
     });
-  }, [open ]);
+  }, [open]);
 
   // Close on scroll/resize so the fixed popup never detaches from its field.
   React.useEffect(() => {
@@ -323,9 +330,10 @@ export function Select({ value, onChange, children, ariaLabel, className }: {
       const estH = Math.min(308, 12 + opts.length * 38);
       const below = window.innerHeight - r.bottom;
       const up = below < estH + 12 && r.top > estH + 12;
+      const popWidth = Math.min(Math.max(r.width, 180), window.innerWidth - 16);
       setPos({
-        left: Math.max(8, Math.min(r.left, window.innerWidth - Math.max(r.width, 180) - 8)),
-        width: Math.max(r.width, 180),
+        left: Math.max(8, Math.min(r.left, window.innerWidth - popWidth - 8)),
+        width: popWidth,
         top: up ? Math.max(8, r.top - estH - 8) : r.bottom + 8,
       });
     }
@@ -343,10 +351,13 @@ export function Select({ value, onChange, children, ariaLabel, className }: {
         const b = btnRef.current?.getBoundingClientRect();
         top = Math.max(8, (b ? b.top : window.innerHeight - r.height - 16) - r.height - 8);
       }
-      if (r.right > window.innerWidth - 8) left = Math.max(8, window.innerWidth - r.width - 8);
+      if (r.right > window.innerWidth - 8) {
+        left = Math.max(8, window.innerWidth - r.width - 8);
+      }
+      width = Math.min(width, window.innerWidth - 16);
       return { top, left, width };
     });
-  }, [open ]);
+  }, [open]);
 
   // Close on scroll / resize / Escape.
   React.useEffect(() => {

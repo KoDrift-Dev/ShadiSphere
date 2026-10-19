@@ -47,7 +47,6 @@ function HeroSearch() {
   return (
     <form
       className="hero-search"
-      style={{ gridTemplateColumns: 'repeat(4, 1fr)' }}
       aria-label="Find your wedding date"
       onSubmit={e => {
         e.preventDefault();
@@ -88,9 +87,6 @@ export default function Home() {
 
   return (
     <div>
-      <style>{`@media (min-width: 701px) and (max-width: 900px){ .hero-search{grid-template-columns:1fr 1fr !important;} } @media (max-width: 900px){ .grid-3,.grid-4,.grid-2{grid-template-columns:1fr;} }
-.hero-ctas .hero-cta-wrap { flex: none; }
-@media (max-width: 700px){ .hero-ctas .hero-cta-wrap { flex: 1 1 0; min-width: 0; } .hero-ctas .hero-cta-wrap .btn { min-width: 0; } }`}</style>
 
       {/* HERO */}
       <section className="hero">

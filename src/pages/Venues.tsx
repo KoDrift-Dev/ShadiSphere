@@ -34,7 +34,7 @@ export default function Venues() {
       if (type !== 'All' && v.type !== type) return false;
       if (config !== 'All' && v.config !== config) return false;
       if (amenity !== 'All' && !v.amenities.includes(amenity)) return false;
-      if (guests && (g < 50 || v.minGuests > g || v.maxGuests < g)) return false;
+      if (guests && g > 0 && v.maxGuests < g) return false;
       if (budget && b > 0 && minRental(v) > b) return false;
       return true;
     });
